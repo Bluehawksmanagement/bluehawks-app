@@ -1126,6 +1126,7 @@ let mpid=1,expid=1;
 let weapons=[],ammoLog=[],uniformLog=[];
 let pid=1,mid=1,moid=1,lid=1,aid=1,cid=100;
 let curSF='all';
+let sfFilter='all';
 
 // ── DEFAULT INVENTORY ──
 const DEFAULT_WEAPONS=[
@@ -1191,93 +1192,59 @@ async function syncToSupabase(){
     await sb.from('monthly_records').delete().neq('id',-1);
     if(months.length) await sb.from('monthly_records').upsert(months.map(m=>({id:m.id,label:m.label,saved_at:m.savedAt,col:m.col,gd:m.gd,co:m.co,misc_x:m.miscX,exp:m.exp,net_p:m.netP,cnt:m.cnt,l_given:m.lG,l_rec:m.lR})));
     await sb.from('settings').upsert([
-      {key:'ammo',value:ammo},
-      {key:'uniforms',value:uniforms},
-      {key:'ammo_log',value:ammoLog},
-      {key:'uniform_log',value:uniformLog},
+      {key:'ammo',value:ammo},{key:'uniforms',value:uniforms},
+      {key:'ammo_log',value:ammoLog},{key:'uniform_log',value:uniformLog},
       {key:'counters',value:{pid,mid,moid,lid,aid,cid,mpid,expid}},
     ]);
   }catch(e){console.warn('Supabase sync error:',e);}
 }
-
 async function load(){
   try{
-    const[
-      {data:pD},{data:mpD},{data:lD},{data:mD},
-      {data:eD},{data:aD},{data:cD},{data:wD},
-      {data:moD},{data:sD}
-    ]=await Promise.all([
-      sb.from('payments').select('*').order('id'),
-      sb.from('mustafa_pays').select('*').order('id'),
-      sb.from('loans').select('*').order('id'),
-      sb.from('miscs').select('*').order('id'),
-      sb.from('expenses').select('*').order('id'),
-      sb.from('attendance').select('*').order('id'),
-      sb.from('contracts').select('*'),
-      sb.from('weapons_inv').select('*'),
-      sb.from('monthly_records').select('*').order('id',{ascending:false}),
-      sb.from('settings').select('*'),
-    ]);
-    if(pD&&pD.length) pays=pD.map(p=>({id:p.id,sid:p.sid,desc:p.desc_text,amt:p.amt,gd:p.gd||0,time:p.time,type:p.type,tl:p.tl,payMonth:p.pay_month}));
-    if(mpD&&mpD.length) mustafaPays=mpD.map(p=>({id:p.id,site:p.site,desc:p.desc_text,amt:p.amt,gd:p.gd||0,time:p.time,type:p.type,tl:p.tl}));
-    if(lD&&lD.length) loans=lD.map(l=>({id:l.id,t:l.type,amt:l.amt,desc:l.desc_text,date:l.date}));
-    if(mD&&mD.length) miscs=mD.map(m=>({id:m.id,desc:m.desc_text,amt:m.amt,t:m.type,month:m.month}));
-    if(eD&&eD.length) expenses=eD.map(e=>({id:e.id,desc:e.desc_text,amount:e.amount,category:e.category,date:e.date,paidTo:e.paid_to,auto:e.auto||false}));
-    if(aD&&aD.length) attendance=aD.map(a=>({id:a.id,person:a.person,date:a.date,status:a.status,notes:a.notes||''}));
-    if(cD&&cD.length){
-      contracts=cD.map(c=>({id:c.id,sup:c.sup,site:c.site,t:c.type,g:c.guards||0,invoice:c.invoice,guard:c.guard||0,weapons:c.weapons||'',date:c.date||'',note:c.note||'',isNew:c.is_new||false}));
-    } else {
-      contracts=[...DEFAULT_CONTRACTS];
-      await sb.from('contracts').upsert(DEFAULT_CONTRACTS.map(c=>({id:c.id,sup:c.sup,site:c.site,type:c.t,guards:c.g||0,invoice:c.invoice,guard:c.guard||0,weapons:c.weapons||'',date:c.date||'',note:c.note||'',is_new:false})));
-    }
-    if(wD&&wD.length) weapons=wD.map(w=>({id:w.id,type:w.type,loc:w.loc,status:w.status,count:w.count,notes:w.notes||''}));
-    else weapons=[...DEFAULT_WEAPONS];
-    if(moD&&moD.length) months=moD.map(m=>({id:m.id,label:m.label,savedAt:m.saved_at,col:m.col,gd:m.gd,co:m.co,miscX:m.misc_x,exp:m.exp,netP:m.net_p,cnt:m.cnt,lG:m.l_given,lR:m.l_rec}));
-    if(sD){
-      const ammoS=sD.find(s=>s.key==='ammo');
-      const unifS=sD.find(s=>s.key==='uniforms');
-      const alS=sD.find(s=>s.key==='ammo_log');
-      const ulS=sD.find(s=>s.key==='uniform_log');
-      const ctrS=sD.find(s=>s.key==='counters');
-      if(ammoS)ammo=ammoS.value;
-      if(unifS)uniforms=unifS.value;
-      if(alS&&alS.value)ammoLog=alS.value;
-      if(ulS&&ulS.value)uniformLog=ulS.value;
-      if(ctrS){const c=ctrS.value;pid=c.pid||pid;mid=c.mid||mid;moid=c.moid||moid;lid=c.lid||lid;aid=c.aid||aid;cid=c.cid||cid;mpid=c.mpid||mpid;expid=c.expid||expid;}
-    }
-    if(months.length===0){months=[{id:1,label:'February 2026',savedAt:'31/3/2026',col:3159777,gd:1701000,co:1458777,miscX:0,exp:623600,netP:835177,cnt:8,lG:0,lR:0}];moid=2;}
+    const d=JSON.parse(localStorage.getItem('bh_v5')||'{}');
+    if(d.pays)pays=d.pays;if(d.miscs)miscs=d.miscs;
+    if(d.months)months=d.months;if(d.loans)loans=d.loans;
+    if(d.attendance)attendance=d.attendance;
+    if(d.contracts)contracts=d.contracts;
+    if(d.mustafaPays)mustafaPays=d.mustafaPays;
+    if(d.expenses)expenses=d.expenses;
+    if(d.mpid)mpid=d.mpid;if(d.expid)expid=d.expid;
+    // Pre-load Shah SB shoe purchase if no expenses yet
     if(expenses.length===0){
-      expenses=[{id:expid,desc:'Black Shoes × 2 — Shah SB (2 pairs @ 1,050 PKR each)',amount:2100,category:'uniform',date:'3 Apr 2026',paidTo:'Shop',auto:false}];
-      expid++;
-      uniformLog.unshift({item:'Black Shoes',qty:2,site:'Shah SB — Personal',sup:'Shah SB',action:'bought',date:'3 Apr 2026',cost:1050,totalCost:2100,note:'2 pairs @ PKR 1,050 each — Shah SB'});
-      if(uniforms['shoes_black_new'])uniforms['shoes_black_new'].qty+=2;
-    }
-  }catch(e){
-    console.warn('Supabase load failed, using localStorage:',e);
-    try{
-      const d=JSON.parse(localStorage.getItem('bh_v5')||'{}');
-      if(d.pays)pays=d.pays;if(d.miscs)miscs=d.miscs;
-      if(d.months)months=d.months;if(d.loans)loans=d.loans;
-      if(d.attendance)attendance=d.attendance;
-      if(d.contracts)contracts=d.contracts;
-      if(d.mustafaPays)mustafaPays=d.mustafaPays;
-      if(d.expenses)expenses=d.expenses;
-      if(d.mpid)mpid=d.mpid;if(d.expid)expid=d.expid;
-      if(expenses.length===0){
-        expenses=[{id:expid++,desc:'Black Shoes × 2 — Shah SB (2 pairs @ 1,050 PKR each)',amount:2100,category:'uniform',date:'3 Apr 2026',paidTo:'Shop',auto:false}];
-        uniformLog.unshift({item:'Black Shoes',qty:2,site:'Shah SB — Personal',sup:'Shah SB',action:'bought',date:'3 Apr 2026',cost:1050,totalCost:2100,note:'2 pairs @ PKR 1,050 each — Shah SB'});
-        if(uniforms['shoes_black_new'])uniforms['shoes_black_new'].qty+=2;
+      expenses=[{
+        id:expid++,
+        desc:'Black Shoes × 2 — Shah SB (2 pairs @ 1,050 PKR each)',
+        amount:2100,
+        category:'uniform',
+        date:'3 Apr 2026',
+        paidTo:'Shop',
+        auto:false
+      }];
+      // Also add to uniform log
+      uniformLog.unshift({
+        item:'Black Shoes',qty:2,
+        site:'Shah SB — Personal',sup:'Shah SB',
+        action:'bought',
+        date:'3 Apr 2026',
+        cost:1050,totalCost:2100,
+        note:'2 pairs @ PKR 1,050 each — Shah SB'
+      });
+      // Update stock
+      if(uniforms['shoes_black_new']){
+        uniforms['shoes_black_new'].qty+=2;
       }
-      if(d.weapons)weapons=d.weapons;else weapons=[...DEFAULT_WEAPONS];
-      if(d.ammoLog)ammoLog=d.ammoLog;
-      if(d.uniformLog)uniformLog=d.uniformLog;
-      if(d.ammo)ammo=d.ammo;
-      if(d.uniforms)uniforms=d.uniforms;else uniforms={...DEFAULT_UNIFORMS};
-      if(d.pid)pid=d.pid;if(d.mid)mid=d.mid;if(d.moid)moid=d.moid;
-      if(d.lid)lid=d.lid;if(d.aid)aid=d.aid;if(d.cid)cid=d.cid;
-      if(months.length===0){months=[{id:1,label:'February 2026',savedAt:'31/3/2026',col:3159777,gd:1701000,co:1458777,miscX:0,exp:623600,netP:835177,cnt:8,lG:0,lR:0}];moid=2;}
-    }catch(e2){weapons=[...DEFAULT_WEAPONS];uniforms={...DEFAULT_UNIFORMS};}
-  }
+    }
+    if(d.weapons)weapons=d.weapons;else weapons=[...DEFAULT_WEAPONS];
+    if(d.ammoLog)ammoLog=d.ammoLog;
+    if(d.uniformLog)uniformLog=d.uniformLog;
+    if(d.ammo)ammo=d.ammo;
+    if(d.uniforms)uniforms=d.uniforms;else uniforms={...DEFAULT_UNIFORMS};
+    if(d.pid)pid=d.pid;if(d.mid)mid=d.mid;if(d.moid)moid=d.moid;
+    if(d.lid)lid=d.lid;if(d.aid)aid=d.aid;if(d.cid)cid=d.cid;
+    if(months.length===0){
+      months=[{id:1,label:'February 2026',savedAt:'31/3/2026',col:3159777,gd:1701000,co:1458777,miscX:0,exp:623600,netP:835177,cnt:8,lG:0,lR:0}];
+      moid=2;
+    }
+  }catch(e){weapons=[...DEFAULT_WEAPONS];uniforms={...DEFAULT_UNIFORMS};}
 }
 function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2200);}
 
@@ -1607,16 +1574,25 @@ function toggleExpDetail(sid){
     `▼ VIEW EXPENSE BREAKDOWN (${EXP_BREAKDOWN[sid]?.total.toLocaleString('en-PK')} PKR)`;
 }
 
+function setSF(f,btn){
+  sfFilter=f;
+  document.querySelectorAll('[id^="sf-"]').forEach(b=>b.classList.remove('on'));
+  if(btn)btn.classList.add('on');
+  renderSites();
+}
+
 function renderSites(){
   const c=$('sites-out');if(!c)return;
+  // Use DEFAULT_CONTRACTS as fallback if contracts is empty
+  const src=contracts.length>0?contracts:DEFAULT_CONTRACTS;
   const q=($('site-search')?.value||'').toLowerCase();
-  const filtered=contracts.filter(ct=>{
+  const filtered=src.filter(ct=>{
     const matchF=sfFilter==='all'||ct.sup===sfFilter;
     const matchS=!q||ct.site.toLowerCase().includes(q)||ct.sup.toLowerCase().includes(q);
     return matchF&&matchS;
   });
-  const tInv=filtered.reduce((a,ct)=>a+ct.invoice,0);
-  const tGd=filtered.reduce((a,ct)=>a+ct.guard,0);
+  const tInv=filtered.reduce((a,ct)=>a+(ct.invoice||0),0);
+  const tGd=filtered.reduce((a,ct)=>a+(ct.guard||0),0);
   c.innerHTML=`<div style="font-size:10px;color:var(--tx3);margin-bottom:8px;letter-spacing:1px">${filtered.length} SITES · Invoice: ${fmt(tInv)} PKR · Guard Sal: ${fmt(tGd)} PKR · Saving: ${fmt(tInv-tGd)} PKR</div>
   <div class="card" style="padding:0;overflow:hidden"><div class="tw"><table>
     <thead><tr><th>Site</th><th>Supervisor</th><th>Type</th><th>G</th><th>Invoice</th><th>Guard</th><th>Saving</th><th>Action</th></tr></thead>
@@ -2319,21 +2295,22 @@ function renderMonths(){
 
 // ── INIT ──
 (async()=>{
-  await load();
-  refresh();
-  updateMustafa();
-  renderMisc();
-  renderMonths();
-  renderLoan();
-  renderSites();
-  updateChinese();
-  updateMustafa();
-  renderEstimated();
-  renderPL();
-  renderInventory();
-  sv('ammo-30',ammo[30]||0);sv('ammo-223',ammo[223]||0);sv('ammo-12',ammo[12]||0);
-  const today=new Date().toISOString().split('T')[0];
-  if($('att-date'))$('att-date').value=today;
+await load();
+refresh();
+updateMustafa();
+renderMisc();
+renderMonths();
+renderLoan();
+renderSites();
+updateChinese();
+updateMustafa();
+renderEstimated();
+renderPL();
+renderInventory();
+sv('ammo-30',ammo[30]||0);sv('ammo-223',ammo[223]||0);sv('ammo-12',ammo[12]||0);
+// Set today's date for attendance
+const today=new Date().toISOString().split('T')[0];
+if($('att-date'))$('att-date').value=today;
 })();
 </script>
 </body>
