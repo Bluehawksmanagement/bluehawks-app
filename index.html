@@ -1,0 +1,2340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Blue Hawks — Operations</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --g:#C09A3A;--g2:#D4AE50;--g3:#F0CC78;
+  --ink:#060810;--ink2:#0A0E18;--ink3:#0E1420;--ink4:#131A28;--ink5:#182030;
+  --bd:#1E2A3C;--bd2:#28374F;
+  --tx:#C8D8EC;--tx2:#7A95B0;--tx3:#4A6080;
+  --gr:#22C55E;--gr2:#16A34A;--rd:#EF4444;--rd2:#DC2626;
+  --bl:#38BDF8;--bl2:#0284C7;--am:#F59E0B;--pu:#A78BFA;--tl:#2DD4BF;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--ink);color:var(--tx);font-family:'DM Mono',monospace;overflow-x:hidden}
+::-webkit-scrollbar{width:2px;height:2px}
+::-webkit-scrollbar-thumb{background:var(--g);border-radius:9px}
+
+.hdr{position:sticky;top:0;z-index:200;background:rgba(10,14,24,0.97);backdrop-filter:blur(20px);border-bottom:1px solid rgba(192,154,58,0.15);padding:0 16px;height:52px;display:flex;align-items:center;gap:12px}
+.hdr-logo{font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:var(--g2);letter-spacing:4px;text-transform:uppercase;text-shadow:0 0 20px rgba(192,154,58,0.3)}
+.hdr-sep{width:1px;height:18px;background:var(--bd);margin:0 4px}
+.hdr-sub{font-size:9px;color:var(--tx3);letter-spacing:2px;text-transform:uppercase}
+.hdr-dot{width:6px;height:6px;border-radius:50%;background:var(--gr);box-shadow:0 0 6px var(--gr);animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+.hdr-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.hdr-badge{background:linear-gradient(135deg,var(--g),var(--g3));color:var(--ink);font-size:8px;font-weight:700;padding:3px 9px;border-radius:3px;letter-spacing:2px;font-family:'Syne',sans-serif}
+.hdr-av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--g),var(--g3));color:var(--ink);font-weight:800;font-size:11px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;box-shadow:0 0 12px rgba(192,154,58,0.3)}
+
+.nav{background:var(--ink2);border-bottom:1px solid var(--bd);display:flex;overflow-x:auto;padding:0 8px;-webkit-overflow-scrolling:touch}
+.nav::-webkit-scrollbar{display:none}
+.nt{padding:11px 12px;font-size:9px;font-weight:600;color:var(--tx3);border-bottom:2px solid transparent;white-space:nowrap;cursor:pointer;letter-spacing:1.5px;text-transform:uppercase;font-family:'Syne',sans-serif;transition:color .2s,border-color .2s;flex-shrink:0}
+.nt.on{color:var(--g2);border-bottom-color:var(--g)}
+
+.pg{display:none;padding:14px;animation:pageIn .25s ease}
+.pg.on{display:block}
+@keyframes pageIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+.ptitle{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:var(--tx);letter-spacing:-.5px;line-height:1;margin-bottom:3px}
+.ptitle em{color:var(--g2);font-style:normal}
+.psub{font-size:9px;color:var(--tx3);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px}
+
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
+.g4{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+
+.sc{position:relative;overflow:hidden;background:var(--ink3);border:1px solid var(--bd);border-radius:12px;padding:13px;transition:border-color .2s,transform .15s}
+.sc:active{transform:scale(.98)}
+.sc-bar{position:absolute;top:0;left:0;right:0;height:2px;border-radius:12px 12px 0 0}
+.sc-l{font-size:8px;font-weight:600;color:var(--tx3);letter-spacing:2px;text-transform:uppercase;margin-bottom:7px;font-family:'Syne',sans-serif}
+.sc-v{font-family:'Syne',sans-serif;font-size:19px;font-weight:800;letter-spacing:-.3px;line-height:1}
+.sc-s{font-size:9px;color:var(--tx3);margin-top:5px}
+
+.card{background:var(--ink3);border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:12px;position:relative;overflow:hidden}
+.ct{font-family:'Syne',sans-serif;font-size:9px;font-weight:700;color:var(--g2);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.ct::before{content:'';display:block;width:20px;height:2px;background:linear-gradient(90deg,var(--g),transparent);border-radius:2px;flex-shrink:0}
+
+.row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid rgba(30,42,60,.8);font-size:11px;gap:10px}
+.row:last-child{border-bottom:none}
+.rl{color:var(--tx2);flex:1;font-size:10px;letter-spacing:.3px}
+.rv{font-weight:500;text-align:right;flex-shrink:0;font-family:'DM Mono',monospace}
+
+.al{border-radius:10px;padding:10px 13px;margin-bottom:12px;font-size:11px;line-height:1.5;display:flex;align-items:flex-start;gap:8px}
+.al-b{background:rgba(56,189,248,.07);border:1px solid rgba(56,189,248,.18);color:#7DD3FC}
+.al-y{background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.18);color:#FCD34D}
+.al-g{background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.18);color:#86EFAC}
+.al-r{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.2);color:#FCA5A5}
+.al-pu{background:rgba(167,139,250,.07);border:1px solid rgba(167,139,250,.2);color:#C4B5FD}
+.al-tl{background:rgba(45,212,191,.07);border:1px solid rgba(45,212,191,.2);color:#5EEAD4}
+
+input,select,textarea{background:var(--ink4);border:1px solid var(--bd2);border-radius:10px;color:var(--tx);padding:10px 13px;font-size:12px;font-family:'DM Mono',monospace;outline:none;width:100%;transition:border-color .2s,box-shadow .2s;-webkit-appearance:none}
+input:focus,select:focus{border-color:var(--g);box-shadow:0 0 0 3px rgba(192,154,58,.1)}
+label{font-size:9px;font-weight:700;color:var(--tx3);letter-spacing:1.5px;text-transform:uppercase;display:block;margin-bottom:5px;font-family:'Syne',sans-serif}
+
+.btn{border:none;border-radius:10px;padding:11px 18px;cursor:pointer;font-size:11px;font-weight:700;font-family:'Syne',sans-serif;letter-spacing:1px;text-transform:uppercase;transition:all .15s}
+.btn:active{transform:scale(.97)}
+.btn-g{background:linear-gradient(135deg,var(--g),var(--g3));color:var(--ink);box-shadow:0 4px 16px rgba(192,154,58,.3)}
+.btn-gr{background:linear-gradient(135deg,var(--gr2),var(--gr));color:#000}
+.btn-bl{background:linear-gradient(135deg,var(--bl2),var(--bl));color:#000}
+.btn-rd{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.25);color:var(--rd);padding:5px 10px;font-size:9px}
+.btn-ghost{background:var(--ink4);border:1px solid var(--bd2);color:var(--tx2);padding:5px 11px;font-size:9px}
+.btn-ghost.on{background:var(--g);color:var(--ink);border-color:var(--g)}
+.btn-sm{padding:5px 10px;font-size:9px}
+
+.pb-wrap{background:var(--ink5);border-radius:99px;height:4px;overflow:hidden;margin:6px 0}
+.pb{height:100%;border-radius:99px;transition:width .7s cubic-bezier(.4,0,.2,1)}
+
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:11px}
+thead tr{background:var(--ink4)}
+th{padding:7px 10px;text-align:left;font-size:8px;color:var(--tx3);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;white-space:nowrap;font-family:'Syne',sans-serif}
+td{padding:7px 10px;border-bottom:1px solid var(--bd);vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+
+.bdg{border-radius:4px;padding:2px 7px;font-size:9px;font-weight:700;font-family:'Syne',sans-serif;letter-spacing:.5px}
+.b-g{background:rgba(34,197,94,.1);color:#86EFAC;border:1px solid rgba(34,197,94,.2)}
+.b-r{background:rgba(239,68,68,.1);color:#FCA5A5;border:1px solid rgba(239,68,68,.2)}
+.b-y{background:rgba(245,158,11,.1);color:#FCD34D;border:1px solid rgba(245,158,11,.2)}
+.b-b{background:rgba(56,189,248,.1);color:#7DD3FC;border:1px solid rgba(56,189,248,.2)}
+.b-pu{background:rgba(167,139,250,.1);color:#C4B5FD;border:1px solid rgba(167,139,250,.2)}
+.b-tl{background:rgba(45,212,191,.1);color:#5EEAD4;border:1px solid rgba(45,212,191,.2)}
+
+.stabs{display:flex;gap:4px;margin-bottom:14px;background:var(--ink3);border-radius:10px;padding:4px;border:1px solid var(--bd)}
+.stab{flex:1;padding:8px;border:none;border-radius:7px;font-weight:700;font-size:9px;cursor:pointer;background:transparent;color:var(--tx3);font-family:'Syne',sans-serif;text-transform:uppercase;letter-spacing:1px;transition:all .2s}
+.stab.on{background:var(--g);color:var(--ink)}
+
+.pe{display:flex;justify-content:space-between;align-items:center;padding:9px 12px;background:var(--ink4);border:1px solid var(--bd);border-radius:9px;margin-bottom:5px;gap:10px}
+
+.pi{border:1px solid var(--bd);border-radius:10px;padding:10px 14px 10px 17px;margin-bottom:7px;background:var(--ink3);position:relative}
+.pi::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:10px 0 0 10px}
+.pi.h::before{background:var(--rd)}
+.pi.m::before{background:var(--am)}
+.pi.d{opacity:.4}
+.pi.d::before{background:var(--gr)}
+
+.sdiv{font-family:'Syne',sans-serif;font-size:9px;font-weight:700;color:var(--tx3);letter-spacing:2px;text-transform:uppercase;margin:16px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--bd)}
+
+.ms{background:var(--ink4);border:1px solid var(--bd);border-radius:8px;padding:8px 10px}
+.ms-l{font-size:8px;color:var(--tx3);text-transform:uppercase;letter-spacing:1px;font-family:'Syne',sans-serif;margin-bottom:3px}
+.ms-v{font-size:13px;font-weight:700;font-family:'Syne',sans-serif}
+
+.fg{display:flex;flex-direction:column;gap:9px}
+.fg2{display:flex;gap:8px}
+.fg2>*{flex:1}
+
+.sup-card{background:var(--ink3);border:1px solid var(--bd);border-radius:12px;padding:12px;margin-bottom:10px;cursor:pointer;transition:border-color .2s}
+.sup-card:hover{border-color:var(--bd2)}
+.sup-card.expanded{border-color:var(--g)}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(12px);background:linear-gradient(135deg,var(--g),var(--g3));color:var(--ink);padding:9px 22px;border-radius:99px;font-size:10px;font-weight:800;font-family:'Syne',sans-serif;letter-spacing:1px;text-transform:uppercase;z-index:999;opacity:0;transition:all .3s;pointer-events:none;box-shadow:0 8px 28px rgba(192,154,58,.4)}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@keyframes pls{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.3)}50%{box-shadow:0 0 0 6px rgba(239,68,68,0)}}
+.pls{animation:pls 2.5s infinite}
+
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:300;display:none;align-items:center;justify-content:center;padding:16px}
+.modal-bg.on{display:flex}
+.modal{background:var(--ink2);border:1px solid var(--bd2);border-radius:16px;padding:18px;width:100%;max-width:480px;max-height:85vh;overflow-y:auto}
+.modal-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--g2);margin-bottom:14px}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<header class="hdr">
+  <span style="font-size:20px;filter:drop-shadow(0 0 8px rgba(192,154,58,.5))">🦅</span>
+  <div class="hdr-logo">Blue Hawks</div>
+  <div class="hdr-sep"></div>
+  <div class="hdr-sub">Ops Center</div>
+  <div class="hdr-right">
+    <div class="hdr-dot"></div>
+    <div class="hdr-badge" id="hdr-month">MAR 2026</div>
+    <div class="hdr-av">A</div>
+  </div>
+</header>
+
+<nav class="nav">
+  <div class="nt on" onclick="go('actual',this)">🏠 Actual</div>
+  <div class="nt" onclick="go('estimated',this)">📊 Estimated</div>
+  <div class="nt" onclick="go('input',this)">✏️ Input</div>
+  <div class="nt" onclick="go('supervisors',this)">👮 Supervisors</div>
+  <div class="nt" onclick="go('sites',this)">📍 Sites</div>
+  <div class="nt" onclick="go('pl',this)">🏦 P&amp;L</div>
+  <div class="nt" onclick="go('loan',this)">💳 Loan</div>
+  <div class="nt" onclick="go('mustafa',this)">🤝 Mustafa</div>
+  <div class="nt" onclick="go('chinese',this)">🇨🇳 Chinese</div>
+  <div class="nt" onclick="go('inventory',this)">🔫 Arsenal</div>
+  <div class="nt" onclick="go('performance',this)">📈 Performance</div>
+  <div class="nt" onclick="go('attendance',this)">📋 Attendance</div>
+  <div class="nt" onclick="go('expenses',this)">💸 Expenses</div>
+  <div class="nt" onclick="go('misc',this)">➕ Misc</div>
+  <div class="nt" onclick="go('monthly',this)">📅 Monthly</div>
+  <div class="nt" onclick="go('pending',this)">⚠️ Pending</div>
+</nav>
+
+<!-- ACTUAL -->
+<div id="pg-actual" class="pg on">
+  <div class="ptitle">Actual <em>Collections</em></div>
+  <div class="psub">Live — updates as you add payments</div>
+  <div class="g2">
+    <div class="sc" style="border-color:rgba(192,154,58,.3)"><div class="sc-bar" style="background:linear-gradient(90deg,var(--g),var(--g3))"></div><div class="sc-l">Total Collected</div><div class="sc-v" id="a-col" style="color:var(--g2)">0</div><div class="sc-s">PKR received</div></div>
+    <div class="sc" style="border-color:rgba(56,189,248,.2)"><div class="sc-bar" style="background:linear-gradient(90deg,var(--bl2),var(--bl))"></div><div class="sc-l">Guard Salaries</div><div class="sc-v" id="a-gd" style="color:var(--bl)">0</div><div class="sc-s">PKR paid to guards</div></div>
+    <div class="sc" style="border-color:rgba(34,197,94,.2)"><div class="sc-bar" style="background:linear-gradient(90deg,var(--gr2),var(--gr))"></div><div class="sc-l">Company Saving</div><div class="sc-v" id="a-co" style="color:var(--gr)">0</div><div class="sc-s">PKR company keeps</div></div>
+    <div class="sc pls" style="border-color:rgba(239,68,68,.2)"><div class="sc-bar" style="background:linear-gradient(90deg,var(--rd2),var(--rd))"></div><div class="sc-l">Outstanding</div><div class="sc-v" id="a-rem" style="color:var(--rd)">0</div><div class="sc-s">PKR to collect</div></div>
+    <div class="sc" style="border-color:rgba(34,197,94,.2)"><div class="sc-bar" style="background:linear-gradient(90deg,var(--gr2),var(--gr))"></div><div class="sc-l">Misc Income</div><div class="sc-v" id="a-misc" style="color:var(--gr)">0</div><div class="sc-s">PKR added</div></div>
+    <div class="sc" style="border-color:rgba(167,139,250,.2)"><div class="sc-bar" style="background:linear-gradient(90deg,#7C3AED,var(--pu))"></div><div class="sc-l">Actual Net Profit</div><div class="sc-v" id="a-net" style="color:var(--pu)">0</div><div class="sc-s">PKR real so far</div></div>
+  </div>
+  <div class="al al-b"><span>💡</span><span>Add payments in ✏️ Input — all tabs update instantly including supervisor and site views</span></div>
+  <div class="card">
+    <div class="ct">Collection Progress</div>
+    <div id="a-bars"><div style="text-align:center;padding:20px;color:var(--tx3);font-size:10px;letter-spacing:2px">NO PAYMENTS YET</div></div>
+  </div>
+  <div class="card">
+    <div class="ct" style="color:var(--gr)">Recent Payments</div>
+    <div id="a-recent"><div style="text-align:center;padding:16px;color:var(--tx3);font-size:10px;letter-spacing:2px">NO PAYMENTS YET</div></div>
+  </div>
+</div>
+
+<!-- ESTIMATED -->
+<div id="pg-estimated" class="pg">
+  <div class="ptitle">Estimated <em>Potential</em></div>
+  <div class="psub">Full contract value — current month</div>
+  <div class="g2">
+    <div class="sc" style="border-color:rgba(192,154,58,.3)"><div class="sc-bar" style="background:linear-gradient(90deg,var(--g),var(--g3))"></div><div class="sc-l">Total Contract</div><div class="sc-v" id="e-contract" style="color:var(--g2)">0</div><div class="sc-s">PKR all sources</div></div>
+    <div class="sc" style="border-color:rgba(56,189,248,.2)"><div class="sc-bar" style="background:linear-gradient(90deg,var(--bl2),var(--bl))"></div><div class="sc-l">Guard Salaries</div><div class="sc-v" id="e-guard" style="color:var(--bl)">0</div><div class="sc-s">PKR company pays</div></div>
+    <div class="sc" style="border-color:rgba(34,197,94,.2)"><div class="sc-bar" style="background:linear-gradient(90deg,var(--gr2),var(--gr))"></div><div class="sc-l">Gross Saving</div><div class="sc-v" id="e-saving" style="color:var(--gr)">0</div><div class="sc-s">PKR before expenses</div></div>
+    <div class="sc" style="border-color:rgba(239,68,68,.2)"><div class="sc-bar" style="background:linear-gradient(90deg,var(--rd2),var(--rd))"></div><div class="sc-l">Staff Expenses</div><div class="sc-v" id="e-exp" style="color:var(--rd)">622,739</div><div class="sc-s">PKR all staff</div></div>
+    <div class="sc" style="border-color:rgba(34,197,94,.2)"><div class="sc-bar" style="background:linear-gradient(90deg,var(--gr2),var(--gr))"></div><div class="sc-l">Misc Added</div><div class="sc-v" id="e-misc" style="color:var(--gr)">0</div><div class="sc-s">PKR extra income</div></div>
+    <div class="sc" style="border-color:rgba(167,139,250,.2)"><div class="sc-bar" style="background:linear-gradient(90deg,#7C3AED,var(--pu))"></div><div class="sc-l">Potential Net Profit</div><div class="sc-v" id="e-net" style="color:var(--pu)">0</div><div class="sc-s">PKR full potential</div></div>
+  </div>
+  <div class="al al-y"><span>💡</span><span>Islamabad pending not included. Mustafa 50% share separate.</span></div>
+  <div class="card">
+    <div class="ct" style="color:var(--pu)">Actual vs Potential</div>
+    <div class="row"><span class="rl">Potential Net Profit</span><span class="rv" id="evp-pot" style="color:var(--pu)">— PKR</span></div>
+    <div class="row"><span class="rl">Collected So Far</span><span class="rv" id="evp-col" style="color:var(--gr)">0 PKR</span></div>
+    <div class="row"><span class="rl">Still to Collect</span><span class="rv" id="evp-rem" style="color:var(--rd)">— PKR</span></div>
+    <div class="row"><span class="rl">Actual Net Profit</span><span class="rv" id="evp-actual" style="color:var(--gr)">0 PKR</span></div>
+    <div class="pb-wrap" style="margin-top:10px"><div class="pb" id="evp-bar" style="width:0%;background:linear-gradient(90deg,#7C3AED,var(--pu))"></div></div>
+    <div style="font-size:9px;color:var(--tx3);margin-top:4px;letter-spacing:1.5px;font-family:'Syne',sans-serif" id="evp-pct">0% COLLECTED</div>
+  </div>
+  <div class="card">
+    <div class="ct" style="color:var(--tl)">Next Month Outlook</div>
+    <div id="next-outlook"><div style="text-align:center;padding:14px;color:var(--tx3);font-size:10px">Generated after you save this month</div></div>
+  </div>
+  <div class="card">
+    <div class="ct">Breakdown — Company Sites</div>
+    <div class="tw" id="est-table"><div style="text-align:center;padding:14px;color:var(--tx3);font-size:10px">Loading...</div></div>
+  </div>
+</div>
+
+<!-- INPUT -->
+<div id="pg-input" class="pg">
+  <div class="ptitle">Live <em>Input</em></div>
+  <div class="psub">Add each payment as received</div>
+  <div class="stabs">
+    <button class="stab on" id="it-add" onclick="switchIT('add')">➕ Add</button>
+    <button class="stab" id="it-log" onclick="switchIT('log')">📋 Log</button>
+    <button class="stab" id="it-split" onclick="switchIT('split')">📊 Split</button>
+  </div>
+  <div id="is-add">
+    <div class="card">
+      <div class="ct">New Payment</div>
+      <div class="fg">
+        <div><label>Supervisor / Source</label>
+        <select id="p-sup" onchange="updateSiteDrop(this.value)">
+          <option value="">— Select Source —</option>
+          <option value="tanvir">Tanvir</option>
+          <option value="shah">Shah SB</option>
+          <option value="altaf">Altaf</option>
+          <option value="karamat">Karamat</option>
+          <option value="shahwaiz">Shahwaiz (25%)</option>
+          <option value="company">Company Direct</option>
+          <option value="islamabad">🇨🇳 Islamabad Chinese</option>
+          <option value="other">Other</option>
+        </select></div>
+        <div><label>Site</label>
+        <select id="p-site" onchange="if(this.value){document.getElementById('p-desc').value=this.value}">
+          <option value="">— Select site or type below —</option>
+        </select></div>
+        <div><label>Description</label>
+        <input id="p-desc" type="text" placeholder="Custom description..."></div>
+        <div class="fg2">
+          <div><label style="color:var(--g2)">Amount Collected (PKR)</label><input id="p-amt" type="number" placeholder="e.g. 50000"></div>
+          <div><label style="color:var(--bl)">Guard Salary (PKR)</label><input id="p-gd" type="number" placeholder="0 if none"></div>
+        </div>
+        <div><label>Payment Type</label>
+        <select id="p-type">
+          <option value="cash">💵 Cash</option>
+          <option value="online">🌐 Online Transfer</option>
+          <option value="cheque">🏦 Cheque</option>
+          <option value="direct">🏢 Direct to Company</option>
+          <option value="other">Other</option>
+        </select></div>
+        <div><label>Month (leave blank for current)</label>
+        <input id="p-month" type="text" placeholder="e.g. Mar 2026 or Feb 2026 (for pending)"></div>
+        <button class="btn btn-g" onclick="addPay()" style="width:100%;padding:13px;font-size:12px;letter-spacing:2px">✅ ADD PAYMENT</button>
+      </div>
+    </div>
+  </div>
+  <div id="is-log" style="display:none"><div id="p-log"><div style="text-align:center;padding:24px;color:var(--tx3);font-size:10px;letter-spacing:2px">NO PAYMENTS YET</div></div></div>
+  <div id="is-split" style="display:none">
+    <div class="card">
+      <div class="ct" style="color:var(--bl)">Guard vs Company Split</div>
+      <div class="tw"><table>
+        <thead><tr><th>Source</th><th>Collected</th><th>→ Guards</th><th>→ Company</th><th>%</th></tr></thead>
+        <tbody id="sp-body"></tbody>
+        <tr id="sp-tot" style="background:var(--ink4)"></tr>
+      </table></div>
+    </div>
+  </div>
+</div>
+
+<!-- SUPERVISORS TAB -->
+<div id="pg-supervisors" class="pg">
+  <div class="ptitle">Supervisor <em>Overview</em></div>
+  <div class="psub">Received vs pending — all supervisors</div>
+  <div id="sup-overview"></div>
+</div>
+
+<!-- SITES TAB -->
+<div id="pg-sites" class="pg">
+  <div class="ptitle">Sites <em>Registry</em></div>
+  <div class="psub">All contracts — add, remove, track</div>
+  <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+    <button class="btn btn-g btn-sm" onclick="openAddContract()">+ Add Contract</button>
+    <button class="btn btn-ghost btn-sm on" id="sf-all" onclick="setSF('all',this)">All</button>
+    <button class="btn btn-ghost btn-sm" id="sf-tanvir" onclick="setSF('tanvir',this)">Tanvir</button>
+    <button class="btn btn-ghost btn-sm" id="sf-shah" onclick="setSF('shah',this)">Shah SB</button>
+    <button class="btn btn-ghost btn-sm" id="sf-karamat" onclick="setSF('karamat',this)">Karamat</button>
+    <button class="btn btn-ghost btn-sm" id="sf-altaf" onclick="setSF('altaf',this)">Altaf</button>
+    <button class="btn btn-ghost btn-sm" id="sf-shahwaiz" onclick="setSF('shahwaiz',this)">Shahwaiz</button>
+    <button class="btn btn-ghost btn-sm" id="sf-company" onclick="setSF('company',this)">Company</button>
+    <button class="btn btn-ghost btn-sm" id="sf-islamabad" onclick="setSF('islamabad',this)">Chinese</button>
+    <button class="btn btn-ghost btn-sm" id="sf-mustafa" onclick="setSF('mustafa',this)">Mustafa</button>
+  </div>
+  <input id="site-search" type="text" placeholder="Search site..." oninput="renderSites()" style="margin-bottom:10px">
+  <div id="sites-out"></div>
+</div>
+
+<!-- P&L -->
+<div id="pg-pl" class="pg">
+  <div class="ptitle">Company <em>P&amp;L</em></div>
+  <div class="psub">Full profit breakdown — current month</div>
+  <div class="card">
+    <div class="ct" style="color:var(--gr)">Revenue</div>
+    <div id="pl-revenue-rows"></div>
+    <div class="row" style="border-top:1px solid rgba(192,154,58,.2);margin-top:4px;padding-top:10px"><span class="rl" style="font-weight:700;color:var(--tx);font-family:'Syne',sans-serif">Total Revenue</span><span class="rv" id="pl-total-rev" style="color:var(--g2);font-size:15px;font-family:'Syne',sans-serif;font-weight:800">0 PKR</span></div>
+  </div>
+  <div class="card">
+    <div class="ct" style="color:var(--bl)">Guard Salaries (Company Pays)</div>
+    <div id="pl-guard-rows"></div>
+    <div class="row" style="border-top:1px solid rgba(56,189,248,.2);margin-top:4px;padding-top:10px"><span class="rl" style="font-weight:700;color:var(--tx);font-family:'Syne',sans-serif">Total Guard Sal</span><span class="rv" id="pl-total-gd" style="color:var(--bl);font-size:15px;font-family:'Syne',sans-serif;font-weight:800">0 PKR</span></div>
+  </div>
+  <div class="card" style="border-color:rgba(34,197,94,.2)">
+    <div class="row" style="border:none;padding:0"><span class="rl" style="font-weight:700;color:var(--tx);font-family:'Syne',sans-serif;font-size:13px">Gross Company Saving</span><span class="rv" id="pl-gross" style="color:var(--gr);font-size:20px;font-family:'Syne',sans-serif;font-weight:800">0 PKR</span></div>
+  </div>
+  <div class="card">
+    <div class="ct" style="color:var(--rd)">Staff Expenses</div>
+    <div class="row"><span class="rl">Shah SB (Salary+Comm+Fuel+Misc)</span><span class="rv" style="color:var(--rd)">94,400 PKR</span></div>
+    <div class="row"><span class="rl">Tanvir (Salary+Rashan+Comm+Fuel+Misc)</span><span class="rv" style="color:var(--rd)">220,316 PKR</span></div>
+    <div class="row"><span class="rl">Karamat (Salary+Comm+Fuel+Misc+Rent)</span><span class="rv" style="color:var(--rd)">87,150 PKR</span></div>
+    <div class="row"><span class="rl">Shahwaiz (Comm+Fuel+Misc)</span><span class="rv" style="color:var(--rd)">33,450 PKR</span></div>
+    <div class="row"><span class="rl">Bilal (Salary+Fuel+Misc−EOBI)</span><span class="rv" style="color:var(--rd)">69,700 PKR</span></div>
+    <div class="row"><span class="rl">Altaf (Salary+Comm+Fuel+Misc−EOBI)</span><span class="rv" style="color:var(--rd)">77,723 PKR</span></div>
+    <div class="row"><span class="rl">Jazib (Salary+Fuel−EOBI)</span><span class="rv" style="color:var(--rd)">40,000 PKR</span></div>
+    <div class="row" style="border-top:1px solid rgba(239,68,68,.2);margin-top:4px;padding-top:10px"><span class="rl" style="font-weight:700;color:var(--tx);font-family:'Syne',sans-serif">Total Expenses</span><span class="rv" style="color:var(--rd);font-size:15px;font-family:'Syne',sans-serif;font-weight:800">622,739 PKR</span></div>
+  </div>
+  <div class="card" style="border-color:rgba(192,154,58,.25)">
+    <div class="ct">Net Profit</div>
+    <div class="row"><span class="rl">Gross Saving</span><span class="rv" id="pl-net-gross" style="color:var(--gr)">0 PKR</span></div>
+    <div class="row"><span class="rl">Staff Expenses</span><span class="rv" style="color:var(--rd)">− 622,739 PKR</span></div>
+    <div class="row"><span class="rl" style="color:var(--gr)">+ Misc Income</span><span class="rv" id="pl-misc" style="color:var(--gr)">+ 0 PKR</span></div>
+    <div class="row" style="border-top:2px solid rgba(192,154,58,.3);margin-top:8px;padding-top:14px">
+      <span class="rl" style="font-weight:800;color:var(--tx);font-family:'Syne',sans-serif;font-size:14px;letter-spacing:1px">TOTAL NET PROFIT</span>
+      <span class="rv" id="pl-total" style="color:var(--gr);font-size:24px;font-family:'Syne',sans-serif;font-weight:800">0 PKR</span>
+    </div>
+    <div style="font-size:9px;color:var(--tx3);margin-top:8px">Islamabad pending not yet received · Mustafa 50% share separate</div>
+  </div>
+</div>
+
+<!-- LOAN -->
+<div id="pg-loan" class="pg">
+  <div class="ptitle">Loan <em>Tracker</em></div>
+  <div class="psub">Intelligent auto-tracking — Alan's guard salary injection</div>
+  <div class="g3">
+    <div class="sc" style="border-color:rgba(167,139,250,.2)"><div class="sc-bar" style="background:linear-gradient(90deg,#7C3AED,var(--pu))"></div><div class="sc-l">Total Loaned</div><div class="sc-v" id="l-given" style="color:var(--pu);font-size:16px">0</div><div class="sc-s">PKR injected</div></div>
+    <div class="sc" style="border-color:rgba(34,197,94,.2)"><div class="sc-bar" style="background:linear-gradient(90deg,var(--gr2),var(--gr))"></div><div class="sc-l">Recovered</div><div class="sc-v" id="l-rec" style="color:var(--gr);font-size:16px">0</div><div class="sc-s">PKR returned</div></div>
+    <div class="sc pls" style="border-color:rgba(239,68,68,.2)"><div class="sc-bar" style="background:linear-gradient(90deg,var(--rd2),var(--rd))"></div><div class="sc-l">Outstanding</div><div class="sc-v" id="l-out" style="color:var(--rd);font-size:16px">0</div><div class="sc-s">PKR owed</div></div>
+  </div>
+  <div class="card" style="border-color:rgba(167,139,250,.2)">
+    <div class="ct" style="color:var(--pu)">Intelligent Loan Status</div>
+    <div id="loan-status"></div>
+  </div>
+  <div class="al al-pu"><span>💡</span><span>Alan injects loan 8th–10th for guard salaries. Auto-recovered from collections. Add entries below.</span></div>
+  <div class="card">
+    <div class="ct">Add Entry</div>
+    <div class="fg">
+      <div><label>Type</label><select id="l-type"><option value="given">💳 Loan Given (Alan injects)</option><option value="recovered">✅ Recovered (from collections)</option></select></div>
+      <div><label>Amount (PKR)</label><input id="l-amt" type="number" placeholder="e.g. 500000"></div>
+      <div><label>Description</label><input id="l-desc" type="text" placeholder="e.g. Guard salaries March batch 1"></div>
+      <div><label>Date</label><input id="l-date" type="text" placeholder="e.g. 8 March 2026"></div>
+      <button class="btn btn-g" onclick="addLoan()" style="width:100%;letter-spacing:1.5px">ADD ENTRY</button>
+    </div>
+  </div>
+  <div class="card"><div class="ct">History</div><div id="l-log"><div style="text-align:center;padding:16px;color:var(--tx3);font-size:10px;letter-spacing:2px">NO ENTRIES YET</div></div></div>
+</div>
+
+<!-- MUSTAFA -->
+<div id="pg-mustafa" class="pg">
+  <div class="ptitle">Mustafa <em>Partnership</em></div>
+  <div class="psub">50/50 Partner — Separate from company accounts</div>
+  <div class="al al-pu"><span>🤝</span><span>Mustafa collections are SEPARATE from company. Alan gets 50% of saving only. Not included in Actual or Estimated tabs.</span></div>
+
+  <!-- SUMMARY STATS -->
+  <div class="g2">
+    <div class="sc" style="border-color:rgba(167,139,250,.2)"><div class="sc-bar" style="background:linear-gradient(90deg,#7C3AED,var(--pu))"></div><div class="sc-l">Total Contract</div><div class="sc-v" id="mu-invoice" style="color:var(--pu)">0</div><div class="sc-s">PKR all 25 sites</div></div>
+    <div class="sc" style="border-color:rgba(34,197,94,.2)"><div class="sc-bar" style="background:linear-gradient(90deg,var(--gr2),var(--gr))"></div><div class="sc-l">Collected (live)</div><div class="sc-v" id="mu-col" style="color:var(--gr)">0</div><div class="sc-s">PKR received so far</div></div>
+    <div class="sc" style="border-color:rgba(239,68,68,.2)"><div class="sc-bar" style="background:linear-gradient(90deg,var(--rd2),var(--rd))"></div><div class="sc-l">Pending</div><div class="sc-v" id="mu-pending" style="color:var(--rd)">0</div><div class="sc-s">PKR outstanding</div></div>
+    <div class="sc" style="border-color:rgba(56,189,248,.2)"><div class="sc-bar" style="background:linear-gradient(90deg,var(--bl2),var(--bl))"></div><div class="sc-l">Guard Sal Paid</div><div class="sc-v" id="mu-gd" style="color:var(--bl)">0</div><div class="sc-s">PKR to guards</div></div>
+    <div class="sc" style="border-color:rgba(192,154,58,.3)"><div class="sc-bar" style="background:linear-gradient(90deg,var(--g),var(--g3))"></div><div class="sc-l">Alan 50% Share</div><div class="sc-v" id="mu-alan" style="color:var(--g2)">0</div><div class="sc-s">PKR Alan receives</div></div>
+    <div class="sc" style="border-color:rgba(167,139,250,.2)"><div class="sc-bar" style="background:linear-gradient(90deg,#7C3AED,var(--pu))"></div><div class="sc-l">Mustafa 50% Share</div><div class="sc-v" id="mu-must" style="color:var(--pu)">0</div><div class="sc-s">PKR Mustafa receives</div></div>
+  </div>
+
+  <!-- ADD PAYMENT -->
+  <div class="card">
+    <div class="ct" style="color:var(--pu)">Add Mustafa Payment</div>
+    <div class="fg">
+      <div><label>Site</label>
+      <select id="mu-site-sel">
+        <option value="">— Select Site —</option>
+      </select></div>
+      <div><label>Description</label>
+      <input id="mu-desc" type="text" placeholder="Custom description..."></div>
+      <div class="fg2">
+        <div><label style="color:var(--g2)">Amount Collected (PKR)</label><input id="mu-amt" type="number" placeholder="e.g. 93000"></div>
+        <div><label style="color:var(--bl)">Guard Salary Paid (PKR)</label><input id="mu-gd-amt" type="number" placeholder="e.g. 78000"></div>
+      </div>
+      <div><label>Payment Type</label>
+      <select id="mu-pay-type">
+        <option value="cash">💵 Cash</option>
+        <option value="online">🌐 Online Transfer</option>
+        <option value="cheque">🏦 Cheque</option>
+      </select></div>
+      <button class="btn" style="background:linear-gradient(135deg,#7C3AED,var(--pu));color:#fff;width:100%;padding:12px;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:1px;border:none;border-radius:10px;cursor:pointer" onclick="addMustafaPay()">✅ ADD MUSTAFA PAYMENT</button>
+    </div>
+  </div>
+
+  <!-- SITE STATUS TABLE -->
+  <div class="card">
+    <div class="ct">Abdul Rehman — All 25 Sites — Live Status</div>
+    <div id="mu-table"></div>
+  </div>
+
+  <!-- PAYMENT LOG -->
+  <div class="card">
+    <div class="ct" style="color:var(--gr)">Payment Log</div>
+    <div id="mu-pay-log"><div style="text-align:center;padding:14px;color:var(--tx3);font-size:10px">No payments yet</div></div>
+  </div>
+</div>
+
+<!-- CHINESE -->
+<div id="pg-chinese" class="pg">
+  <div class="ptitle">Chinese <em>Clients</em></div>
+  <div class="psub">Islamabad sites — managed by Shah SB</div>
+
+  <!-- STATS -->
+  <div class="g2">
+    <div class="sc" style="border-color:rgba(192,154,58,.3)"><div class="sc-bar" style="background:linear-gradient(90deg,var(--g),var(--g3))"></div><div class="sc-l">Total Invoice</div><div class="sc-v" id="cn-invoice" style="color:var(--g2)">0</div><div class="sc-s">PKR this month</div></div>
+    <div class="sc" style="border-color:rgba(34,197,94,.2)"><div class="sc-bar" style="background:linear-gradient(90deg,var(--gr2),var(--gr))"></div><div class="sc-l">Received (live)</div><div class="sc-v" id="cn-rec" style="color:var(--gr)">0</div><div class="sc-s">PKR collected</div></div>
+    <div class="sc pls" style="border-color:rgba(239,68,68,.2)"><div class="sc-bar" style="background:linear-gradient(90deg,var(--rd2),var(--rd))"></div><div class="sc-l">Pending</div><div class="sc-v" id="cn-pen" style="color:var(--rd)">0</div><div class="sc-s">PKR outstanding</div></div>
+    <div class="sc" style="border-color:rgba(56,189,248,.2)"><div class="sc-bar" style="background:linear-gradient(90deg,var(--bl2),var(--bl))"></div><div class="sc-l">Guard Sal Paid</div><div class="sc-v" id="cn-gd" style="color:var(--bl)">0</div><div class="sc-s">PKR to guards</div></div>
+    <div class="sc" style="border-color:rgba(34,197,94,.2)"><div class="sc-bar" style="background:linear-gradient(90deg,var(--gr2),var(--gr))"></div><div class="sc-l">Saving (live)</div><div class="sc-v" id="cn-co" style="color:var(--gr)">0</div><div class="sc-s">PKR so far</div></div>
+    <div class="sc" style="border-color:rgba(167,139,250,.2)"><div class="sc-bar" style="background:linear-gradient(90deg,#7C3AED,var(--pu))"></div><div class="sc-l">Full Potential</div><div class="sc-v" id="cn-pot" style="color:var(--pu)">0</div><div class="sc-s">PKR if all collected</div></div>
+  </div>
+
+  <!-- ADD PAYMENT -->
+  <div class="card">
+    <div class="ct" style="color:var(--tl)">Add Chinese Client Payment</div>
+    <div class="fg">
+      <div><label>Site</label>
+      <select id="cn-site-sel">
+        <option value="">— Select Site —</option>
+        <option value="D-12 House">D-12 House — 160,000 PKR</option>
+        <option value="E-11">E-11 — 350,000 PKR</option>
+        <option value="D-12 1">D-12 1 — 280,000 PKR</option>
+        <option value="D-12 2">D-12 2 — 280,000 PKR</option>
+        <option value="D-12 3">D-12 3 — 350,000 PKR</option>
+      </select></div>
+      <div><label>Description / Notes</label>
+      <input id="cn-desc" type="text" placeholder="e.g. Cheque received from D-12 House client"></div>
+      <div class="fg2">
+        <div><label style="color:var(--g2)">Amount Collected (PKR)</label>
+        <input id="cn-amt" type="number" placeholder="e.g. 160000"></div>
+        <div><label style="color:var(--bl)">Guard Salary Paid (PKR)</label>
+        <input id="cn-gd-amt" type="number" placeholder="e.g. 74000"></div>
+      </div>
+      <div><label>Payment Type</label>
+      <select id="cn-pay-type">
+        <option value="cash">💵 Cash</option>
+        <option value="online">🌐 Online Transfer</option>
+        <option value="cheque">🏦 Cheque</option>
+      </select></div>
+      <button class="btn" style="background:linear-gradient(135deg,var(--bl2),var(--tl));color:#000;width:100%;padding:12px;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:1px;border:none;border-radius:10px;cursor:pointer" onclick="addChinesePay()">✅ ADD CHINESE PAYMENT</button>
+    </div>
+  </div>
+
+  <!-- SITE STATUS TABLE -->
+  <div class="card">
+    <div class="ct">Site Details — Live Status</div>
+    <div class="tw"><div id="cn-table"></div></div>
+    <div class="al al-r" style="margin-top:10px;margin-bottom:0;display:none" id="cn-alert"></div>
+  </div>
+
+  <!-- PAYMENT LOG -->
+  <div class="card">
+    <div class="ct" style="color:var(--gr)">Payment Log</div>
+    <div id="cn-pay-log"><div style="text-align:center;padding:14px;color:var(--tx3);font-size:10px">No payments yet — add above</div></div>
+  </div>
+</div>
+
+<!-- ARSENAL / INVENTORY -->
+<div id="pg-inventory" class="pg">
+  <div class="ptitle">Arsenal <em>Inventory</em></div>
+  <div class="psub">Live tracking — weapons, ammo, uniforms</div>
+  <div class="stabs">
+    <button class="stab on" id="inv-weapons" onclick="switchINV('weapons')">🔫 Weapons</button>
+    <button class="stab" id="inv-ammo" onclick="switchINV('ammo')">🎯 Ammo</button>
+    <button class="stab" id="inv-uniforms" onclick="switchINV('uniforms')">👕 Uniforms</button>
+    <button class="stab" id="inv-dispatch" onclick="switchINV('dispatch')">📤 Dispatch</button>
+    <button class="stab" id="inv-wireless" onclick="switchINV('wireless')">📡 Wireless</button>
+  </div>
+
+  <!-- WEAPONS -->
+  <div id="iw-weapons">
+    <div class="al al-r"><span>⚠️</span><span>19x 30 bore + 10x 12 bore need maintenance — send for service now</span></div>
+    <div class="card">
+      <div class="ct">Current Weapon Stock</div>
+      <div class="tw"><table>
+        <thead><tr><th>Type</th><th>Location</th><th>Status</th><th>Count</th><th>Action</th></tr></thead>
+        <tbody id="weapon-table"></tbody>
+      </table></div>
+    </div>
+    <div class="card">
+      <div class="ct" style="color:var(--gr)">Add / Update Weapon</div>
+      <div class="fg">
+        <div class="fg2">
+          <div><label>Weapon Type</label><select id="w-type"><option>30 Bore Rifle</option><option>12 Bore</option><option>223 Bore</option><option>9MM Pistol</option><option>30 Bore Pistol</option></select></div>
+          <div><label>Location</label><select id="w-loc"><option>In House</option><option>In Office</option><option>Deployed</option></select></div>
+        </div>
+        <div class="fg2">
+          <div><label>Status</label><select id="w-status"><option>Working</option><option>Maintenance</option><option>Deployed</option></select></div>
+          <div><label>Count</label><input id="w-count" type="number" placeholder="e.g. 2"></div>
+        </div>
+        <div><label>Notes</label><input id="w-notes" type="text" placeholder="e.g. Sent for repair 1 Apr"></div>
+        <button class="btn btn-g" onclick="addWeapon()" style="width:100%">ADD / UPDATE</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AMMO -->
+  <div id="iw-ammo" style="display:none">
+    <div class="al al-r"><span>🔴</span><span>30 bore: 30 rounds · 12 bore: 18 rounds — CRITICALLY LOW — RESTOCK NOW</span></div>
+    <div class="g3">
+      <div class="sc pls" style="border-color:rgba(239,68,68,.3)"><div class="sc-bar" style="background:var(--rd)"></div><div class="sc-l">30 Bore</div><div class="sc-v" id="ammo-30" style="color:var(--rd);font-size:22px">30</div><div class="sc-s">rounds ⚠️ LOW</div></div>
+      <div class="sc" style="border-color:rgba(245,158,11,.2)"><div class="sc-bar" style="background:var(--am)"></div><div class="sc-l">223 Bore</div><div class="sc-v" id="ammo-223" style="color:var(--am);font-size:22px">32</div><div class="sc-s">rounds</div></div>
+      <div class="sc pls" style="border-color:rgba(239,68,68,.3)"><div class="sc-bar" style="background:var(--rd)"></div><div class="sc-l">12 Bore</div><div class="sc-v" id="ammo-12" style="color:var(--rd);font-size:22px">18</div><div class="sc-s">rounds ⚠️ LOW</div></div>
+    </div>
+    <div class="card">
+      <div class="ct" style="color:var(--am)">Update Ammo Stock</div>
+      <div class="fg">
+        <div class="fg2">
+          <div><label>Type</label><select id="ammo-type"><option value="30">30 Bore</option><option value="223">223 Bore</option><option value="12">12 Bore</option></select></div>
+          <div><label>Action</label><select id="ammo-action"><option value="add">➕ Add (restocked)</option><option value="use">➖ Used</option><option value="set">📝 Set exact count</option></select></div>
+        </div>
+        <div><label>Rounds</label><input id="ammo-qty" type="number" placeholder="Number of rounds"></div>
+        <button class="btn btn-g" onclick="updateAmmo()" style="width:100%">UPDATE AMMO</button>
+      </div>
+    </div>
+    <div class="card"><div class="ct">Ammo Log</div><div id="ammo-log"><div style="text-align:center;padding:14px;color:var(--tx3);font-size:10px">No entries</div></div></div>
+  </div>
+
+  <!-- UNIFORMS -->
+  <div id="iw-uniforms" style="display:none">
+    <div class="al al-tl"><span>📋</span><span>Rule: New contract = New uniform dispatched. Used uniforms for regular replacements only.</span></div>
+
+    <!-- STOCK TABLE -->
+    <div class="card">
+      <div class="ct">Current Stock</div>
+      <div class="tw"><table>
+        <thead><tr><th>Item</th><th>Condition</th><th>Qty</th><th>Status</th></tr></thead>
+        <tbody id="uniform-table"></tbody>
+      </table></div>
+    </div>
+
+    <!-- SUB TABS -->
+    <div class="stabs" style="margin-bottom:12px">
+      <button class="stab on" id="ut-dispatch" onclick="switchUT('dispatch')">📤 Dispatch</button>
+      <button class="stab" id="ut-buy" onclick="switchUT('buy')">🛒 Buy from Shop</button>
+      <button class="stab" id="ut-return" onclick="switchUT('return')">📥 Return</button>
+    </div>
+
+    <!-- DISPATCH -->
+    <div id="uw-dispatch">
+      <div class="card">
+        <div class="ct" style="color:var(--tl)">Dispatch to Site</div>
+        <div class="fg">
+          <div><label>Item</label><select id="u-item">
+            <option value="blue_new">Blue Uniform (New)</option>
+            <option value="blue_old">Blue Uniform (Used)</option>
+            <option value="blue_tshirt">Blue T-Shirt (Used)</option>
+            <option value="black_new">Black Uniform (New)</option>
+            <option value="black_old">Black Uniform (Used)</option>
+            <option value="belt_new">Belt (New)</option>
+            <option value="belt_old">Belt (Used)</option>
+            <option value="blue_coat">Blue Coat</option>
+            <option value="black_coat">Black Coat</option>
+            <option value="jacket">Protection Jacket</option>
+            <option value="shoes_black_new">Black Shoes (New)</option>
+            <option value="shoes_brown_new">Brown Shoes (New)</option>
+            <option value="shoes_black_old">Black Shoes (Used)</option>
+            <option value="shoes_brown_old">Brown Shoes (Used)</option>
+            <option value="socks">Socks (pairs)</option>
+            <option value="red_cap">Red Cap</option>
+            <option value="black_cap">Black Cap</option>
+            <option value="blue_cap">Blue Cap</option>
+          </select></div>
+          <div><label>Qty</label><input id="u-qty" type="number" placeholder="e.g. 2"></div>
+          <div><label>Supervisor</label>
+          <select id="u-sup-sel" onchange="updateUniformSiteDrop(this.value)">
+            <option value="">— Select Supervisor —</option>
+            <option value="tanvir">Tanvir</option>
+            <option value="shah">Shah SB</option>
+            <option value="altaf">Altaf</option>
+            <option value="karamat">Karamat</option>
+            <option value="shahwaiz">Shahwaiz</option>
+            <option value="company">Company Direct</option>
+            <option value="islamabad">🇨🇳 Islamabad</option>
+            <option value="mustafa">🤝 Mustafa</option>
+          </select></div>
+          <div><label>Site</label>
+          <select id="u-site-sel">
+            <option value="">— Select Site —</option>
+          </select></div>
+          <div><label>Notes (optional)</label><input id="u-notes-d" type="text" placeholder="e.g. New contract uniform"></div>
+          <button class="btn btn-gr" onclick="dispatchUniform('dispatch')" style="width:100%;letter-spacing:1px">📤 DISPATCH — REDUCES STOCK</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- BUY FROM SHOP -->
+    <div id="uw-buy" style="display:none">
+      <div class="card" style="border-color:rgba(192,154,58,.3)">
+        <div class="ct" style="color:var(--g2)">🛒 Buy from Shop — Adds to Stock</div>
+        <div class="al al-y"><span>💡</span><span>Any item bought from shop increases inventory immediately.</span></div>
+        <div class="fg">
+          <div><label>Item Purchased</label><select id="b-item">
+            <option value="blue_new">Blue Uniform (New)</option>
+            <option value="black_new">Black Uniform (New)</option>
+            <option value="belt_new">Belt (New)</option>
+            <option value="blue_coat">Blue Coat</option>
+            <option value="black_coat">Black Coat</option>
+            <option value="jacket">Protection Jacket</option>
+            <option value="shoes_black_new">Black Shoes (New)</option>
+            <option value="shoes_brown_new">Brown Shoes (New)</option>
+            <option value="socks">Socks (pairs)</option>
+            <option value="red_cap">Red Cap</option>
+            <option value="black_cap">Black Cap</option>
+            <option value="blue_cap">Blue Cap</option>
+          </select></div>
+          <div class="fg2">
+            <div><label>Qty Bought</label><input id="b-qty" type="number" placeholder="e.g. 10" oninput="calcBuyTotal()"></div>
+            <div><label>Cost per Item (PKR)</label><input id="b-cost" type="number" placeholder="e.g. 1800" oninput="calcBuyTotal()"></div>
+          </div>
+          <div class="fg2">
+            <div><label>Shop / Supplier</label><input id="b-shop" type="text" placeholder="e.g. Saddar Market"></div>
+            <div><label>Date</label><input id="b-date" type="text" placeholder="e.g. 1 Apr 2026"></div>
+          </div>
+          <div id="b-total-display" style="background:var(--ink4);border:1px solid var(--bd);border-radius:8px;padding:10px;font-size:12px;color:var(--g2);font-family:'Syne',sans-serif;display:none">
+            Total Cost: <strong id="b-total">0</strong> PKR
+          </div>
+          <button class="btn btn-g" onclick="buyFromShop()" style="width:100%;letter-spacing:1px">🛒 ADD TO STOCK</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RETURN -->
+    <div id="uw-return" style="display:none">
+      <div class="card">
+        <div class="ct" style="color:var(--bl)">📥 Return to Stock</div>
+        <div class="fg">
+          <div><label>Item Returned</label><select id="r-item">
+            <option value="blue_new">Blue Uniform (New)</option>
+            <option value="blue_old">Blue Uniform (Used)</option>
+            <option value="black_new">Black Uniform (New)</option>
+            <option value="black_old">Black Uniform (Used)</option>
+            <option value="belt_new">Belt (New)</option>
+            <option value="belt_old">Belt (Used)</option>
+            <option value="shoes_black_new">Black Shoes (New)</option>
+            <option value="shoes_brown_new">Brown Shoes (New)</option>
+            <option value="shoes_black_old">Black Shoes (Used)</option>
+            <option value="shoes_brown_old">Brown Shoes (Used)</option>
+          </select></div>
+          <div class="fg2">
+            <div><label>Qty Returned</label><input id="r-qty" type="number" placeholder="e.g. 2"></div>
+            <div><label>Condition</label><select id="r-cond"><option value="same">Same as selected</option><option value="downgrade">Downgrade to Used</option></select></div>
+          </div>
+          <div><label>Returned From (Site)</label><input id="r-site" type="text" placeholder="e.g. Guard left — Islamabad Village"></div>
+          <button class="btn btn-bl" onclick="dispatchUniform('return')" style="width:100%;letter-spacing:1px">📥 RETURN TO STOCK</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card"><div class="ct">Dispatch & Purchase History</div><div id="uniform-log"><div style="text-align:center;padding:14px;color:var(--tx3);font-size:10px">No records yet</div></div></div>
+  </div>
+
+  <!-- DISPATCH LOG -->
+  <div id="iw-dispatch" style="display:none">
+    <div class="card">
+      <div class="ct">All Dispatch History</div>
+      <div id="dispatch-log"><div style="text-align:center;padding:14px;color:var(--tx3);font-size:10px">No dispatches yet</div></div>
+    </div>
+  </div>
+
+  <!-- WIRELESS -->
+  <div id="iw-wireless" style="display:none">
+    <div class="g2">
+      <div class="sc" style="border-color:rgba(45,212,191,.2)"><div class="sc-bar" style="background:var(--tl)"></div><div class="sc-l">Total Sets</div><div class="sc-v" style="color:var(--tl)">32</div><div class="sc-s">deployed</div></div>
+      <div class="sc" style="border-color:rgba(192,154,58,.3)"><div class="sc-bar" style="background:var(--g2)"></div><div class="sc-l">Monthly Revenue</div><div class="sc-v" style="color:var(--g2)">59,500</div><div class="sc-s">PKR/month</div></div>
+    </div>
+    <div class="card">
+      <div class="ct">Wireless Sets Deployment</div>
+      <div class="tw"><table>
+        <thead><tr><th>Location</th><th>Sets</th><th>Monthly PKR</th></tr></thead>
+        <tbody>
+          <tr><td>Wapda Town</td><td>5</td><td style="color:var(--g2)">47,500</td></tr>
+          <tr><td>E-11 PCC</td><td>10</td><td style="color:var(--g2)">12,000</td></tr>
+          <tr><td>Khanna PCC</td><td>4</td><td style="color:var(--tx3)">Free</td></tr>
+          <tr><td>Humak PCC</td><td>3</td><td style="color:var(--tx3)">Free</td></tr>
+          <tr><td>Lahore</td><td>3</td><td style="color:var(--tx3)">Free</td></tr>
+          <tr><td>Park Enclave</td><td>3</td><td style="color:var(--tx3)">Free</td></tr>
+          <tr><td>In Office</td><td>4</td><td style="color:var(--tx3)">—</td></tr>
+          <tr style="background:var(--ink4)"><td style="color:var(--g2);font-family:'Syne',sans-serif;font-weight:700">TOTAL</td><td><strong>32</strong></td><td style="color:var(--g2)"><strong>59,500</strong></td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+
+<!-- PERFORMANCE -->
+<div id="pg-performance" class="pg">
+  <div class="ptitle">Staff <em>Performance</em></div>
+  <div class="psub">Contracts brought · Profit generated · KPIs</div>
+  <div class="al al-tl"><span>📈</span><span>Performance = Contracts active + Profit contribution to company. Updated monthly.</span></div>
+  <div id="perf-cards"></div>
+</div>
+
+<!-- ATTENDANCE -->
+<div id="pg-attendance" class="pg">
+  <div class="ptitle">Attendance <em>Tracker</em></div>
+  <div class="psub">Monthly attendance log per staff member</div>
+  <div class="card">
+    <div class="ct">Mark Attendance</div>
+    <div class="fg">
+      <div class="fg2">
+        <div><label>Staff Member</label>
+        <select id="att-person">
+          <option value="shah">Shah SB</option>
+          <option value="bilal">Bilal</option>
+          <option value="tanvir">Tanvir</option>
+          <option value="jazib">Jazib</option>
+          <option value="karamat">Karamat</option>
+          <option value="altaf">Altaf</option>
+          <option value="shahwaiz">Shahwaiz</option>
+        </select></div>
+        <div><label>Date</label><input id="att-date" type="date"></div>
+      </div>
+      <div class="fg2">
+        <div><label>Status</label>
+        <select id="att-status">
+          <option value="present">✅ Present</option>
+          <option value="absent">❌ Absent</option>
+          <option value="half">🟡 Half Day</option>
+          <option value="leave">🔵 Approved Leave</option>
+        </select></div>
+        <div><label>Notes</label><input id="att-notes" type="text" placeholder="Optional notes"></div>
+      </div>
+      <button class="btn btn-g" onclick="markAttendance()" style="width:100%">MARK ATTENDANCE</button>
+    </div>
+  </div>
+  <div id="att-summary"></div>
+  <div class="card"><div class="ct">Attendance Log</div><div id="att-log"><div style="text-align:center;padding:16px;color:var(--tx3);font-size:10px">No records yet</div></div></div>
+</div>
+
+<!-- EXPENSES -->
+<div id="pg-expenses" class="pg">
+  <div class="ptitle">Company <em>Expenses</em></div>
+  <div class="psub">All money paid out — uniforms, shoes, wireless, repairs, transport</div>
+  <div class="g3">
+    <div class="sc" style="border-color:rgba(239,68,68,.2)"><div class="sc-bar" style="background:linear-gradient(90deg,var(--rd2),var(--rd))"></div><div class="sc-l">Total Spent</div><div class="sc-v" id="exp-total" style="color:var(--rd);font-size:16px">0</div><div class="sc-s">PKR this month</div></div>
+    <div class="sc" style="border-color:rgba(245,158,11,.2)"><div class="sc-bar" style="background:var(--am)"></div><div class="sc-l">Purchases</div><div class="sc-v" id="exp-purchases" style="color:var(--am);font-size:16px">0</div><div class="sc-s">PKR uniforms/shoes</div></div>
+    <div class="sc" style="border-color:rgba(56,189,248,.2)"><div class="sc-bar" style="background:var(--bl)"></div><div class="sc-l">Other Expenses</div><div class="sc-v" id="exp-other" style="color:var(--bl);font-size:16px">0</div><div class="sc-s">PKR misc</div></div>
+  </div>
+  <div class="al al-y"><span>💡</span><span>Shop purchases from Arsenal tab auto-appear here. Add other expenses manually below.</span></div>
+  <div class="card">
+    <div class="ct" style="color:var(--rd)">Add Expense</div>
+    <div class="fg">
+      <div><label>Quick Select — Staff Expense</label>
+      <select id="exp-quick" onchange="fillExpense(this.value)">
+        <option value="">— Quick select or fill manually below —</option>
+        <optgroup label="👤 Staff Salaries">
+          <option value="shah_sal|Shah SB Salary|55000|office|Shah SB">Shah SB — Salary (55,000)</option>
+          <option value="tanvir_sal|Tanvir Salary + Rashan|53000|office|Tanvir">Tanvir — Salary + Rashan (53,000)</option>
+          <option value="altaf_sal|Altaf Salary|44000|office|Altaf">Altaf — Salary (44,000)</option>
+          <option value="karamat_sal|Karamat Salary|52500|office|Karamat">Karamat — Salary (52,500)</option>
+          <option value="bilal_sal|Bilal Salary|55000|office|Bilal">Bilal — Salary (55,000)</option>
+          <option value="jazib_sal|Jazib Salary|35000|office|Jazib">Jazib — Salary (35,000)</option>
+        </optgroup>
+        <optgroup label="⛽ Fuel">
+          <option value="shah_fuel|Shah SB Fuel|10000|transport|Shah SB">Shah SB — Fuel (10,000)</option>
+          <option value="tanvir_fuel|Tanvir Fuel|11200|transport|Tanvir">Tanvir — Fuel (11,200)</option>
+          <option value="altaf_fuel|Altaf Fuel|18000|transport|Altaf">Altaf — Fuel (18,000)</option>
+          <option value="karamat_fuel|Karamat Fuel|9000|transport|Karamat">Karamat — Fuel (9,000)</option>
+          <option value="bilal_fuel|Bilal Fuel|8500|transport|Bilal">Bilal — Fuel (8,500)</option>
+          <option value="jazib_fuel|Jazib Fuel|6000|transport|Jazib">Jazib — Fuel (6,000)</option>
+        </optgroup>
+        <optgroup label="💰 Commission">
+          <option value="shah_comm|Shah SB Commission|13250|office|Shah SB">Shah SB — Commission (13,250)</option>
+          <option value="tanvir_comm|Tanvir Commission|41420|office|Tanvir">Tanvir — Commission (41,420)</option>
+          <option value="altaf_comm|Altaf Commission|12723|office|Altaf">Altaf — Commission (12,723)</option>
+          <option value="karamat_comm|Karamat Commission|7750|office|Karamat">Karamat — Commission (7,750)</option>
+          <option value="shahwaiz_comm|Shahwaiz Commission|23800|office|Shahwaiz">Shahwaiz — Commission (23,800)</option>
+        </optgroup>
+        <optgroup label="📋 Misc Staff">
+          <option value="shah_misc|Shah SB Misc Expenses|16150|office|Shah SB">Shah SB — Misc (16,150)</option>
+          <option value="tanvir_misc|Tanvir Misc Expenses|126896|office|Tanvir">Tanvir — Misc (126,896)</option>
+          <option value="altaf_misc|Altaf Misc Expenses|4000|office|Altaf">Altaf — Misc (4,000)</option>
+          <option value="karamat_misc|Karamat Misc Expenses|10900|office|Karamat">Karamat — Misc (10,900)</option>
+          <option value="shahwaiz_misc|Shahwaiz Misc Expenses|5650|office|Shahwaiz">Shahwaiz — Misc (5,650)</option>
+          <option value="bilal_misc|Bilal Misc Expenses|7200|office|Bilal">Bilal — Misc (7,200)</option>
+        </optgroup>
+        <optgroup label="🔫 Weapon & 📡 Wireless">
+          <option value="weapon_maint|Weapon Maintenance|0|weapon|Workshop">Weapon Maintenance</option>
+          <option value="wireless_buy|Wireless Set Purchase|0|wireless|Supplier">Wireless Set Purchase</option>
+          <option value="ammo_buy|Ammunition Purchase|0|weapon|Supplier">Ammunition Purchase</option>
+        </optgroup>
+        <optgroup label="🚗 Transport & Other">
+          <option value="transport|Transport / Travel|0|transport|Driver">Transport / Travel</option>
+          <option value="repair|Repair / Maintenance|0|repair|Workshop">Repair / Maintenance</option>
+          <option value="office_exp|Office Expense|0|office|Office">Office Expense</option>
+        </optgroup>
+      </select></div>
+      <div><label>Description</label><input id="exp-desc" type="text" placeholder="e.g. Shah SB Salary April 2026"></div>
+      <div class="fg2">
+        <div><label>Amount (PKR)</label><input id="exp-amt" type="number" placeholder="e.g. 5000"></div>
+        <div><label>Category</label>
+        <select id="exp-cat">
+          <option value="uniform">👕 Uniform / Shoes</option>
+          <option value="wireless">📡 Wireless Sets</option>
+          <option value="weapon">🔫 Weapon / Ammo</option>
+          <option value="transport">🚗 Transport / Fuel</option>
+          <option value="repair">🔧 Repairs</option>
+          <option value="office">🏢 Salary / Office</option>
+          <option value="other">📋 Other</option>
+        </select></div>
+      </div>
+      <div class="fg2">
+        <div><label>Date</label><input id="exp-date" type="text" placeholder="e.g. 3 Apr 2026"></div>
+        <div><label>Paid To</label><input id="exp-paid-to" type="text" placeholder="e.g. Saddar Market"></div>
+      </div>
+      <button class="btn btn-rd" onclick="addExpense()" style="width:100%;padding:12px;font-size:12px;letter-spacing:1px;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3)">ADD EXPENSE</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ct">Expense Log</div>
+    <div id="exp-log"><div style="text-align:center;padding:16px;color:var(--tx3);font-size:10px;letter-spacing:2px">NO EXPENSES YET</div></div>
+  </div>
+</div>
+
+<!-- MISC -->
+<div id="pg-misc" class="pg">
+  <div class="ptitle">Misc <em>Payments</em></div>
+  <div class="psub">Extra income or deductions — auto updates P&L</div>
+  <div class="g3">
+    <div class="sc" style="border-color:rgba(34,197,94,.2)"><div class="sc-bar" style="background:linear-gradient(90deg,var(--gr2),var(--gr))"></div><div class="sc-l">Extra Income</div><div class="sc-v" id="m-extra" style="color:var(--gr);font-size:16px">0</div><div class="sc-s">PKR</div></div>
+    <div class="sc" style="border-color:rgba(239,68,68,.2)"><div class="sc-bar" style="background:linear-gradient(90deg,var(--rd2),var(--rd))"></div><div class="sc-l">Deductions</div><div class="sc-v" id="m-deduct" style="color:var(--rd);font-size:16px">0</div><div class="sc-s">PKR</div></div>
+    <div class="sc" style="border-color:rgba(167,139,250,.2)"><div class="sc-bar" style="background:linear-gradient(90deg,#7C3AED,var(--pu))"></div><div class="sc-l">Net Effect</div><div class="sc-v" id="m-net" style="color:var(--pu);font-size:16px">0</div><div class="sc-s">on profit</div></div>
+  </div>
+  <div class="al al-y"><span>💡</span><span>Wapda Town govt cheque (47,500 PKR) — add here when cheque clears</span></div>
+  <div class="card">
+    <div class="ct">Add Entry</div>
+    <div class="fg">
+      <div><label>Description</label><input id="m-desc" type="text" placeholder="e.g. Wapda Town cheque received"></div>
+      <div class="fg2">
+        <div><label>Amount (PKR)</label><input id="m-amt" type="number" placeholder="Amount"></div>
+        <div><label>Month</label><input id="m-month" type="text" placeholder="Mar 2026"></div>
+      </div>
+      <div class="fg2">
+        <div><label>Type</label><select id="m-type"><option value="extra">➕ Extra Income</option><option value="deduct">➖ Deduction</option></select></div>
+        <button class="btn btn-gr" onclick="addMisc()" style="margin-top:22px;white-space:nowrap;letter-spacing:1px">ADD</button>
+      </div>
+    </div>
+  </div>
+  <div class="card"><div class="ct">Entries</div><div id="m-list"><div style="text-align:center;padding:16px;color:var(--tx3);font-size:10px;letter-spacing:2px">NO ENTRIES YET</div></div></div>
+</div>
+
+<!-- MONTHLY -->
+<div id="pg-monthly" class="pg">
+  <div class="ptitle">Monthly <em>Records</em></div>
+  <div class="psub">Archive each month permanently</div>
+  <div class="al al-b"><span>💡</span><span>End of month → Save Month → Start New Month for fresh start. Records are permanent.</span></div>
+  <div class="card">
+    <div class="ct" style="color:var(--gr)">Save This Month</div>
+    <div class="fg2" style="margin-bottom:10px">
+      <input id="mo-lbl" type="text" placeholder="e.g. March 2026" style="flex:1">
+      <button class="btn btn-g" onclick="saveMonth()" style="white-space:nowrap">SAVE</button>
+    </div>
+    <div style="border-top:1px solid var(--bd);padding-top:12px">
+      <div style="font-size:9px;font-weight:700;color:var(--rd);margin-bottom:6px;font-family:'Syne',sans-serif;letter-spacing:2px">🔄 START NEW MONTH</div>
+      <div style="font-size:10px;color:var(--tx3);margin-bottom:10px">Clears payments, misc, loans. Monthly records stay safe.</div>
+      <button onclick="startNew()" style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:10px;color:var(--rd);padding:11px;cursor:pointer;font-size:10px;font-weight:700;width:100%;font-family:'Syne',sans-serif;letter-spacing:2px">🔄 START NEW MONTH</button>
+    </div>
+  </div>
+  <div class="card" style="background:var(--ink4)">
+    <div class="ct" style="color:var(--am)">Monthly Schedule</div>
+    <div class="row"><span class="rl">1st of month</span><span class="rv" style="color:var(--tx)">Start collecting from supervisors</span></div>
+    <div class="row"><span class="rl">8th–10th</span><span class="rv" style="color:var(--rd)">Pay guard + staff salaries · Log loan</span></div>
+    <div class="row"><span class="rl">25th</span><span class="rv" style="color:var(--am)">Chase remaining collections</span></div>
+    <div class="row"><span class="rl">29th</span><span class="rv" style="color:var(--gr)">Monthly report + save record + share with Claude</span></div>
+  </div>
+  <div id="mo-list"><div style="text-align:center;padding:24px;color:var(--tx3);font-size:10px;letter-spacing:2px">NO RECORDS YET</div></div>
+</div>
+
+<!-- PENDING -->
+<div id="pg-pending" class="pg">
+  <div class="ptitle">Pending <em>Issues</em></div>
+  <div class="psub">Open items — current month</div>
+  <div class="sdiv" style="color:var(--rd)">🔴 HIGH PRIORITY</div>
+  <div class="pi h"><div style="font-size:12px;font-weight:600;margin-bottom:3px;font-family:'Syne',sans-serif">Islamabad — 510,000 PKR pending collection</div><div style="font-size:10px;color:var(--tx3)">D-12 House (160k) + D-12 3 (350k) — follow up with Shah SB</div></div>
+  <div class="pi h"><div style="font-size:12px;font-weight:600;margin-bottom:3px;font-family:'Syne',sans-serif">Shah SB — 1,500 PKR extra commission unexplained</div><div style="font-size:10px;color:var(--tx3)">February + March both — get written explanation</div></div>
+  <div class="pi h"><div style="font-size:12px;font-weight:600;margin-bottom:3px;font-family:'Syne',sans-serif">Ammo critically low — restock immediately</div><div style="font-size:10px;color:var(--tx3)">30 bore: 30 rounds · 12 bore: 18 rounds only</div></div>
+  <div class="pi h"><div style="font-size:12px;font-weight:600;margin-bottom:3px;font-family:'Syne',sans-serif">29 weapons need maintenance</div><div style="font-size:10px;color:var(--tx3)">19x 30 bore + 10x 12 bore — send for service</div></div>
+  <div class="pi h"><div style="font-size:12px;font-weight:600;margin-bottom:3px;font-family:'Syne',sans-serif">Loan amount for March — confirm and log</div><div style="font-size:10px;color:var(--tx3)">Add in 💳 Loan tab once confirmed</div></div>
+  <div class="sdiv" style="color:var(--am)">🟡 MEDIUM PRIORITY</div>
+  <div class="pi m"><div style="font-size:12px;font-weight:600;margin-bottom:3px;font-family:'Syne',sans-serif">G-8 & F-6 (Karamat) — agreement type unclear</div><div style="font-size:10px;color:var(--tx3)">322,835 PKR contract — clarify terms</div></div>
+  <div class="pi m"><div style="font-size:12px;font-weight:600;margin-bottom:3px;font-family:'Syne',sans-serif">Alshafi Hospital — 7,500 PKR deduction to confirm</div><div style="font-size:10px;color:var(--tx3)">Tanvir — confirm reason</div></div>
+  <div class="pi m"><div style="font-size:12px;font-weight:600;margin-bottom:3px;font-family:'Syne',sans-serif">North Star Plaza — weapon rotation update needed</div><div style="font-size:10px;color:var(--tx3)">Alan to confirm which site weapon moved to</div></div>
+  <div class="sdiv" style="color:var(--gr)">✅ RESOLVED</div>
+  <div class="pi d"><div style="font-size:12px;font-weight:600;text-decoration:line-through;font-family:'Syne',sans-serif">Eastern Poultry — now fully active ✅</div></div>
+  <div class="pi d"><div style="font-size:12px;font-weight:600;text-decoration:line-through;font-family:'Syne',sans-serif">Mustafa / Abdul Rehman — role clarified ✅</div></div>
+  <div class="pi d"><div style="font-size:12px;font-weight:600;text-decoration:line-through;font-family:'Syne',sans-serif">Chinese clients — 5 Islamabad sites identified ✅</div></div>
+</div>
+
+<!-- ADD CONTRACT MODAL -->
+<div class="modal-bg" id="modal-contract">
+  <div class="modal">
+    <div class="modal-title">➕ Add New Contract</div>
+    <div class="al al-tl" style="margin-bottom:12px"><span>📋</span><span>New contract = New uniform will be dispatched. I will flag this automatically.</span></div>
+    <div class="fg">
+      <div><label>Site Name</label><input id="nc-site" type="text" placeholder="e.g. New Plaza Rawalpindi"></div>
+      <div><label>Supervisor / Repository</label>
+      <select id="nc-sup">
+        <option value="tanvir">Tanvir</option>
+        <option value="shah">Shah SB</option>
+        <option value="altaf">Altaf</option>
+        <option value="karamat">Karamat</option>
+        <option value="shahwaiz">Shahwaiz (25%)</option>
+        <option value="company">Company Direct</option>
+        <option value="islamabad">🇨🇳 Islamabad Chinese</option>
+        <option value="mustafa">🤝 Mustafa</option>
+      </select></div>
+      <div class="fg2">
+        <div><label>Monthly Invoice (PKR)</label><input id="nc-invoice" type="number" placeholder="e.g. 50000"></div>
+        <div><label>Guard Salary (PKR)</label><input id="nc-guard" type="number" placeholder="e.g. 35000"></div>
+      </div>
+      <div class="fg2">
+        <div><label>No. of Guards</label><input id="nc-guards" type="number" placeholder="e.g. 2"></div>
+        <div><label>Contract Type</label>
+        <select id="nc-type">
+          <option value="full">Full Contract (Guards)</option>
+          <option value="weapon">Weapon/Service Only</option>
+        </select></div>
+      </div>
+      <div><label>Weapons Deployed</label><input id="nc-weapons" type="text" placeholder="e.g. 1 x 30 bore, 1 x 12 bore"></div>
+      <div><label>Start Date</label><input id="nc-date" type="text" placeholder="e.g. April 2026"></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-g" onclick="addContract()" style="flex:1">ADD CONTRACT</button>
+        <button class="btn btn-ghost" onclick="closeModal('modal-contract')" style="flex:1">CANCEL</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">✅ SAVED</div>
+
+<script>
+// ── SUPABASE CONFIG ──
+const SUPA_URL='https://yxpnaxpdnryldgswrtto.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4cG5heHBkbnJ5bGRnc3dydHRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUyODM4MzUsImV4cCI6MjA5MDg1OTgzNX0.-Ap02jG0rUeo_k5zrBf_-vpJxn8QOeM1vS7FexGwpDE';
+const sb=supabase.createClient(SUPA_URL,SUPA_KEY);
+
+const $=id=>document.getElementById(id);
+const fmt=n=>n?(+n).toLocaleString('en-PK'):'0';
+const sv=(id,v)=>{const e=$(id);if(e)e.textContent=v};
+
+// ── SUPERVISOR CONFIG ──
+const SUPS={
+  tanvir:{name:'Tanvir',c:'#D4AE50',exp:220316},
+  shah:{name:'Shah SB',c:'#22C55E',exp:94400},
+  altaf:{name:'Altaf',c:'#38BDF8',exp:77723},
+  karamat:{name:'Karamat',c:'#F59E0B',exp:87150},
+  shahwaiz:{name:'Shahwaiz',c:'#EF4444',exp:33450},
+  company:{name:'Company Direct',c:'#2DD4BF',exp:0},
+  islamabad:{name:'🇨🇳 Islamabad',c:'#A78BFA',exp:0},
+  other:{name:'Other',c:'#4A6080',exp:0},
+};
+// Mustafa is SEPARATE — 50/50 partner, NOT part of company collections
+const MUSTAFA_COLOR='#C084FC';
+
+// Expense breakdowns per supervisor — March 2026
+const EXP_BREAKDOWN={
+  tanvir:{'total':220316,'items':[['Salary',44000],['Rashan Allowance',9000],['Commission',41420],['Fuel',11200],['Office Rent + Bill',23926],['PWD Flat Rent + Bill',28770],['Bahria Flat + Bill',28000],['Store Rent',10000],['Federation Breakfast',7000],['Bike Maintenance',10700],['Lahore Weapon Return',4000],['Card',1800],['Misc',1500],['EOBI',-1000]]},
+  shah:{'total':94400,'items':[['Salary',55000],['Commission',13250],['Fuel',10000],['Card',1700],['Motorcycle Maintenance',7500],['Uniform Cleaning',5150],['Weapon Maintenance',1000],['Store Work',800]]},
+  altaf:{'total':77723,'items':[['Salary',44000],['Commission',12723],['Fuel',18000],['Misc',4000],['EOBI',-1000]]},
+  karamat:{'total':87150,'items':[['Salary',52500],['Commission',7750],['Fuel',9000],['Room Rent',8000],['Card',1700],['Bike Tube & Bush',1800],['Bike Tuning',2000],['Forms & Photocopy',400],['Boots',3000],['Supreme Court',2000],['EOBI',-1000]]},
+  shahwaiz:{'total':33450,'items':[['Commission',23800],['Fuel',5000],['Card',1700],['Motorcycle Maintenance',3950],['EOBI',-1000]]},
+  bilal:{'total':69700,'items':[['Salary',55000],['Fuel',8500],['Card',1500],['Chalan',5700],['EOBI',-1000]]},
+  jazib:{'total':40000,'items':[['Salary',35000],['Fuel',6000],['EOBI',-1000]]},
+};
+
+// ── SITES DATA (contracts) ── stored in state for add/remove
+const DEFAULT_CONTRACTS=[
+  // TANVIR
+  {id:'t1',sup:'tanvir',site:'Block A Street 4 NPF',t:'full',g:2,invoice:50000,guard:46000},
+  {id:'t2',sup:'tanvir',site:'Street C-2',t:'full',g:3,invoice:78000,guard:66000},
+  {id:'t3',sup:'tanvir',site:'Chakra RWP',t:'weapon',g:2,invoice:12000,guard:0},
+  {id:'t4',sup:'tanvir',site:'Minhas Corporation',t:'full',g:1,invoice:28000,guard:24000},
+  {id:'t5',sup:'tanvir',site:'Raja Shahzaib DEF Road',t:'weapon',g:1,invoice:7000,guard:0},
+  {id:'t6',sup:'tanvir',site:'Bilal Hardware',t:'full',g:1,invoice:27500,guard:23000},
+  {id:'t7',sup:'tanvir',site:'Alshafi Hospital',t:'full',g:2,invoice:60000,guard:46500},
+  {id:'t8',sup:'tanvir',site:'Educator School',t:'full',g:3,invoice:84000,guard:75000},
+  {id:'t9',sup:'tanvir',site:'Ali Haider Jeweler',t:'full',g:1,invoice:30000,guard:24000},
+  {id:'t10',sup:'tanvir',site:'ES System',t:'full',g:1,invoice:30000,guard:25000},
+  {id:'t11',sup:'tanvir',site:'Mobile Market PWD',t:'weapon',g:0,invoice:13300,guard:0},
+  {id:'t12',sup:'tanvir',site:'Rawaj Jewelers',t:'full',g:1,invoice:28000,guard:24000},
+  {id:'t13',sup:'tanvir',site:'Street A-3',t:'full',g:1,invoice:25000,guard:22000},
+  {id:'t14',sup:'tanvir',site:'Adyala Jewelers',t:'full',g:1,invoice:28000,guard:24000},
+  {id:'t15',sup:'tanvir',site:'Gold is Gold',t:'full',g:1,invoice:31000,guard:24000},
+  {id:'t16',sup:'tanvir',site:'Nareema',t:'full',g:2,invoice:86000,guard:70000},
+  {id:'t17',sup:'tanvir',site:'Spring Arch',t:'full',g:2,invoice:86000,guard:70000},
+  {id:'t18',sup:'tanvir',site:'Roman Glove',t:'full',g:3,invoice:129000,guard:105000},
+  {id:'t19',sup:'tanvir',site:'193 House',t:'full',g:2,invoice:105419,guard:70000},
+  {id:'t20',sup:'tanvir',site:'Assetz Mart',t:'full',g:1,invoice:35000,guard:27000},
+  {id:'t21',sup:'tanvir',site:'Roshan Pakistan',t:'weapon',g:6,invoice:45000,guard:0},
+  {id:'t22',sup:'tanvir',site:'Mansha Khan',t:'weapon',g:0,invoice:20000,guard:0},
+  {id:'t23',sup:'tanvir',site:'Bitech',t:'full',g:1,invoice:45000,guard:35000},
+  {id:'t24',sup:'tanvir',site:'Park Enclave',t:'full',g:10,invoice:26000,guard:0},
+  {id:'t25',sup:'tanvir',site:'Damas',t:'full',g:4,invoice:116000,guard:96000},
+  {id:'t26',sup:'tanvir',site:'Islamabad Village',t:'full',g:6,invoice:280000,guard:223000},
+  {id:'t27',sup:'tanvir',site:'Focus IT',t:'full',g:4,invoice:193452,guard:140000},
+  // SHAH SB
+  {id:'s1',sup:'shah',site:'Bio Natural Rawat',t:'weapon',g:4,invoice:22000,guard:0},
+  {id:'s2',sup:'shah',site:'Seza Rawat',t:'weapon',g:1,invoice:5500,guard:0},
+  {id:'s3',sup:'shah',site:'Ishfaq Ahmed',t:'weapon',g:0,invoice:20000,guard:0},
+  {id:'s4',sup:'shah',site:'RMRSCO Ehsan Shahid',t:'weapon',g:0,invoice:60000,guard:0},
+  {id:'s5',sup:'shah',site:'Zahid Bewal',t:'weapon',g:0,invoice:5000,guard:0},
+  {id:'s6',sup:'shah',site:'Techman Intl Rawat',t:'weapon',g:1,invoice:5000,guard:0},
+  // ALTAF
+  {id:'a1',sup:'altaf',site:'MB Chick',t:'weapon',g:0,invoice:9050,guard:0},
+  {id:'a2',sup:'altaf',site:'New Fine Flour Mill',t:'weapon',g:0,invoice:5000,guard:0},
+  {id:'a3',sup:'altaf',site:'Ittefaq Bakers',t:'weapon',g:0,invoice:5000,guard:0},
+  {id:'a4',sup:'altaf',site:'Syed Zeeshan / Budget Pro',t:'full',g:8,invoice:335000,guard:249000},
+  {id:'a5',sup:'altaf',site:'Rawal Flour Mill',t:'weapon',g:2,invoice:11500,guard:0},
+  {id:'a6',sup:'altaf',site:'Bannu Traders',t:'weapon',g:0,invoice:5000,guard:0},
+  // KARAMAT
+  {id:'k1',sup:'karamat',site:'Al Abbas Poultry',t:'weapon',g:22,invoice:66000,guard:0},
+  {id:'k2',sup:'karamat',site:'Punjab Chicks',t:'full',g:16,invoice:80000,guard:15000},
+  {id:'k3',sup:'karamat',site:'G-8 & F-6',t:'full',g:8,invoice:322835,guard:276835},
+  {id:'k4',sup:'karamat',site:'I-10/3 Fazal Foods',t:'weapon',g:0,invoice:2000,guard:0},
+  {id:'k5',sup:'karamat',site:'Commercial Plaza Murree Rd',t:'weapon',g:4,invoice:13000,guard:0},
+  {id:'k6',sup:'karamat',site:'Chakwal',t:'weapon',g:0,invoice:6000,guard:0},
+  {id:'k7',sup:'karamat',site:'Call Center Umair Plaza',t:'weapon',g:0,invoice:10500,guard:0},
+  {id:'k8',sup:'karamat',site:'Mashriq Feed',t:'weapon',g:0,invoice:2000,guard:0},
+  {id:'k9',sup:'karamat',site:'Rawal Poultry',t:'full',g:21,invoice:182000,guard:102000},
+  // SHAHWAIZ
+  {id:'sw1',sup:'shahwaiz',site:'SM Poultry',t:'weapon',g:8,invoice:40000,guard:0},
+  {id:'sw2',sup:'shahwaiz',site:'Battery Factory',t:'weapon',g:2,invoice:11500,guard:0},
+  {id:'sw3',sup:'shahwaiz',site:'Umair Plaza',t:'weapon',g:0,invoice:7000,guard:0},
+  {id:'sw4',sup:'shahwaiz',site:'Munir Brother',t:'weapon',g:0,invoice:6000,guard:0},
+  {id:'sw5',sup:'shahwaiz',site:'Mars BPO',t:'full',g:0,invoice:38500,guard:32500,note:'Client pays guard sal'},
+  {id:'sw6',sup:'shahwaiz',site:'Nazeer Hospital',t:'full',g:4,invoice:168000,guard:138000,note:'Client pays guard sal'},
+  {id:'sw7',sup:'shahwaiz',site:'Ice Cream Shop',t:'weapon',g:0,invoice:6000,guard:0},
+  {id:'sw8',sup:'shahwaiz',site:'Rawat Site',t:'full',g:0,invoice:37000,guard:30000,note:'Client pays guard sal'},
+  {id:'sw9',sup:'shahwaiz',site:'Saddar Call Center',t:'full',g:1,invoice:45000,guard:35000,note:'Client pays guard sal'},
+  {id:'sw10',sup:'shahwaiz',site:'IK Financial',t:'weapon',g:0,invoice:8000,guard:0},
+  {id:'sw11',sup:'shahwaiz',site:'Eastern Poultry',t:'full',g:17,invoice:510000,guard:430000},
+  // COMPANY DIRECT
+  {id:'c1',sup:'company',site:'Media Town',t:'weapon',g:6,invoice:83258,guard:0},
+  {id:'c2',sup:'company',site:'Wapda Town',t:'weapon',g:0,invoice:47500,guard:0,note:'Govt cheque delayed'},
+  {id:'c3',sup:'company',site:'Roz Chicks',t:'full',g:2,invoice:62000,guard:56000},
+  {id:'c4',sup:'company',site:'Signature Car',t:'full',g:2,invoice:65000,guard:56000},
+  {id:'c5',sup:'company',site:'Agile',t:'full',g:1,invoice:33000,guard:27000},
+  {id:'c6',sup:'company',site:'Seven Star',t:'full',g:1,invoice:65000,guard:35000},
+  {id:'c7',sup:'company',site:'Federation',t:'weapon',g:10,invoice:33840,guard:0},
+  {id:'c8',sup:'company',site:'Prep School',t:'full',g:1,invoice:11000,guard:0},
+  {id:'c9',sup:'company',site:'Sadapay',t:'full',g:1,invoice:41000,guard:30000},
+  {id:'c10',sup:'company',site:'Educators School Extra',t:'full',g:3,invoice:14000,guard:0},
+  // ISLAMABAD CHINESE
+  {id:'i1',sup:'islamabad',site:'D-12 House',t:'full',g:2,invoice:160000,guard:74000},
+  {id:'i2',sup:'islamabad',site:'E-11',t:'full',g:5,invoice:350000,guard:200000},
+  {id:'i3',sup:'islamabad',site:'D-12 1',t:'full',g:4,invoice:280000,guard:160000},
+  {id:'i4',sup:'islamabad',site:'D-12 2',t:'full',g:4,invoice:280000,guard:170000},
+  {id:'i5',sup:'islamabad',site:'D-12 3',t:'full',g:5,invoice:350000,guard:200000},
+  // MUSTAFA
+  {id:'m1',sup:'mustafa',site:'Rafay Mall',t:'full',g:3,invoice:93000,guard:78000},
+  {id:'m2',sup:'mustafa',site:'Save Mart Tarnol',t:'full',g:4,invoice:93000,guard:78000},
+  {id:'m3',sup:'mustafa',site:'Westridge Save Mart',t:'full',g:2,invoice:62000,guard:52000},
+  {id:'m4',sup:'mustafa',site:'G 11 Save Mart',t:'full',g:6,invoice:192000,guard:168000},
+  {id:'m5',sup:'mustafa',site:'PCC Bahria',t:'full',g:4,invoice:120000,guard:106000},
+  {id:'m6',sup:'mustafa',site:'PCC Khanna Pul',t:'full',g:12,invoice:95000,guard:52000},
+  {id:'m7',sup:'mustafa',site:'PCC Humak',t:'full',g:7,invoice:157000,guard:133000},
+  {id:'m8',sup:'mustafa',site:'G 12 Head Office',t:'full',g:2,invoice:64000,guard:56000},
+  {id:'m9',sup:'mustafa',site:'Punjab Food Authority',t:'full',g:2,invoice:86700,guard:63000},
+  {id:'m10',sup:'mustafa',site:'Raja Bazar Kakar Plaza',t:'full',g:2,invoice:90000,guard:72000},
+  {id:'m11',sup:'mustafa',site:'Tulsa Save Mart',t:'full',g:3,invoice:93000,guard:78000},
+  {id:'m12',sup:'mustafa',site:'Islamabad Personal',t:'full',g:1,invoice:50000,guard:30000},
+  {id:'m13',sup:'mustafa',site:'Punjab Cash & Carry E11',t:'full',g:8,invoice:252000,guard:222000},
+  {id:'m14',sup:'mustafa',site:'Royal Dynasty',t:'full',g:2,invoice:80000,guard:60000},
+  {id:'m15',sup:'mustafa',site:'Montreal Marquee',t:'full',g:4,invoice:128000,guard:100000},
+  {id:'m16',sup:'mustafa',site:'Phase 2 Save Mart',t:'full',g:3,invoice:93000,guard:75000},
+  {id:'m17',sup:'mustafa',site:'Save Mart Phase 8',t:'full',g:4,invoice:128000,guard:100000},
+  {id:'m18',sup:'mustafa',site:'Save Mart Phase 7',t:'full',g:4,invoice:124000,guard:111000},
+  {id:'m19',sup:'mustafa',site:'Barrier Phase 8',t:'full',g:2,invoice:70000,guard:60000},
+  {id:'m20',sup:'mustafa',site:'Dr Mughees',t:'full',g:1,invoice:40000,guard:32000},
+  {id:'m21',sup:'mustafa',site:'Bahria Shah Sb',t:'full',g:1,invoice:29000,guard:25000},
+  {id:'m22',sup:'mustafa',site:'Gondal',t:'full',g:4,invoice:153000,guard:120000},
+  {id:'m23',sup:'mustafa',site:'National Group',t:'full',g:2,invoice:76550,guard:56000},
+  {id:'m24',sup:'mustafa',site:'G-13 PCC',t:'full',g:6,invoice:180000,guard:160000},
+  {id:'m25',sup:'mustafa',site:'Barani',t:'weapon',g:2,invoice:15000,guard:0},
+];
+
+// ── STATE ──
+let pays=[],miscs=[],months=[],loans=[],attendance=[],contracts=[...DEFAULT_CONTRACTS],mustafaPays=[],expenses=[];
+let mpid=1,expid=1;
+let weapons=[],ammoLog=[],uniformLog=[];
+let pid=1,mid=1,moid=1,lid=1,aid=1,cid=100;
+let curSF='all';
+
+// ── DEFAULT INVENTORY ──
+const DEFAULT_WEAPONS=[
+  {id:'w1',type:'30 Bore Rifle',loc:'In House',status:'Working',count:19,notes:''},
+  {id:'w2',type:'223 Bore',loc:'In House',status:'Working',count:2,notes:''},
+  {id:'w3',type:'30 Bore Rifle',loc:'In House',status:'Maintenance',count:19,notes:'Needs service'},
+  {id:'w4',type:'12 Bore',loc:'In House',status:'Maintenance',count:10,notes:'Needs service'},
+  {id:'w5',type:'30 Bore',loc:'In Office',status:'Working',count:2,notes:''},
+  {id:'w6',type:'9MM Pistol',loc:'In Office',status:'Working',count:1,notes:''},
+  {id:'w7',type:'12 Bore',loc:'In Office',status:'Working',count:1,notes:''},
+  {id:'w8',type:'30 Bore Pistol',loc:'In Office',status:'Working',count:1,notes:''},
+];
+
+let ammo={30:30,223:32,12:18};
+
+const DEFAULT_UNIFORMS={
+  blue_new:{label:'Blue Uniform',cond:'New',qty:7},
+  blue_old:{label:'Blue Uniform',cond:'Used',qty:20},
+  blue_tshirt:{label:'Blue T-Shirt',cond:'Used',qty:18},
+  black_new:{label:'Black Uniform',cond:'New',qty:0},
+  black_old:{label:'Black Uniform',cond:'Used',qty:6},
+  belt_new:{label:'Belt',cond:'New',qty:7},
+  belt_old:{label:'Belt',cond:'Used',qty:7},
+  blue_coat:{label:'Blue Coat',cond:'—',qty:10},
+  black_coat:{label:'Black Coat',cond:'—',qty:4},
+  jacket:{label:'Protection Jacket',cond:'—',qty:50},
+  shoes_black_new:{label:'Black Shoes',cond:'New',qty:4},
+  shoes_brown_new:{label:'Brown Shoes',cond:'New',qty:1},
+  shoes_black_old:{label:'Black Shoes',cond:'Used',qty:0},
+  shoes_brown_old:{label:'Brown Shoes',cond:'Used',qty:0},
+  socks:{label:'Socks (pairs)',cond:'New',qty:0},
+  red_cap:{label:'Red Cap',cond:'New',qty:0},
+  black_cap:{label:'Black Cap',cond:'New',qty:1},
+  blue_cap:{label:'Blue Cap',cond:'New',qty:5},
+};
+let uniforms={...DEFAULT_UNIFORMS};
+
+// ── STORAGE ──
+function save(){
+  try{
+    localStorage.setItem('bh_v5',JSON.stringify({pays,miscs,months,loans,attendance,contracts,weapons,ammoLog,uniformLog,ammo,uniforms,mustafaPays,expenses,pid,mid,moid,lid,aid,cid,mpid,expid}));
+    toast('✅ SAVED');
+  }catch(e){}
+  syncToSupabase();
+}
+
+async function syncToSupabase(){
+  try{
+    await sb.from('payments').delete().neq('id',-1);
+    if(pays.length) await sb.from('payments').upsert(pays.map(p=>({id:p.id,sid:p.sid,desc_text:p.desc,amt:p.amt,gd:p.gd||0,time:p.time,type:p.type,tl:p.tl,pay_month:p.payMonth||'current'})));
+    await sb.from('mustafa_pays').delete().neq('id',-1);
+    if(mustafaPays.length) await sb.from('mustafa_pays').upsert(mustafaPays.map(p=>({id:p.id,site:p.site||'',desc_text:p.desc||'',amt:p.amt,gd:p.gd||0,time:p.time||'',type:p.type||'',tl:p.tl||''})));
+    await sb.from('loans').delete().neq('id',-1);
+    if(loans.length) await sb.from('loans').upsert(loans.map(l=>({id:l.id,type:l.t,amt:l.amt,desc_text:l.desc||'',date:l.date||''})));
+    await sb.from('miscs').delete().neq('id',-1);
+    if(miscs.length) await sb.from('miscs').upsert(miscs.map(m=>({id:m.id,desc_text:m.desc,amt:m.amt,type:m.t,month:m.month||''})));
+    await sb.from('expenses').delete().neq('id',-1);
+    if(expenses.length) await sb.from('expenses').upsert(expenses.map(e=>({id:e.id,desc_text:e.desc,amount:e.amount,category:e.category||'',date:e.date||'',paid_to:e.paidTo||'',auto:e.auto||false})));
+    await sb.from('attendance').delete().neq('id',-1);
+    if(attendance.length) await sb.from('attendance').upsert(attendance.map(a=>({id:a.id,person:a.person,date:a.date,status:a.status,notes:a.notes||''})));
+    await sb.from('contracts').upsert(contracts.map(c=>({id:c.id,sup:c.sup,site:c.site,type:c.t,guards:c.g||0,invoice:c.invoice,guard:c.guard||0,weapons:c.weapons||'',date:c.date||'',note:c.note||'',is_new:c.isNew||false})));
+    if(weapons.length) await sb.from('weapons_inv').upsert(weapons.map(w=>({id:w.id,type:w.type,loc:w.loc,status:w.status,count:w.count,notes:w.notes||''})));
+    await sb.from('monthly_records').delete().neq('id',-1);
+    if(months.length) await sb.from('monthly_records').upsert(months.map(m=>({id:m.id,label:m.label,saved_at:m.savedAt,col:m.col,gd:m.gd,co:m.co,misc_x:m.miscX,exp:m.exp,net_p:m.netP,cnt:m.cnt,l_given:m.lG,l_rec:m.lR})));
+    await sb.from('settings').upsert([
+      {key:'ammo',value:ammo},
+      {key:'uniforms',value:uniforms},
+      {key:'ammo_log',value:ammoLog},
+      {key:'uniform_log',value:uniformLog},
+      {key:'counters',value:{pid,mid,moid,lid,aid,cid,mpid,expid}},
+    ]);
+  }catch(e){console.warn('Supabase sync error:',e);}
+}
+
+async function load(){
+  try{
+    const[
+      {data:pD},{data:mpD},{data:lD},{data:mD},
+      {data:eD},{data:aD},{data:cD},{data:wD},
+      {data:moD},{data:sD}
+    ]=await Promise.all([
+      sb.from('payments').select('*').order('id'),
+      sb.from('mustafa_pays').select('*').order('id'),
+      sb.from('loans').select('*').order('id'),
+      sb.from('miscs').select('*').order('id'),
+      sb.from('expenses').select('*').order('id'),
+      sb.from('attendance').select('*').order('id'),
+      sb.from('contracts').select('*'),
+      sb.from('weapons_inv').select('*'),
+      sb.from('monthly_records').select('*').order('id',{ascending:false}),
+      sb.from('settings').select('*'),
+    ]);
+    if(pD&&pD.length) pays=pD.map(p=>({id:p.id,sid:p.sid,desc:p.desc_text,amt:p.amt,gd:p.gd||0,time:p.time,type:p.type,tl:p.tl,payMonth:p.pay_month}));
+    if(mpD&&mpD.length) mustafaPays=mpD.map(p=>({id:p.id,site:p.site,desc:p.desc_text,amt:p.amt,gd:p.gd||0,time:p.time,type:p.type,tl:p.tl}));
+    if(lD&&lD.length) loans=lD.map(l=>({id:l.id,t:l.type,amt:l.amt,desc:l.desc_text,date:l.date}));
+    if(mD&&mD.length) miscs=mD.map(m=>({id:m.id,desc:m.desc_text,amt:m.amt,t:m.type,month:m.month}));
+    if(eD&&eD.length) expenses=eD.map(e=>({id:e.id,desc:e.desc_text,amount:e.amount,category:e.category,date:e.date,paidTo:e.paid_to,auto:e.auto||false}));
+    if(aD&&aD.length) attendance=aD.map(a=>({id:a.id,person:a.person,date:a.date,status:a.status,notes:a.notes||''}));
+    if(cD&&cD.length){
+      contracts=cD.map(c=>({id:c.id,sup:c.sup,site:c.site,t:c.type,g:c.guards||0,invoice:c.invoice,guard:c.guard||0,weapons:c.weapons||'',date:c.date||'',note:c.note||'',isNew:c.is_new||false}));
+    } else {
+      contracts=[...DEFAULT_CONTRACTS];
+      await sb.from('contracts').upsert(DEFAULT_CONTRACTS.map(c=>({id:c.id,sup:c.sup,site:c.site,type:c.t,guards:c.g||0,invoice:c.invoice,guard:c.guard||0,weapons:c.weapons||'',date:c.date||'',note:c.note||'',is_new:false})));
+    }
+    if(wD&&wD.length) weapons=wD.map(w=>({id:w.id,type:w.type,loc:w.loc,status:w.status,count:w.count,notes:w.notes||''}));
+    else weapons=[...DEFAULT_WEAPONS];
+    if(moD&&moD.length) months=moD.map(m=>({id:m.id,label:m.label,savedAt:m.saved_at,col:m.col,gd:m.gd,co:m.co,miscX:m.misc_x,exp:m.exp,netP:m.net_p,cnt:m.cnt,lG:m.l_given,lR:m.l_rec}));
+    if(sD){
+      const ammoS=sD.find(s=>s.key==='ammo');
+      const unifS=sD.find(s=>s.key==='uniforms');
+      const alS=sD.find(s=>s.key==='ammo_log');
+      const ulS=sD.find(s=>s.key==='uniform_log');
+      const ctrS=sD.find(s=>s.key==='counters');
+      if(ammoS)ammo=ammoS.value;
+      if(unifS)uniforms=unifS.value;
+      if(alS&&alS.value)ammoLog=alS.value;
+      if(ulS&&ulS.value)uniformLog=ulS.value;
+      if(ctrS){const c=ctrS.value;pid=c.pid||pid;mid=c.mid||mid;moid=c.moid||moid;lid=c.lid||lid;aid=c.aid||aid;cid=c.cid||cid;mpid=c.mpid||mpid;expid=c.expid||expid;}
+    }
+    if(months.length===0){months=[{id:1,label:'February 2026',savedAt:'31/3/2026',col:3159777,gd:1701000,co:1458777,miscX:0,exp:623600,netP:835177,cnt:8,lG:0,lR:0}];moid=2;}
+    if(expenses.length===0){
+      expenses=[{id:expid,desc:'Black Shoes × 2 — Shah SB (2 pairs @ 1,050 PKR each)',amount:2100,category:'uniform',date:'3 Apr 2026',paidTo:'Shop',auto:false}];
+      expid++;
+      uniformLog.unshift({item:'Black Shoes',qty:2,site:'Shah SB — Personal',sup:'Shah SB',action:'bought',date:'3 Apr 2026',cost:1050,totalCost:2100,note:'2 pairs @ PKR 1,050 each — Shah SB'});
+      if(uniforms['shoes_black_new'])uniforms['shoes_black_new'].qty+=2;
+    }
+  }catch(e){
+    console.warn('Supabase load failed, using localStorage:',e);
+    try{
+      const d=JSON.parse(localStorage.getItem('bh_v5')||'{}');
+      if(d.pays)pays=d.pays;if(d.miscs)miscs=d.miscs;
+      if(d.months)months=d.months;if(d.loans)loans=d.loans;
+      if(d.attendance)attendance=d.attendance;
+      if(d.contracts)contracts=d.contracts;
+      if(d.mustafaPays)mustafaPays=d.mustafaPays;
+      if(d.expenses)expenses=d.expenses;
+      if(d.mpid)mpid=d.mpid;if(d.expid)expid=d.expid;
+      if(expenses.length===0){
+        expenses=[{id:expid++,desc:'Black Shoes × 2 — Shah SB (2 pairs @ 1,050 PKR each)',amount:2100,category:'uniform',date:'3 Apr 2026',paidTo:'Shop',auto:false}];
+        uniformLog.unshift({item:'Black Shoes',qty:2,site:'Shah SB — Personal',sup:'Shah SB',action:'bought',date:'3 Apr 2026',cost:1050,totalCost:2100,note:'2 pairs @ PKR 1,050 each — Shah SB'});
+        if(uniforms['shoes_black_new'])uniforms['shoes_black_new'].qty+=2;
+      }
+      if(d.weapons)weapons=d.weapons;else weapons=[...DEFAULT_WEAPONS];
+      if(d.ammoLog)ammoLog=d.ammoLog;
+      if(d.uniformLog)uniformLog=d.uniformLog;
+      if(d.ammo)ammo=d.ammo;
+      if(d.uniforms)uniforms=d.uniforms;else uniforms={...DEFAULT_UNIFORMS};
+      if(d.pid)pid=d.pid;if(d.mid)mid=d.mid;if(d.moid)moid=d.moid;
+      if(d.lid)lid=d.lid;if(d.aid)aid=d.aid;if(d.cid)cid=d.cid;
+      if(months.length===0){months=[{id:1,label:'February 2026',savedAt:'31/3/2026',col:3159777,gd:1701000,co:1458777,miscX:0,exp:623600,netP:835177,cnt:8,lG:0,lR:0}];moid=2;}
+    }catch(e2){weapons=[...DEFAULT_WEAPONS];uniforms={...DEFAULT_UNIFORMS};}
+  }
+}
+function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2200);}
+
+// ── NAVIGATION ──
+function go(id,el){
+  document.querySelectorAll('.pg').forEach(e=>e.classList.remove('on'));
+  document.querySelectorAll('.nt').forEach(e=>e.classList.remove('on'));
+  const pg=$('pg-'+id);if(pg)pg.classList.add('on');if(el)el.classList.add('on');
+  if(id==='input'){renderLog();switchIT('add');}
+  if(id==='misc')renderMisc();
+  if(id==='monthly')renderMonths();
+  if(id==='loan')renderLoan();
+  if(id==='sites')renderSites();
+  if(id==='supervisors')renderSupervisors();
+  if(id==='inventory')renderInventory();
+  if(id==='performance')renderPerformance();
+  if(id==='attendance')renderAttendance();
+  if(id==='chinese')updateChinese();
+  if(id==='mustafa')updateMustafa();
+  if(id==='estimated')renderEstimated();
+  if(id==='pl')renderPL();
+  if(id==='expenses')renderExpenses();
+}
+
+// ── TOTALS ──
+function supT(sid){
+  const l=pays.filter(p=>p.sid===sid);
+  const col=l.reduce((a,p)=>a+p.amt,0);
+  const gd=l.reduce((a,p)=>a+p.gd,0);
+  return{col,gd,co:Math.max(0,col-gd),l};
+}
+function allT(){
+  // Company only — Mustafa excluded (separate 50/50 partner)
+  return{
+    col:Object.keys(SUPS).reduce((a,s)=>a+supT(s).col,0),
+    gd:Object.keys(SUPS).reduce((a,s)=>a+supT(s).gd,0),
+    co:Object.keys(SUPS).reduce((a,s)=>a+supT(s).co,0)
+  };
+}
+function mustafaT(){
+  const col=mustafaPays.reduce((a,p)=>a+p.amt,0);
+  const gd=mustafaPays.reduce((a,p)=>a+p.gd,0);
+  const co=Math.max(0,col-gd);
+  return{col,gd,co,alan:Math.floor(co/2),mustafa:co-Math.floor(co/2)};
+}
+function miscT(){
+  const x=miscs.filter(m=>m.t==='extra').reduce((a,m)=>a+m.amt,0);
+  const d=miscs.filter(m=>m.t==='deduct').reduce((a,m)=>a+m.amt,0);
+  return{x,d,net:x-d};
+}
+function loanT(){
+  const g=loans.filter(l=>l.t==='given').reduce((a,l)=>a+l.amt,0);
+  const r=loans.filter(l=>l.t==='recovered').reduce((a,l)=>a+l.amt,0);
+  return{g,r,out:Math.max(0,g-r)};
+}
+function contractTotals(sid){
+  const cc=contracts.filter(c=>c.sup===sid);
+  return{
+    count:cc.length,
+    invoice:cc.reduce((a,c)=>a+c.invoice,0),
+    guard:cc.reduce((a,c)=>a+c.guard,0),
+  };
+}
+function expensesT(){
+  return expenses.reduce((a,e)=>a+e.amount,0);
+}
+
+// ── MAIN REFRESH ──
+function refresh(){
+  const{col,gd,co}=allT();
+  const{x:mx,net:mn}=miscT();
+  const exp=622739;
+  const net=co>0?Math.max(0,co-exp+mn):0;
+  const allContracts=contracts.filter(c=>c.sup!=='mustafa');
+  const TC=allContracts.reduce((a,c)=>a+c.invoice,0);
+  const rem=Math.max(0,TC-col);
+  const pct=TC>0?Math.round((col/TC)*100):0;
+
+  sv('a-col',fmt(col));sv('a-gd',fmt(gd));sv('a-co',fmt(co));
+  sv('a-rem',fmt(rem));sv('a-misc',fmt(mx));sv('a-net',fmt(net));
+  sv('evp-col',fmt(col)+' PKR');sv('evp-rem',fmt(rem)+' PKR');
+  sv('evp-actual',fmt(net)+' PKR');sv('evp-pct',pct+'% COLLECTED');
+  const bar=$('evp-bar');if(bar)bar.style.width=Math.min(100,pct)+'%';
+  sv('e-misc',fmt(mx));
+
+  // Actual bars
+  const bc=$('a-bars');
+  if(bc){
+    if(!pays.length){bc.innerHTML='<div style="text-align:center;padding:20px;color:var(--tx3);font-size:10px;letter-spacing:2px">NO PAYMENTS YET</div>';return;}
+    bc.innerHTML=Object.keys(SUPS).map(sid=>{
+      const s=SUPS[sid];const{col:c,gd:g,co:co2}=supT(sid);if(!c)return '';
+      const ct=contractTotals(sid);
+      const pct2=ct.invoice>0?Math.round((c/ct.invoice)*100):0;
+      return `<div style="margin-bottom:14px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">
+          <span style="font-size:12px;font-weight:700;color:${s.c};font-family:'Syne',sans-serif">${s.name}</span>
+          <span style="font-size:11px;font-weight:700;color:${s.c}">${fmt(c)} PKR</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;font-size:9px;margin-bottom:4px;color:var(--tx3)">
+          <span style="color:var(--g2)">COL: ${fmt(c)}</span>
+          <span style="color:var(--bl)">GRD: ${fmt(g)}</span>
+          <span style="color:var(--gr)">CO: ${fmt(co2)}</span>
+        </div>
+        <div style="background:var(--ink5);border-radius:99px;height:3px;overflow:hidden">
+          <div style="height:100%;border-radius:99px;background:${s.c};width:${pct2}%"></div>
+        </div>
+        <div style="font-size:9px;color:var(--tx3);margin-top:2px;letter-spacing:1px">${pct2}% OF CONTRACT</div>
+      </div>`;
+    }).join('');
+  }
+  // Recent
+  const rc=$('a-recent');
+  if(rc){
+    if(!pays.length){rc.innerHTML='<div style="text-align:center;padding:16px;color:var(--tx3);font-size:10px;letter-spacing:2px">NO PAYMENTS YET</div>';return;}
+    rc.innerHTML=[...pays].reverse().slice(0,5).map(p=>{
+      const s=SUPS[p.sid];
+      return `<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--bd);gap:10px">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:'Syne',sans-serif">${p.desc}</div>
+          <div style="font-size:9px;color:var(--tx3);margin-top:2px">${s?s.name:p.sid} · ${p.time} · ${p.tl} ${p.payMonth&&p.payMonth!='current'?'· <span style="color:var(--am)">'+p.payMonth+'</span>':''}</div>
+        </div>
+        <span style="font-weight:800;color:var(--gr);font-size:14px;flex-shrink:0;font-family:'Syne',sans-serif">+${fmt(p.amt)}</span>
+      </div>`;
+    }).join('');
+  }
+  // Update other tabs if visible
+  updateChinese();updateMustafa();renderLoan();renderExpenses();
+}
+
+// ── ESTIMATED ──
+function renderEstimated(){
+  const allC=contracts.filter(c=>c.sup!=='mustafa');
+  const TC=allC.reduce((a,c)=>a+c.invoice,0);
+  const TG=allC.reduce((a,c)=>a+c.guard,0);
+  const TS=TC-TG;
+  const exp=622739;
+  const{x:mx,net:mn}=miscT();
+  const pot=Math.max(0,TS-exp+mn);
+  const{col,co}=allT();
+  sv('e-contract',fmt(TC));sv('e-guard',fmt(TG));sv('e-saving',fmt(TS));sv('e-net',fmt(pot));
+  sv('evp-pot',fmt(pot)+' PKR');
+  // Breakdown table
+  const tbl=$('est-table');
+  if(tbl){
+    const sids=['tanvir','shah','altaf','karamat','shahwaiz','company','islamabad'];
+    tbl.innerHTML=`<div class="tw"><table>
+      <thead><tr><th>Source</th><th>Invoice</th><th>Guard Sal</th><th>Saving</th><th>Expenses</th><th>Net</th></tr></thead>
+      <tbody>${sids.map(sid=>{
+        const s=SUPS[sid];const ct=contractTotals(sid);
+        const saving=ct.invoice-ct.guard;const net=saving-s.exp;
+        return `<tr><td style="font-family:'Syne',sans-serif;font-weight:600">${s.name}</td>
+          <td style="color:var(--g2)">${fmt(ct.invoice)}</td>
+          <td style="color:var(--bl)">${fmt(ct.guard)}</td>
+          <td style="color:var(--gr)">${fmt(saving)}</td>
+          <td style="color:var(--rd)">${s.exp?fmt(s.exp):'—'}</td>
+          <td style="color:var(--gr)"><strong>${fmt(net)}</strong></td></tr>`;
+      }).join('')}
+      <tr style="background:var(--ink4)"><td style="font-family:'Syne',sans-serif;font-weight:700;color:var(--g2)">TOTAL</td>
+        <td style="color:var(--g2)"><strong>${fmt(TC)}</strong></td>
+        <td style="color:var(--bl)"><strong>${fmt(TG)}</strong></td>
+        <td style="color:var(--gr)"><strong>${fmt(TS)}</strong></td>
+        <td style="color:var(--rd)"><strong>622,739</strong></td>
+        <td style="color:var(--gr)"><strong>${fmt(pot)}</strong></td></tr>
+      </tbody></table></div>`;
+  }
+  // Next month outlook
+  const nm=$('next-outlook');
+  if(nm&&months.length>0){
+    const lastM=months[0];
+    nm.innerHTML=`<div class="row"><span class="rl">Expected Collections (same contracts)</span><span class="rv" style="color:var(--g2)">~${fmt(TC)} PKR</span></div>
+      <div class="row"><span class="rl">Islamabad pending carry forward</span><span class="rv" style="color:var(--am)">510,000 PKR</span></div>
+      <div class="row"><span class="rl">Eastern Poultry fully active</span><span class="rv" style="color:var(--gr)">+80,000 PKR saving</span></div>
+      <div class="row"><span class="rl">Expected Expenses</span><span class="rv" style="color:var(--rd)">~545,000 PKR</span></div>
+      <div class="row"><span class="rl" style="font-weight:700;color:var(--tx);font-family:'Syne',sans-serif">Estimated Next Month Net</span><span class="rv" style="color:var(--pu);font-size:16px;font-family:'Syne',sans-serif;font-weight:800">~${fmt(pot+80000)} PKR</span></div>`;
+  }
+}
+
+// ── P&L ──
+function renderPL(){
+  const{col,gd,co}=allT();const{x:mx,net:mn}=miscT();
+  const exp=622739;const net=Math.max(0,co-exp+mn);
+  const sids=['tanvir','shah','altaf','karamat','shahwaiz','company','islamabad'];
+  const rr=$('pl-revenue-rows');
+  if(rr)rr.innerHTML=sids.map(sid=>{
+    const s=SUPS[sid];const{col:c}=supT(sid);
+    return `<div class="row"><span class="rl">${s.name}</span><span class="rv" style="color:var(--g2)">${fmt(c)} PKR</span></div>`;
+  }).join('');
+  sv('pl-total-rev',fmt(col)+' PKR');
+  const gr=$('pl-guard-rows');
+  if(gr)gr.innerHTML=sids.map(sid=>{
+    const s=SUPS[sid];const{gd:g}=supT(sid);if(!g)return '';
+    return `<div class="row"><span class="rl">${s.name} sites</span><span class="rv" style="color:var(--bl)">${fmt(g)} PKR</span></div>`;
+  }).join('');
+  sv('pl-total-gd',fmt(gd)+' PKR');
+  sv('pl-gross',fmt(co)+' PKR');sv('pl-net-gross',fmt(co)+' PKR');
+  sv('pl-misc','+ '+fmt(mx)+' PKR');sv('pl-total',fmt(net)+' PKR');
+}
+
+// ── INPUT TABS ──
+function updateSiteDrop(supId){
+  const sel=$('p-site');if(!sel)return;
+  const sites=contracts.filter(c=>c.sup===supId).map(c=>c.site);
+  sel.innerHTML='<option value="">— Select site or type below —</option>'+sites.map(s=>`<option value="${s}">${s}</option>`).join('');
+}
+function switchIT(tab){
+  ['add','log','split'].forEach(t=>{
+    const s=$('is-'+t);const b=$('it-'+t);
+    if(s)s.style.display=t===tab?'block':'none';
+    if(b)b.classList.toggle('on',t===tab);
+  });
+  if(tab==='log')renderLog();if(tab==='split')renderSplit();
+}
+function addPay(){
+  const sid=$('p-sup').value;const desc=$('p-desc').value.trim();
+  const amt=parseFloat($('p-amt').value)||0;const gd=parseFloat($('p-gd').value)||0;
+  const type=$('p-type').value;const payMonth=$('p-month').value.trim();
+  const tl={'cash':'💵 Cash','online':'🌐 Online','cheque':'🏦 Cheque','direct':'🏢 Direct','other':'Other'}[type]||type;
+  if(!sid){alert('Select supervisor');return;}if(!desc){alert('Enter description');return;}if(!amt){alert('Enter amount');return;}
+  const now=new Date();
+  const time=now.getDate()+'/'+(now.getMonth()+1)+' '+now.getHours()+':'+String(now.getMinutes()).padStart(2,'0');
+  pays.push({id:pid++,sid,desc,amt,gd,time,type,tl,payMonth:payMonth||'current'});
+  $('p-desc').value='';$('p-amt').value='';$('p-gd').value='';$('p-month').value='';
+  renderLog();refresh();renderPL();save();toast('✅ PAYMENT ADDED — ALL TABS UPDATED');
+}
+function delPay(id){pays=pays.filter(p=>p.id!==id);renderLog();refresh();renderPL();save();}
+function renderLog(){
+  const c=$('p-log');if(!c)return;
+  if(!pays.length){c.innerHTML='<div style="text-align:center;padding:24px;color:var(--tx3);font-size:10px;letter-spacing:2px">NO PAYMENTS YET</div>';return;}
+  c.innerHTML=Object.keys(SUPS).map(sid=>{
+    const s=SUPS[sid];const{col,gd,co,l}=supT(sid);if(!l.length)return '';
+    const ct=contractTotals(sid);
+    const pct=ct.invoice>0?Math.round((col/ct.invoice)*100):0;
+    return `<div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div style="font-weight:800;font-size:14px;color:${s.c};font-family:'Syne',sans-serif">${s.name}</div>
+        <span style="font-size:9px;color:var(--tx3);letter-spacing:1px">${l.length} ENTRIES · ${pct}% OF CONTRACT</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px">
+        <div class="ms"><div class="ms-l">Collected</div><div class="ms-v" style="color:var(--g2)">${fmt(col)}</div></div>
+        <div class="ms"><div class="ms-l">→ Guards</div><div class="ms-v" style="color:var(--bl)">${fmt(gd)}</div></div>
+        <div class="ms"><div class="ms-l">→ Company</div><div class="ms-v" style="color:var(--gr)">${fmt(co)}</div></div>
+      </div>
+      ${l.map(p=>`<div class="pe">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:'Syne',sans-serif">${p.desc}</div>
+          <div style="font-size:9px;color:var(--tx3);margin-top:2px">${p.time} · ${p.tl} · G:${fmt(p.gd)} · Co:${fmt(Math.max(0,p.amt-p.gd))} ${p.payMonth&&p.payMonth!='current'?'· <span style="color:var(--am)">'+p.payMonth+'</span>':''}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;margin-left:8px">
+          <span style="font-weight:800;color:var(--gr);font-size:14px;font-family:'Syne',sans-serif">+${fmt(p.amt)}</span>
+          <button onclick="delPay(${p.id})" class="btn btn-rd">✕</button>
+        </div>
+      </div>`).join('')}
+    </div>`;
+  }).join('');
+}
+function renderSplit(){
+  const tb=$('sp-body');const tr=$('sp-tot');if(!tb)return;
+  let tC=0,tG=0,tCo=0;
+  tb.innerHTML=Object.keys(SUPS).map(sid=>{
+    const s=SUPS[sid];const{col,gd,co}=supT(sid);if(!col)return '';
+    const pct=col>0?Math.round((co/col)*100):0;tC+=col;tG+=gd;tCo+=co;
+    return `<tr><td><strong style="color:${s.c};font-family:'Syne',sans-serif">${s.name}</strong></td><td style="color:var(--g2)">${fmt(col)}</td><td style="color:var(--bl)">${fmt(gd)}</td><td style="color:var(--gr)">${fmt(co)}</td><td style="color:var(--tx3)">${pct}%</td></tr>`;
+  }).join('');
+  if(tr)tr.innerHTML=`<td><strong style="font-family:'Syne',sans-serif;color:var(--g2)">TOTAL</strong></td><td style="color:var(--g2)"><strong>${fmt(tC)}</strong></td><td style="color:var(--bl)"><strong>${fmt(tG)}</strong></td><td style="color:var(--gr)"><strong>${fmt(tCo)}</strong></td><td></td>`;
+}
+
+// ── SUPERVISORS ──
+function renderSupervisors(){
+  const c=$('sup-overview');if(!c)return;
+  c.innerHTML=Object.keys(SUPS).filter(sid=>sid!=='other').map(sid=>{
+    const s=SUPS[sid];
+    const{col,gd,co}=supT(sid);
+    const ct=contractTotals(sid);
+    const pending=Math.max(0,ct.invoice-col);
+    const pct=ct.invoice>0?Math.round((col/ct.invoice)*100):0;
+    const profitContrib=co-s.exp;
+    const bd=EXP_BREAKDOWN[sid];
+    const expBreakdown=bd?`
+      <div id="exp-detail-${sid}" style="display:none;margin-top:10px;background:var(--ink5);border-radius:8px;padding:10px">
+        <div style="font-size:9px;font-weight:700;color:var(--rd);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;font-family:'Syne',sans-serif">Expense Breakdown — March 2026</div>
+        ${bd.items.map(([name,val])=>`
+          <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--bd);font-size:11px">
+            <span style="color:var(--tx2)">${name}</span>
+            <span style="color:${val<0?'var(--gr)':'var(--rd)'};font-weight:600;font-family:'DM Mono',monospace">${val<0?'−'+Math.abs(val).toLocaleString('en-PK'):val.toLocaleString('en-PK')} PKR</span>
+          </div>`).join('')}
+        <div style="display:flex;justify-content:space-between;padding:7px 0;margin-top:4px;font-size:12px;border-top:2px solid var(--rd)">
+          <span style="font-weight:700;color:var(--tx);font-family:'Syne',sans-serif">TOTAL</span>
+          <span style="font-weight:800;color:var(--rd);font-family:'Syne',sans-serif">${bd.total.toLocaleString('en-PK')} PKR</span>
+        </div>
+      </div>
+      <button onclick="toggleExpDetail('${sid}')" style="margin-top:8px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);border-radius:7px;color:var(--rd);padding:5px 12px;cursor:pointer;font-size:9px;font-weight:700;font-family:'Syne',sans-serif;letter-spacing:1px;width:100%">
+        <span id="exp-btn-${sid}">▼ VIEW EXPENSE BREAKDOWN (${bd.total.toLocaleString('en-PK')} PKR)</span>
+      </button>`:
+      '<div style="font-size:9px;color:var(--tx3);margin-top:6px">No expense breakdown available</div>';
+    return `<div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div>
+          <div style="font-weight:800;font-size:15px;color:${s.c};font-family:'Syne',sans-serif">${s.name}</div>
+          <div style="font-size:9px;color:var(--tx3);margin-top:2px;letter-spacing:1px">${ct.count} SITES · ${ct.invoice?fmt(ct.invoice)+' PKR CONTRACT':''}</div>
+        </div>
+        <span class="bdg ${pct>=80?'b-g':pct>=40?'b-y':'b-r'}">${pct}% collected</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px">
+        <div class="ms"><div class="ms-l">Collected</div><div class="ms-v" style="color:var(--g2)">${fmt(col)}</div></div>
+        <div class="ms"><div class="ms-l">Pending</div><div class="ms-v" style="color:${pending>0?'var(--rd)':'var(--gr)'}">${fmt(pending)}</div></div>
+        <div class="ms"><div class="ms-l">Co. Saving</div><div class="ms-v" style="color:var(--gr)">${fmt(co)}</div></div>
+        <div class="ms"><div class="ms-l">Guard Sal</div><div class="ms-v" style="color:var(--bl)">${fmt(gd)}</div></div>
+        <div class="ms"><div class="ms-l">Expenses</div><div class="ms-v" style="color:var(--rd)">${fmt(s.exp)}</div></div>
+        <div class="ms"><div class="ms-l">Profit Contrib</div><div class="ms-v" style="color:${profitContrib>0?'var(--gr)':'var(--rd)'}">${fmt(profitContrib)}</div></div>
+      </div>
+      <div style="background:var(--ink5);border-radius:99px;height:4px;overflow:hidden;margin-bottom:6px">
+        <div style="height:100%;border-radius:99px;background:${s.c};width:${pct}%;transition:width .7s"></div>
+      </div>
+      ${expBreakdown}
+    </div>`;
+  }).join('');
+}
+
+function toggleExpDetail(sid){
+  const detail=$('exp-detail-'+sid);
+  const btn=$('exp-btn-'+sid);
+  if(!detail)return;
+  const isHidden=detail.style.display==='none';
+  detail.style.display=isHidden?'block':'none';
+  if(btn)btn.innerHTML=isHidden?
+    '▲ HIDE EXPENSE BREAKDOWN':
+    `▼ VIEW EXPENSE BREAKDOWN (${EXP_BREAKDOWN[sid]?.total.toLocaleString('en-PK')} PKR)`;
+}
+
+function renderSites(){
+  const c=$('sites-out');if(!c)return;
+  const q=($('site-search')?.value||'').toLowerCase();
+  const filtered=contracts.filter(ct=>{
+    const matchF=sfFilter==='all'||ct.sup===sfFilter;
+    const matchS=!q||ct.site.toLowerCase().includes(q)||ct.sup.toLowerCase().includes(q);
+    return matchF&&matchS;
+  });
+  const tInv=filtered.reduce((a,ct)=>a+ct.invoice,0);
+  const tGd=filtered.reduce((a,ct)=>a+ct.guard,0);
+  c.innerHTML=`<div style="font-size:10px;color:var(--tx3);margin-bottom:8px;letter-spacing:1px">${filtered.length} SITES · Invoice: ${fmt(tInv)} PKR · Guard Sal: ${fmt(tGd)} PKR · Saving: ${fmt(tInv-tGd)} PKR</div>
+  <div class="card" style="padding:0;overflow:hidden"><div class="tw"><table>
+    <thead><tr><th>Site</th><th>Supervisor</th><th>Type</th><th>G</th><th>Invoice</th><th>Guard</th><th>Saving</th><th>Action</th></tr></thead>
+    <tbody>${filtered.map(ct=>{
+      const s=SUPS[ct.sup];
+      return `<tr>
+        <td><strong style="font-family:'Syne',sans-serif;font-size:11px">${ct.site}</strong>${ct.note?`<div style="font-size:9px;color:var(--tx3)">${ct.note}</div>`:''}${ct.isNew?`<span class="bdg b-g" style="font-size:8px">NEW</span>`:''}
+        </td>
+        <td><span style="font-size:10px;color:${s?s.c:'var(--tx3)'};font-family:'Syne',sans-serif;font-weight:600">${s?s.name:ct.sup}</span></td>
+        <td><span class="bdg ${ct.t==='full'?'b-g':'b-b'}">${ct.t==='full'?'Guards':'W/S'}</span></td>
+        <td style="color:var(--tx3)">${ct.g||'—'}</td>
+        <td style="color:var(--g2)">${fmt(ct.invoice)}</td>
+        <td style="color:var(--bl)">${ct.guard?fmt(ct.guard):'—'}</td>
+        <td style="color:var(--gr)"><strong>${fmt(ct.invoice-ct.guard)}</strong></td>
+        <td><button onclick="removeContract('${ct.id}')" class="btn btn-rd">✕</button></td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table></div></div>`;
+}
+
+// ── ADD CONTRACT ──
+function openAddContract(){
+  $('modal-contract').classList.add('on');
+}
+function closeModal(id){$(id).classList.remove('on');}
+function addContract(){
+  const site=$('nc-site').value.trim();
+  const sup=$('nc-sup').value;
+  const invoice=parseFloat($('nc-invoice').value)||0;
+  const guard=parseFloat($('nc-guard').value)||0;
+  const guards=parseInt($('nc-guards').value)||0;
+  const type=$('nc-type').value;
+  const weapons=$('nc-weapons').value.trim();
+  const date=$('nc-date').value.trim();
+  if(!site||!invoice){alert('Enter site name and invoice amount');return;}
+  const nc={id:'c'+cid++,sup,site,t:type==='Full Contract (Guards)'?'full':'weapon',g:guards,invoice,guard,weapons,date,isNew:true,note:'Added '+date};
+  contracts.push(nc);
+  closeModal('modal-contract');
+  $('nc-site').value='';$('nc-invoice').value='';$('nc-guard').value='';$('nc-guards').value='';$('nc-weapons').value='';$('nc-date').value='';
+  renderSites();renderEstimated();refresh();save();
+  toast('✅ CONTRACT ADDED — UNIFORM REQUIRED PER RULE');
+  setTimeout(()=>alert(`✅ New Contract: ${site}\n\n📋 RULE: New contract = New uniform dispatched\n\nGo to 🔫 Arsenal → 👕 Uniforms → Dispatch new uniform for this site.`),500);
+}
+function removeContract(id){
+  if(!confirm('Remove this contract? This will affect all calculations.'))return;
+  contracts=contracts.filter(c=>c.id!==id);
+  renderSites();renderEstimated();refresh();save();toast('✅ CONTRACT REMOVED');
+}
+
+// ── CHINESE ──
+function addChinesePay(){
+  const site=$('cn-site-sel').value;
+  const desc=$('cn-desc').value.trim();
+  const amt=parseFloat($('cn-amt').value)||0;
+  const gd=parseFloat($('cn-gd-amt').value)||0;
+  const type=$('cn-pay-type').value;
+  const tl={'cash':'💵 Cash','online':'🌐 Online','cheque':'🏦 Cheque'}[type]||type;
+  if(!site){alert('Select a site');return;}
+  if(!amt){alert('Enter amount');return;}
+  const now=new Date();
+  const time=now.getDate()+'/'+(now.getMonth()+1)+' '+now.getHours()+':'+String(now.getMinutes()).padStart(2,'0');
+  // Add to main pays as islamabad source so Actual tab updates too
+  pays.push({id:pid++,sid:'islamabad',desc:site+(desc?' — '+desc:''),amt,gd,time,type,tl,payMonth:'current'});
+  $('cn-amt').value='';$('cn-gd-amt').value='';$('cn-desc').value='';$('cn-site-sel').value='';
+  updateChinese();refresh();save();
+  toast('✅ CHINESE PAYMENT ADDED — ACTUAL TAB UPDATED');
+}
+
+function updateChinese(){
+  const cnContracts=contracts.filter(c=>c.sup==='islamabad');
+  const totalInv=cnContracts.reduce((a,c)=>a+c.invoice,0);
+  const totalGd=cnContracts.reduce((a,c)=>a+c.guard,0);
+  const pot=totalInv-totalGd;
+
+  // Get payments for islamabad from main pays
+  const cnPays=pays.filter(p=>p.sid==='islamabad');
+  const col=cnPays.reduce((a,p)=>a+p.amt,0);
+  const gd=cnPays.reduce((a,p)=>a+p.gd,0);
+  const co=Math.max(0,col-gd);
+  const pending=Math.max(0,totalInv-col);
+
+  sv('cn-invoice',fmt(totalInv));
+  sv('cn-rec',fmt(col));
+  sv('cn-pen',fmt(pending));
+  sv('cn-gd',fmt(gd));
+  sv('cn-co',fmt(co));
+  sv('cn-pot',fmt(pot));
+
+  // Site status table — check per site name
+  const tbl=$('cn-table');
+  if(tbl){
+    tbl.innerHTML=`<table>
+      <thead><tr><th>Site</th><th>Guards</th><th>Invoice</th><th>Guard Sal</th><th>Saving</th><th>Collected</th><th>Status</th></tr></thead>
+      <tbody>${cnContracts.map(c=>{
+        const sitePays=cnPays.filter(p=>p.desc&&p.desc.startsWith(c.site));
+        const siteCol=sitePays.reduce((a,p)=>a+p.amt,0);
+        const isPending=siteCol===0;
+        const isPartial=siteCol>0&&siteCol<c.invoice;
+        return `<tr>
+          <td><strong style="font-family:'Syne',sans-serif">${c.site}</strong></td>
+          <td style="color:var(--tx3)">${c.g}</td>
+          <td style="color:var(--g2)">${fmt(c.invoice)}</td>
+          <td style="color:var(--bl)">${fmt(c.guard)}</td>
+          <td style="color:var(--gr)">${fmt(c.invoice-c.guard)}</td>
+          <td style="color:${siteCol>0?'var(--gr)':'var(--tx3)'}">${siteCol>0?fmt(siteCol):'—'}</td>
+          <td><span class="bdg ${isPending?'b-r':isPartial?'b-y':'b-g'}">
+            ${isPending?'🔴 Pending':isPartial?'🟡 Partial':'✅ Received'}
+          </span></td>
+        </tr>`;
+      }).join('')}
+      <tr style="background:var(--ink4)">
+        <td style="font-family:'Syne',sans-serif;font-weight:700;color:var(--g2)">TOTAL</td><td></td>
+        <td style="color:var(--g2)"><strong>${fmt(totalInv)}</strong></td>
+        <td style="color:var(--bl)"><strong>${fmt(totalGd)}</strong></td>
+        <td style="color:var(--gr)"><strong>${fmt(pot)}</strong></td>
+        <td style="color:var(--gr)"><strong>${fmt(col)}</strong></td>
+        <td></td>
+      </tr></tbody></table>`;
+  }
+
+  // Alert for pending
+  const al=$('cn-alert');
+  if(al){
+    if(pending>0){
+      al.innerHTML=`<span>🔴</span><span>${fmt(pending)} PKR pending — follow up with Shah SB urgently</span>`;
+      al.style.display='flex';
+    } else {
+      al.style.display='none';
+    }
+  }
+
+  // Payment log
+  const pl=$('cn-pay-log');
+  if(pl){
+    if(!cnPays.length){
+      pl.innerHTML='<div style="text-align:center;padding:14px;color:var(--tx3);font-size:10px">No payments yet — add above</div>';
+      return;
+    }
+    pl.innerHTML=[...cnPays].reverse().map(p=>`
+      <div class="pe">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:12px;font-weight:600;font-family:'Syne',sans-serif;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.desc}</div>
+          <div style="font-size:9px;color:var(--tx3);margin-top:2px">
+            ${p.time} · ${p.tl} ·
+            <span style="color:var(--bl)">G: ${fmt(p.gd)}</span> ·
+            <span style="color:var(--gr)">Co: ${fmt(Math.max(0,p.amt-p.gd))}</span>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+          <span style="font-weight:800;color:var(--gr);font-size:13px;font-family:'Syne',sans-serif">+${fmt(p.amt)}</span>
+          <button onclick="delCnPay(${p.id})" class="btn btn-rd">✕</button>
+        </div>
+      </div>`).join('');
+  }
+}
+
+function delCnPay(id){
+  pays=pays.filter(p=>p.id!==id);
+  updateChinese();refresh();save();
+}
+
+// ── MUSTAFA ──
+function updateMustafa(){
+  const muContracts=contracts.filter(c=>c.sup==='mustafa');
+  const totalInv=muContracts.reduce((a,c)=>a+c.invoice,0);
+  const totalGd=muContracts.reduce((a,c)=>a+c.guard,0);
+
+  // Populate site dropdown
+  const sel=$('mu-site-sel');
+  if(sel){
+    sel.innerHTML='<option value="">— Select Site —</option>'+
+      muContracts.map(c=>`<option value="${c.site}">${c.site} — ${c.invoice.toLocaleString('en-PK')} PKR</option>`).join('');
+  }
+
+  // Totals from mustafaPays
+  const mt=mustafaT();
+  const pending=Math.max(0,totalInv-mt.col);
+
+  sv('mu-invoice',fmt(totalInv));
+  sv('mu-col',fmt(mt.col));
+  sv('mu-pending',fmt(pending));
+  sv('mu-gd',fmt(mt.gd));
+  sv('mu-alan',fmt(mt.alan));
+  sv('mu-must',fmt(mt.mustafa));
+
+  // Site status table
+  const tbl=$('mu-table');
+  if(tbl){
+    tbl.innerHTML=`<div class="tw"><table>
+      <thead><tr><th>Site</th><th>G</th><th>Invoice</th><th>Guard Sal</th><th>Saving</th><th>Status</th></tr></thead>
+      <tbody>${muContracts.map(c=>{
+        const siteCol=mustafaPays.filter(p=>p.site===c.site).reduce((a,p)=>a+p.amt,0);
+        const siteGd=mustafaPays.filter(p=>p.site===c.site).reduce((a,p)=>a+p.gd,0);
+        const isPending=siteCol===0;
+        const isPartial=siteCol>0&&siteCol<c.invoice;
+        return `<tr>
+          <td style="font-family:'Syne',sans-serif;font-size:11px"><strong>${c.site}</strong></td>
+          <td style="color:var(--tx3)">${c.g}</td>
+          <td style="color:var(--g2)">${fmt(c.invoice)}</td>
+          <td style="color:var(--bl)">${fmt(c.guard)}</td>
+          <td style="color:var(--gr)">${fmt(c.invoice-c.guard)}</td>
+          <td><span class="bdg ${isPending?'b-r':isPartial?'b-y':'b-g'}">
+            ${isPending?'🔴 Pending':isPartial?'🟡 Partial':'✅ Received'}
+          </span></td>
+        </tr>`;
+      }).join('')}
+      <tr style="background:var(--ink4)">
+        <td style="font-family:'Syne',sans-serif;font-weight:700;color:var(--pu)">TOTAL</td><td></td>
+        <td style="color:var(--g2)"><strong>${fmt(totalInv)}</strong></td>
+        <td style="color:var(--bl)"><strong>${fmt(totalGd)}</strong></td>
+        <td style="color:var(--gr)"><strong>${fmt(totalInv-totalGd)}</strong></td>
+        <td></td>
+      </tr></tbody></table></div>
+      <div class="al al-pu" style="margin-top:10px;margin-bottom:0">
+        <span>📊</span>
+        <span>Potential saving: ${fmt(totalInv-totalGd)} PKR · Alan 50%: ${fmt(Math.floor((totalInv-totalGd)/2))} PKR · Collected so far: ${fmt(mt.col)} PKR · Alan earned so far: ${fmt(mt.alan)} PKR</span>
+      </div>`;
+  }
+
+  // Payment log
+  const pl=$('mu-pay-log');
+  if(pl){
+    if(!mustafaPays.length){pl.innerHTML='<div style="text-align:center;padding:14px;color:var(--tx3);font-size:10px">No payments yet</div>';return;}
+    pl.innerHTML=[...mustafaPays].reverse().map(p=>`
+      <div class="pe">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:12px;font-weight:600;font-family:'Syne',sans-serif;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.site}</div>
+          ${p.desc&&p.desc!==p.site?`<div style="font-size:11px;color:var(--tx2);margin-top:2px">${p.desc}</div>`:''}
+          <div style="font-size:9px;color:var(--tx3);margin-top:2px">
+            ${p.time} · ${p.tl} · 
+            <span style="color:var(--bl)">G: ${fmt(p.gd)}</span> · 
+            <span style="color:var(--gr)">Co: ${fmt(Math.max(0,p.amt-p.gd))}</span> · 
+            <span style="color:var(--g2)">Alan 50%: ${fmt(Math.floor(Math.max(0,p.amt-p.gd)/2))}</span>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+          <span style="font-weight:800;color:var(--pu);font-size:13px;font-family:'Syne',sans-serif">+${fmt(p.amt)}</span>
+          <button onclick="delMustafaPay(${p.id})" class="btn btn-rd">✕</button>
+        </div>
+      </div>`).join('');
+  }
+}
+
+function addMustafaPay(){
+  const site=$('mu-site-sel').value||$('mu-desc').value.trim();
+  const desc=$('mu-desc').value.trim()||site;
+  const amt=parseFloat($('mu-amt').value)||0;
+  const gd=parseFloat($('mu-gd-amt').value)||0;
+  const type=$('mu-pay-type').value;
+  const tl={'cash':'💵 Cash','online':'🌐 Online','cheque':'🏦 Cheque'}[type]||type;
+  if(!site){alert('Select a site');return;}
+  if(!amt){alert('Enter amount');return;}
+  const now=new Date();
+  const time=now.getDate()+'/'+(now.getMonth()+1)+' '+now.getHours()+':'+String(now.getMinutes()).padStart(2,'0');
+  mustafaPays.push({id:mpid++,site,desc,amt,gd,time,type,tl});
+  $('mu-amt').value='';$('mu-gd-amt').value='';$('mu-desc').value='';
+  updateMustafa();save();toast('✅ MUSTAFA PAYMENT ADDED — NOT IN COMPANY ACCOUNTS');
+}
+
+function delMustafaPay(id){
+  mustafaPays=mustafaPays.filter(p=>p.id!==id);
+  updateMustafa();save();
+}
+
+// ── MISC ──
+function addMisc(){
+  const desc=$('m-desc').value.trim();const amt=parseFloat($('m-amt').value)||0;
+  const t=$('m-type').value;const month=$('m-month').value.trim()||'Mar 2026';
+  if(!desc||!amt){alert('Enter description and amount');return;}
+  miscs.push({id:mid++,desc,amt,t,month});
+  $('m-desc').value='';$('m-amt').value='';$('m-month').value='';
+  renderMisc();refresh();save();
+}
+function delMisc(id){miscs=miscs.filter(m=>m.id!==id);renderMisc();refresh();save();}
+function renderMisc(){
+  const{x,d,net}=miscT();sv('m-extra',fmt(x));sv('m-deduct',fmt(d));sv('m-net',fmt(net));
+  const c=$('m-list');if(!c)return;
+  if(!miscs.length){c.innerHTML='<div style="text-align:center;padding:16px;color:var(--tx3);font-size:10px;letter-spacing:2px">NO ENTRIES YET</div>';return;}
+  c.innerHTML=miscs.map(m=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--bd);gap:10px">
+      <div><div style="font-size:12px;font-weight:600;font-family:'Syne',sans-serif">${m.desc}</div>
+      <div style="font-size:9px;color:var(--tx3);margin-top:2px">${m.month} · <span style="color:${m.t==='extra'?'var(--gr)':'var(--rd)'}">${m.t==='extra'?'➕ EXTRA':'➖ DEDUCTION'}</span></div></div>
+      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+        <span style="font-weight:800;font-size:13px;color:${m.t==='extra'?'var(--gr)':'var(--rd)'};font-family:'Syne',sans-serif">${m.t==='extra'?'+':'-'}${fmt(m.amt)}</span>
+        <button onclick="delMisc(${m.id})" class="btn btn-rd">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+// ── LOAN ──
+function addLoan(){
+  const t=$('l-type').value;const amt=parseFloat($('l-amt').value)||0;
+  const desc=$('l-desc').value.trim();const date=$('l-date').value.trim()||'Mar 2026';
+  if(!amt){alert('Enter amount');return;}
+  loans.push({id:lid++,t,amt,desc,date});
+  $('l-amt').value='';$('l-desc').value='';$('l-date').value='';
+  renderLoan();refresh();save();
+}
+function delLoan(id){loans=loans.filter(l=>l.id!==id);renderLoan();refresh();save();}
+function renderLoan(){
+  const{g,r,out}=loanT();sv('l-given',fmt(g));sv('l-rec',fmt(r));sv('l-out',fmt(out));
+  // Intelligent status
+  const ls=$('loan-status');
+  if(ls){
+    const{col}=allT();
+    const coverage=g>0?(r/g)*100:0;
+    ls.innerHTML=`<div class="row"><span class="rl">Total Injected by Alan</span><span class="rv" style="color:var(--pu)">${fmt(g)} PKR</span></div>
+      <div class="row"><span class="rl">Recovered from Collections</span><span class="rv" style="color:var(--gr)">${fmt(r)} PKR</span></div>
+      <div class="row"><span class="rl">Recovery Rate</span><span class="rv" style="color:${coverage>=80?'var(--gr)':coverage>=50?'var(--am)':'var(--rd)'}">${Math.round(coverage)}%</span></div>
+      <div class="row"><span class="rl">Outstanding (Alan's Money)</span><span class="rv" style="color:var(--rd);font-weight:800">${fmt(out)} PKR</span></div>
+      <div class="row" style="border:none"><span class="rl">Status</span><span class="rv">${out===0?'<span class="bdg b-g">✅ FULLY RECOVERED</span>':out>1000000?'<span class="bdg b-r">🔴 HIGH OUTSTANDING</span>':'<span class="bdg b-y">🟡 PARTIALLY RECOVERED</span>'}</span></div>`;
+  }
+  const c=$('l-log');if(!c)return;
+  if(!loans.length){c.innerHTML='<div style="text-align:center;padding:16px;color:var(--tx3);font-size:10px;letter-spacing:2px">NO ENTRIES YET</div>';return;}
+  c.innerHTML=loans.map(l=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--bd);gap:10px">
+      <div><div style="font-size:12px;font-weight:600;font-family:'Syne',sans-serif">${l.desc||'Loan entry'}</div>
+      <div style="font-size:9px;color:var(--tx3);margin-top:2px">${l.date} · <span style="color:${l.t==='given'?'var(--pu)':'var(--gr)'}">${l.t==='given'?'💳 GIVEN':'✅ RECOVERED'}</span></div></div>
+      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+        <span style="font-weight:800;font-size:13px;color:${l.t==='given'?'var(--pu)':'var(--gr)'};font-family:'Syne',sans-serif">${l.t==='given'?'-':'+'}${fmt(l.amt)}</span>
+        <button onclick="delLoan(${l.id})" class="btn btn-rd">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+// ── INVENTORY ──
+function switchINV(tab){
+  ['weapons','ammo','uniforms','dispatch','wireless'].forEach(t=>{
+    const s=$('iw-'+t);const b=$('inv-'+t);
+    if(s)s.style.display=t===tab?'block':'none';
+    if(b)b.classList.toggle('on',t===tab);
+  });
+  if(tab==='weapons')renderWeapons();
+  if(tab==='uniforms')renderUniforms();
+  if(tab==='dispatch')renderDispatchLog();
+}
+function renderInventory(){
+  renderWeapons();
+}
+function renderWeapons(){
+  const tbl=$('weapon-table');if(!tbl)return;
+  tbl.innerHTML=weapons.map(w=>`<tr>
+    <td style="font-family:'Syne',sans-serif">${w.type}</td>
+    <td style="color:var(--tx3)">${w.loc}</td>
+    <td><span class="bdg ${w.status==='Working'?'b-g':w.status==='Maintenance'?'b-r':'b-y'}">${w.status}</span></td>
+    <td style="color:${w.status==='Working'?'var(--gr)':'var(--rd)'}"><strong>${w.count}</strong></td>
+    <td><button onclick="delWeapon('${w.id}')" class="btn btn-rd">✕</button></td>
+  </tr>`).join('');
+}
+function addWeapon(){
+  const type=$('w-type').value;const loc=$('w-loc').value;const status=$('w-status').value;
+  const count=parseInt($('w-count').value)||0;const notes=$('w-notes').value.trim();
+  if(!count){alert('Enter count');return;}
+  // Check if exists
+  const ex=weapons.find(w=>w.type===type&&w.loc===loc&&w.status===status);
+  if(ex){ex.count+=count;ex.notes=notes;}
+  else{weapons.push({id:'w'+Date.now(),type,loc,status,count,notes});}
+  $('w-count').value='';$('w-notes').value='';
+  renderWeapons();save();toast('✅ WEAPON UPDATED');
+}
+function delWeapon(id){weapons=weapons.filter(w=>w.id!==id);renderWeapons();save();}
+function updateAmmo(){
+  const type=$('ammo-type').value;const action=$('ammo-action').value;const qty=parseInt($('ammo-qty').value)||0;
+  if(!qty){alert('Enter quantity');return;}
+  const before=ammo[type]||0;
+  if(action==='add')ammo[type]=(ammo[type]||0)+qty;
+  else if(action==='use')ammo[type]=Math.max(0,(ammo[type]||0)-qty);
+  else ammo[type]=qty;
+  ammoLog.unshift({type,action,qty,before,after:ammo[type],date:new Date().toLocaleDateString('en-PK')});
+  $('ammo-qty').value='';
+  sv('ammo-30',ammo[30]||0);sv('ammo-223',ammo[223]||0);sv('ammo-12',ammo[12]||0);
+  const al=$('ammo-log');
+  if(al)al.innerHTML=ammoLog.slice(0,10).map(l=>`<div style="padding:7px 0;border-bottom:1px solid var(--bd);font-size:11px;display:flex;justify-content:space-between">
+    <span style="color:var(--tx2)">${l.type} bore · ${l.action} · ${l.date}</span>
+    <span style="color:var(--g2)">${l.before} → ${l.after}</span>
+  </div>`).join('');
+  save();toast('✅ AMMO UPDATED');
+}
+function renderUniforms(){
+  const tbl=$('uniform-table');if(!tbl)return;
+  tbl.innerHTML=Object.entries(uniforms).map(([k,u])=>`<tr>
+    <td style="font-family:'Syne',sans-serif;font-size:11px"><strong>${u.label}</strong></td>
+    <td><span class="bdg ${u.cond==='New'?'b-g':u.cond==='Used'?'b-y':'b-b'}">${u.cond}</span></td>
+    <td style="color:${u.qty===0?'var(--rd)':u.qty<3?'var(--am)':'var(--gr)'}"><strong>${u.qty}</strong></td>
+    <td>${u.qty===0?'<span class="bdg b-r">OUT</span>':u.qty<3?'<span class="bdg b-y">⚠️ LOW</span>':'<span class="bdg b-g">OK</span>'}</td>
+  </tr>`).join('');
+  const ul=$('uniform-log');
+  if(ul)ul.innerHTML=uniformLog.length?uniformLog.slice(0,20).map(l=>`<div style="padding:8px 0;border-bottom:1px solid var(--bd);font-size:11px">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <span style="color:${l.action==='dispatch'?'var(--rd)':l.action==='return'?'var(--gr)':'var(--g2)'};font-family:'Syne',sans-serif;font-weight:700">
+        ${l.action==='dispatch'?'📤 DISPATCH':l.action==='return'?'📥 RETURN':'🛒 BOUGHT'} — ${l.item}
+      </span>
+      <span style="color:var(--g2);font-weight:700">× ${l.qty}</span>
+    </div>
+    <div style="font-size:9px;color:var(--tx3);margin-top:2px">${l.site} · ${l.sup} · ${l.date}${l.totalCost?' · Cost: PKR '+l.totalCost.toLocaleString('en-PK'):''}</div>
+    ${l.notes?'<div style="font-size:9px;color:var(--tl);margin-top:1px">'+l.notes+'</div>':''}
+  </div>`).join(''):'<div style="text-align:center;padding:14px;color:var(--tx3);font-size:10px">No records yet</div>';
+}
+
+function switchUT(tab){
+  ['dispatch','buy','return'].forEach(t=>{
+    const s=$('uw-'+t);const b=$('ut-'+t);
+    if(s)s.style.display=t===tab?'block':'none';
+    if(b)b.classList.toggle('on',t===tab);
+  });
+}
+
+function updateUniformSiteDrop(supId){
+  const sel=$('u-site-sel');if(!sel)return;
+  const sites=contracts.filter(c=>c.sup===supId).map(c=>c.site);
+  sel.innerHTML='<option value="">— Select Site —</option>'+sites.map(s=>`<option value="${s}">${s}</option>`).join('');
+}
+
+// Calculate total cost live
+function calcBuyTotal(){
+  const qty=parseInt($('b-qty')?.value)||0;
+  const cost=parseInt($('b-cost')?.value)||0;
+  const total=qty*cost;
+  const td=$('b-total-display');const tv=$('b-total');
+  if(td&&tv){td.style.display=total>0?'block':'none';tv.textContent=total.toLocaleString('en-PK');}
+}
+
+function buyFromShop(){
+  const item=$('b-item').value;
+  const qty=parseInt($('b-qty').value)||0;
+  const cost=parseInt($('b-cost').value)||0;
+  const shop=$('b-shop').value.trim();
+  const date=$('b-date').value.trim()||new Date().toLocaleDateString('en-PK');
+  if(!qty){alert('Enter quantity');return;}
+  if(uniforms[item]){uniforms[item].qty+=qty;}
+  else{uniforms[item]={label:item,cond:'New',qty};}
+  const totalCost=qty*cost;
+  uniformLog.unshift({
+    item:uniforms[item]?.label||item,qty,
+    site:shop||'Shop Purchase',sup:'Stock',
+    action:'bought',date,
+    cost,totalCost,
+    note:`Bought from ${shop||'shop'} — Total: PKR ${totalCost.toLocaleString('en-PK')}`
+  });
+  // Auto-add to Expenses tab
+  if(totalCost>0){
+    addExpense({
+      desc:(uniforms[item]?.label||item)+' × '+qty+' — '+( shop||'Shop Purchase'),
+      amount:totalCost,
+      category:'uniform',
+      date:date||new Date().toLocaleDateString('en-PK'),
+      paidTo:shop||'Shop'
+    });
+  }
+  $('b-qty').value='';$('b-cost').value='';$('b-shop').value='';$('b-date').value='';
+  calcBuyTotal();
+  renderUniforms();save();toast('✅ STOCK UPDATED — '+qty+' items added');
+}
+
+function dispatchUniform(action){
+  let item,qty,site,sup,notes;
+  if(action==='dispatch'){
+    item=$('u-item').value;qty=parseInt($('u-qty').value)||0;
+    const siteSel=$('u-site-sel');
+    site=siteSel?.value||'';
+    sup=$('u-sup-sel')?.value||'';
+    notes=$('u-notes-d')?.value.trim()||'';
+    if(!qty||!site){alert('Enter quantity and select a site');return;}
+    if(uniforms[item]){
+      if(uniforms[item].qty<qty){alert('Only '+uniforms[item].qty+' in stock. Cannot dispatch '+qty);return;}
+      uniforms[item].qty-=qty;
+    }
+    uniformLog.unshift({item:uniforms[item]?.label||item,qty,site,sup:SUPS[sup]?.name||sup,action:'dispatch',date:new Date().toLocaleDateString('en-PK'),notes});
+    $('u-qty').value='';$('u-notes-d').value='';
+    toast('✅ DISPATCHED — STOCK REDUCED');
+  } else if(action==='return'){
+    item=$('r-item').value;qty=parseInt($('r-qty').value)||0;
+    site=$('r-site')?.value.trim()||'';
+    if(!qty){alert('Enter quantity');return;}
+    if(uniforms[item])uniforms[item].qty+=qty;
+    uniformLog.unshift({item:uniforms[item]?.label||item,qty,site,sup:'Return',action:'return',date:new Date().toLocaleDateString('en-PK'),notes:'Returned to stock'});
+    $('r-qty').value='';$('r-site').value='';
+    toast('✅ RETURNED TO STOCK');
+  }
+  renderUniforms();save();
+}
+function renderDispatchLog(){
+  const c=$('dispatch-log');if(!c)return;
+  const all=[...uniformLog,...ammoLog.map(l=>({...l,isAmmo:true}))].sort((a,b)=>0);
+  if(!all.length){c.innerHTML='<div style="text-align:center;padding:14px;color:var(--tx3);font-size:10px">No dispatches yet</div>';return;}
+  c.innerHTML=[...uniformLog].slice(0,20).map(l=>`<div style="padding:8px 0;border-bottom:1px solid var(--bd);font-size:11px">
+    <div style="display:flex;justify-content:space-between">
+      <span style="color:var(--tl);font-family:'Syne',sans-serif;font-weight:600">${l.action==='dispatch'?'📤 DISPATCH':l.action==='return'?'📥 RETURN':'➕ ADD'} — ${l.item}</span>
+      <span style="color:var(--g2)">× ${l.qty} · ${l.date}</span>
+    </div>
+    <div style="font-size:9px;color:var(--tx3)">${l.site} · ${l.sup}</div>
+  </div>`).join('');
+}
+
+// ── PERFORMANCE ──
+function renderPerformance(){
+  const c=$('perf-cards');if(!c)return;
+  const staffData=[
+    {name:'Tanvir',role:'Supervisor + Marketing',sid:'tanvir',contracts:27,
+     contribution:()=>supT('tanvir').co-220316,kpis:['27 active sites','Largest portfolio','Marketing role']},
+    {name:'Shah SB',role:'Senior GM',sid:'shah',contracts:6,
+     contribution:()=>supT('shah').co-94400,kpis:['6 sites + 5 Chinese','Manages Islamabad','Contract signing auth']},
+    {name:'Karamat',role:'Supervisor — Rawalpindi',sid:'karamat',contracts:9,
+     contribution:()=>supT('karamat').co-87150,kpis:['9 sites','Poultry specialist','Eastern Poultry new']},
+    {name:'Altaf',role:'Supervisor + Plaza Manager',sid:'altaf',contracts:6,
+     contribution:()=>supT('altaf').co-0,kpis:['6 sites','Budget Pro key client']},
+    {name:'Shahwaiz',role:'External Agent 25%',sid:'shahwaiz',contracts:11,
+     contribution:()=>supT('shahwaiz').co-33450,kpis:['11 sites','25% commission','Eastern Poultry active']},
+    {name:'Bilal',role:'Accountant',sid:null,contracts:0,
+     contribution:()=>-69700,kpis:['Reports to Alan','Salary calculations','Commission audit']},
+    {name:'Jazib',role:'Sub-Supervisor',sid:null,contracts:0,
+     contribution:()=>-40000,kpis:['Reports to Shah SB','Sub-supervisor role']},
+  ];
+  c.innerHTML=staffData.map(st=>{
+    const{col}=st.sid?supT(st.sid):{col:0};
+    const contrib=st.contribution();
+    const pColor=contrib>0?'var(--gr)':'var(--rd)';
+    const attRecords=attendance.filter(a=>a.person===st.name.toLowerCase());
+    const presentDays=attRecords.filter(a=>a.status==='present'||a.status==='half').length;
+    return `<div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+        <div>
+          <div style="font-weight:800;font-size:14px;color:var(--g2);font-family:'Syne',sans-serif">${st.name}</div>
+          <div style="font-size:9px;color:var(--tx3);margin-top:2px;letter-spacing:1px">${st.role.toUpperCase()}</div>
+        </div>
+        <span class="bdg ${contrib>0?'b-g':'b-r'}">${contrib>0?'+':''}${fmt(contrib)} PKR</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px">
+        <div class="ms"><div class="ms-l">Sites</div><div class="ms-v" style="color:var(--g2)">${st.contracts}</div></div>
+        <div class="ms"><div class="ms-l">Collections</div><div class="ms-v" style="color:var(--gr)">${fmt(col)}</div></div>
+        <div class="ms"><div class="ms-l">Attendance</div><div class="ms-v" style="color:var(--bl)">${presentDays} days</div></div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">${st.kpis.map(k=>`<span class="bdg b-tl" style="font-size:8px">${k}</span>`).join('')}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── ATTENDANCE ──
+function markAttendance(){
+  const person=$('att-person').value;
+  const date=$('att-date').value;
+  const status=$('att-status').value;
+  const notes=$('att-notes').value.trim();
+  if(!date){alert('Select date');return;}
+  // Update if exists
+  const ex=attendance.find(a=>a.person===person&&a.date===date);
+  if(ex){ex.status=status;ex.notes=notes;}
+  else attendance.push({id:aid++,person,date,status,notes});
+  $('att-date').value='';$('att-notes').value='';
+  renderAttendance();save();toast('✅ ATTENDANCE MARKED');
+}
+function renderAttendance(){
+  // Summary per person
+  const persons=['shah','bilal','tanvir','jazib','karamat','altaf','shahwaiz'];
+  const names={shah:'Shah SB',bilal:'Bilal',tanvir:'Tanvir',jazib:'Jazib',karamat:'Karamat',altaf:'Altaf',shahwaiz:'Shahwaiz'};
+  const summ=$('att-summary');
+  if(summ){
+    summ.innerHTML=`<div class="card">
+      <div class="ct">This Month Summary</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">${persons.map(p=>{
+        const recs=attendance.filter(a=>a.person===p);
+        const present=recs.filter(a=>a.status==='present').length;
+        const absent=recs.filter(a=>a.status==='absent').length;
+        const half=recs.filter(a=>a.status==='half').length;
+        const leave=recs.filter(a=>a.status==='leave').length;
+        return `<div class="ms">
+          <div class="ms-l">${names[p]||p}</div>
+          <div style="font-size:11px;margin-top:3px">
+            <span style="color:var(--gr)">✅ ${present}</span> &nbsp;
+            <span style="color:var(--rd)">❌ ${absent}</span> &nbsp;
+            <span style="color:var(--am)">🟡 ${half}</span> &nbsp;
+            <span style="color:var(--bl)">🔵 ${leave}</span>
+          </div>
+        </div>`;
+      }).join('')}</div>
+    </div>`;
+  }
+  // Log
+  const lg=$('att-log');
+  if(lg){
+    if(!attendance.length){lg.innerHTML='<div style="text-align:center;padding:16px;color:var(--tx3);font-size:10px">No records yet</div>';return;}
+    lg.innerHTML=[...attendance].reverse().slice(0,30).map(a=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--bd)">
+      <div>
+        <div style="font-size:12px;font-weight:600;font-family:'Syne',sans-serif">${names[a.person]||a.person}</div>
+        <div style="font-size:9px;color:var(--tx3)">${a.date} ${a.notes?'· '+a.notes:''}</div>
+      </div>
+      <span class="bdg ${a.status==='present'?'b-g':a.status==='absent'?'b-r':a.status==='half'?'b-y':'b-b'}">
+        ${a.status==='present'?'✅ Present':a.status==='absent'?'❌ Absent':a.status==='half'?'🟡 Half Day':'🔵 Leave'}
+      </span>
+    </div>`).join('');
+  }
+}
+
+// ── EXPENSES ──
+function fillExpense(val){
+  if(!val)return;
+  const parts=val.split('|');
+  // parts: [key, desc, amount, category, paidTo]
+  const desc=parts[1]||'';
+  const amount=parseInt(parts[2])||0;
+  const cat=parts[3]||'other';
+  const paidTo=parts[4]||'';
+  const d=$('exp-desc');const a=$('exp-amt');
+  const c=$('exp-cat');const p=$('exp-paid-to');
+  if(d)d.value=desc;
+  if(a&&amount>0)a.value=amount;
+  if(c)c.value=cat;
+  if(p)p.value=paidTo;
+  // Set today's date if empty
+  const dt=$('exp-date');
+  if(dt&&!dt.value)dt.value=new Date().toLocaleDateString('en-PK');
+  // Reset dropdown
+  const q=$('exp-quick');if(q)q.value='';
+}
+
+function addExpense(opts){
+  // opts = {desc, amount, category, date, paidTo} for auto-add from shop
+  const desc=opts?opts.desc:$('exp-desc')?.value.trim();
+  const amount=opts?opts.amount:parseFloat($('exp-amt')?.value)||0;
+  const category=opts?opts.category:$('exp-cat')?.value||'other';
+  const date=opts?opts.date:($('exp-date')?.value.trim()||new Date().toLocaleDateString('en-PK'));
+  const paidTo=opts?opts.paidTo:($('exp-paid-to')?.value.trim()||'');
+  const auto=opts?true:false;
+  if(!desc||!amount){if(!auto)alert('Enter description and amount');return;}
+  expenses.push({id:expid++,desc,amount,category,date,paidTo,auto});
+  if(!auto){
+    $('exp-desc').value='';$('exp-amt').value='';$('exp-date').value='';$('exp-paid-to').value='';
+  }
+  renderExpenses();save();
+  if(!auto)toast('✅ EXPENSE ADDED');
+}
+
+function delExpense(id){expenses=expenses.filter(e=>e.id!==id);renderExpenses();save();}
+
+function renderExpenses(){
+  const total=expensesT();
+  const purchases=expenses.filter(e=>e.category==='uniform').reduce((a,e)=>a+e.amount,0);
+  const other=total-purchases;
+  sv('exp-total',fmt(total));sv('exp-purchases',fmt(purchases));sv('exp-other',fmt(other));
+  const c=$('exp-log');if(!c)return;
+  if(!expenses.length){c.innerHTML='<div style="text-align:center;padding:16px;color:var(--tx3);font-size:10px;letter-spacing:2px">NO EXPENSES YET</div>';return;}
+  const catIcon={'uniform':'👕','wireless':'📡','weapon':'🔫','transport':'🚗','repair':'🔧','office':'🏢','other':'📋'};
+  const catColor={'uniform':'var(--am)','wireless':'var(--bl)','weapon':'var(--rd)','transport':'var(--gr)','repair':'var(--am)','office':'var(--tl)','other':'var(--tx2)'};
+  c.innerHTML=[...expenses].reverse().map(e=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--bd);gap:10px">
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;gap:6px">
+          <span>${catIcon[e.category]||'📋'}</span>
+          <span style="font-size:12px;font-weight:600;font-family:'Syne',sans-serif;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.desc}</span>
+          ${e.auto?'<span class="bdg b-tl" style="font-size:8px;flex-shrink:0">AUTO</span>':''}
+        </div>
+        <div style="font-size:9px;color:var(--tx3);margin-top:2px">${e.date}${e.paidTo?' · '+e.paidTo:''} · <span style="color:${catColor[e.category]||'var(--tx3)'}">${e.category.toUpperCase()}</span></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+        <span style="font-weight:800;font-size:13px;color:var(--rd);font-family:'Syne',sans-serif">- ${fmt(e.amount)}</span>
+        <button onclick="delExpense(${e.id})" class="btn btn-rd">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+// ── MONTHLY ──
+function saveMonth(){
+  const label=$('mo-lbl').value.trim();if(!label){alert('Enter month name e.g. March 2026');return;}
+  const{col,gd,co}=allT();const{x,net:mn}=miscT();const{g,r}=loanT();
+  const allC=contracts.filter(c=>c.sup!=='mustafa');
+  const TC=allC.reduce((a,c)=>a+c.invoice,0);
+  const exp=622739;
+  const netP=co>0?Math.max(0,co-exp+mn):0;
+  months.unshift({id:moid++,label,savedAt:new Date().toLocaleDateString('en-PK'),col,gd,co,miscX:x,exp,netP,cnt:pays.length,lG:g,lR:r,TC,contracts:contracts.length});
+  $('mo-lbl').value='';save();renderMonths();alert('✅ '+label+' saved successfully!');
+}
+function startNew(){
+  if(!confirm('Start new month?\n\nThis will clear:\n• All payment entries\n• Misc entries\n• Loan entries\n• Attendance records\n\nContracts, inventory, and monthly records stay safe!\n\nMake sure you have saved this month first.'))return;
+  pays=[];miscs=[];loans=[];attendance=[];mustafaPays=[];expenses=[];pid=1;mid=1;lid=1;aid=1;mpid=1;expid=1;
+  save();refresh();renderMisc();renderLoan();renderLog();renderAttendance();toast('✅ NEW MONTH STARTED');
+}
+function delMonth(id){if(!confirm('Delete this monthly record?'))return;months=months.filter(m=>m.id!==id);save();renderMonths();}
+function renderMonths(){
+  const c=$('mo-list');if(!c)return;
+  if(!months.length){c.innerHTML='<div style="text-align:center;padding:24px;color:var(--tx3);font-size:10px;letter-spacing:2px">NO RECORDS YET</div>';return;}
+  c.innerHTML=months.map(r=>`
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+        <div>
+          <div style="font-weight:800;font-size:16px;color:var(--g2);font-family:'Syne',sans-serif">${r.label}</div>
+          <div style="font-size:9px;color:var(--tx3);margin-top:2px;letter-spacing:1px">SAVED ${r.savedAt} · ${r.cnt} ENTRIES</div>
+        </div>
+        <button onclick="delMonth(${r.id})" class="btn btn-rd">🗑️</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
+        <div class="ms"><div class="ms-l">Collected</div><div class="ms-v" style="color:var(--g2)">${fmt(r.col)}</div></div>
+        <div class="ms"><div class="ms-l">Guard Sal</div><div class="ms-v" style="color:var(--bl)">${fmt(r.gd)}</div></div>
+        <div class="ms"><div class="ms-l">Co. Saving</div><div class="ms-v" style="color:var(--gr)">${fmt(r.co)}</div></div>
+        <div class="ms"><div class="ms-l">Misc</div><div class="ms-v" style="color:var(--gr)">${fmt(r.miscX)}</div></div>
+        <div class="ms"><div class="ms-l">Expenses</div><div class="ms-v" style="color:var(--rd)">${fmt(r.exp)}</div></div>
+        <div class="ms"><div class="ms-l">Net Profit</div><div class="ms-v" style="color:${r.netP>0?'var(--gr)':'var(--rd)'}">${fmt(r.netP)}</div></div>
+      </div>
+    </div>`).join('');
+}
+
+// ── INIT ──
+(async()=>{
+  await load();
+  refresh();
+  updateMustafa();
+  renderMisc();
+  renderMonths();
+  renderLoan();
+  renderSites();
+  updateChinese();
+  updateMustafa();
+  renderEstimated();
+  renderPL();
+  renderInventory();
+  sv('ammo-30',ammo[30]||0);sv('ammo-223',ammo[223]||0);sv('ammo-12',ammo[12]||0);
+  const today=new Date().toISOString().split('T')[0];
+  if($('att-date'))$('att-date').value=today;
+})();
+</script>
+</body>
+</html>
