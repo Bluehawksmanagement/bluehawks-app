@@ -144,6 +144,26 @@ tbody tr:last-child td{border-bottom:none}
 </head>
 <body>
 
+<!-- PASSWORD SCREEN -->
+<div id="pw-screen" style="position:fixed;inset:0;background:var(--ink);z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px">
+  <div style="width:100%;max-width:360px">
+    <div style="text-align:center;margin-bottom:32px">
+      <div style="font-size:48px;margin-bottom:12px;filter:drop-shadow(0 0 16px rgba(192,154,58,.5))">🦅</div>
+      <div style="font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:var(--g2);letter-spacing:4px">BLUE HAWKS</div>
+      <div style="font-size:10px;color:var(--tx3);letter-spacing:2px;margin-top:4px">OPERATIONS CENTER</div>
+    </div>
+    <div style="background:var(--ink3);border:1px solid var(--bd);border-radius:16px;padding:24px">
+      <label style="font-size:9px;font-weight:700;color:var(--tx3);letter-spacing:1.5px;text-transform:uppercase;font-family:'Syne',sans-serif;margin-bottom:8px;display:block">Enter Password</label>
+      <input id="pw-input" type="password" placeholder="••••••••••••"
+        style="background:var(--ink4);border:1px solid var(--bd2);border-radius:10px;color:var(--tx);padding:13px;font-size:16px;font-family:'DM Mono',monospace;outline:none;width:100%;margin-bottom:12px;letter-spacing:4px"
+        onkeydown="if(event.key==='Enter')checkPW()">
+      <div id="pw-error" style="color:var(--rd);font-size:10px;text-align:center;margin-bottom:10px;display:none;letter-spacing:1px;font-family:'Syne',sans-serif">❌ INCORRECT PASSWORD</div>
+      <button onclick="checkPW()" style="width:100%;background:linear-gradient(135deg,var(--g),var(--g3));color:var(--ink);border:none;border-radius:10px;padding:13px;font-size:13px;font-weight:800;font-family:'Syne',sans-serif;letter-spacing:2px;cursor:pointer">ENTER →</button>
+    </div>
+    <div style="text-align:center;margin-top:16px;font-size:9px;color:var(--tx3);letter-spacing:1px">SECURE · PRIVATE · BLUE HAWKS SECURITY</div>
+  </div>
+</div>
+
 <header class="hdr">
   <span style="font-size:20px;filter:drop-shadow(0 0 8px rgba(192,154,58,.5))">🦅</span>
   <div class="hdr-logo">Blue Hawks</div>
@@ -172,6 +192,7 @@ tbody tr:last-child td{border-bottom:none}
   <div class="nt" onclick="go('expenses',this)">💸 Expenses</div>
   <div class="nt" onclick="go('misc',this)">➕ Misc</div>
   <div class="nt" onclick="go('monthly',this)">📅 Monthly</div>
+  <div class="nt" onclick="go('settings',this)">⚙️ Settings</div>
   <div class="nt" onclick="go('pending',this)">⚠️ Pending</div>
 </nav>
 
@@ -1051,6 +1072,37 @@ tbody tr:last-child td{border-bottom:none}
   </div>
 </div>
 
+<!-- SETTINGS -->
+<div id="pg-settings" class="pg">
+  <div class="ptitle">App <em>Settings</em></div>
+  <div class="psub">Password · Preferences · App info</div>
+
+  <div class="card" style="border-color:rgba(192,154,58,.3)">
+    <div class="ct">🔐 Change Password</div>
+    <div class="fg">
+      <div><label>Current Password</label><input id="settings-cur-pw" type="password" placeholder="Enter current password"></div>
+      <div><label>New Password</label><input id="settings-new-pw" type="password" placeholder="Enter new password (min 6 chars)"></div>
+      <div><label>Confirm New Password</label><input id="settings-confirm-pw" type="password" placeholder="Repeat new password"></div>
+      <button class="btn btn-g" onclick="changePW()" style="width:100%;letter-spacing:1px">🔐 CHANGE PASSWORD</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ct" style="color:var(--rd)">🔒 Session</div>
+    <div style="font-size:11px;color:var(--tx2);margin-bottom:12px">You are currently logged in. Logging out will require password on next visit.</div>
+    <button onclick="logout()" style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);border-radius:10px;color:var(--rd);padding:11px;cursor:pointer;font-size:11px;font-weight:700;width:100%;font-family:'Syne',sans-serif;letter-spacing:1px">🔒 LOGOUT</button>
+  </div>
+
+  <div class="card">
+    <div class="ct" style="color:var(--bl)">📱 App Info</div>
+    <div class="row"><span class="rl">App Name</span><span class="rv" style="color:var(--tx)">Blue Hawks Operations</span></div>
+    <div class="row"><span class="rl">Version</span><span class="rv" style="color:var(--g2)">APR 2026</span></div>
+    <div class="row"><span class="rl">Database</span><span class="rv" style="color:var(--gr)">Supabase Cloud ✅</span></div>
+    <div class="row"><span class="rl">Deployment</span><span class="rv" style="color:var(--gr)">Vercel Auto-deploy ✅</span></div>
+    <div class="row"><span class="rl">URL</span><span class="rv" style="color:var(--bl)">bluehawks-app.vercel.app</span></div>
+  </div>
+</div>
+
 <!-- PENDING -->
 <div id="pg-pending" class="pg">
   <div class="ptitle">Pending <em>Issues</em></div>
@@ -1069,6 +1121,56 @@ tbody tr:last-child td{border-bottom:none}
   <div class="pi d"><div style="font-size:12px;font-weight:600;text-decoration:line-through;font-family:'Syne',sans-serif">Eastern Poultry — now fully active ✅</div></div>
   <div class="pi d"><div style="font-size:12px;font-weight:600;text-decoration:line-through;font-family:'Syne',sans-serif">Mustafa / Abdul Rehman — role clarified ✅</div></div>
   <div class="pi d"><div style="font-size:12px;font-weight:600;text-decoration:line-through;font-family:'Syne',sans-serif">Chinese clients — 5 Islamabad sites identified ✅</div></div>
+</div>
+
+<!-- EDIT CONTRACT MODAL -->
+<div class="modal-bg" id="modal-edit-contract">
+  <div class="modal">
+    <div class="modal-title">✏️ Edit Contract</div>
+    <input type="hidden" id="ec-id">
+    <div class="fg">
+      <div><label>Site Name</label><input id="ec-site" type="text" placeholder="Site name"></div>
+      <div><label>Supervisor</label>
+      <select id="ec-sup">
+        <option value="tanvir">Tanvir</option>
+        <option value="shah">Shah SB</option>
+        <option value="altaf">Altaf</option>
+        <option value="karamat">Karamat</option>
+        <option value="shahwaiz">Shahwaiz</option>
+        <option value="company">Company Direct</option>
+        <option value="islamabad">🇨🇳 Islamabad Chinese</option>
+        <option value="mustafa">🤝 Mustafa</option>
+      </select></div>
+      <div class="fg2">
+        <div><label style="color:var(--g2)">Monthly Invoice (PKR)</label><input id="ec-invoice" type="number" placeholder="e.g. 160000" oninput="updateEditPreview()"></div>
+        <div><label style="color:var(--bl)">Guard Salary (PKR)</label><input id="ec-guard" type="number" placeholder="e.g. 74000" oninput="updateEditPreview()"></div>
+      </div>
+      <div class="fg2">
+        <div><label>No. of Guards</label><input id="ec-guards" type="number" placeholder="e.g. 2"></div>
+        <div><label>Type</label>
+        <select id="ec-type">
+          <option value="full">Full Contract (Guards)</option>
+          <option value="weapon">Weapon/Service Only</option>
+        </select></div>
+      </div>
+      <div><label>Notes</label><input id="ec-notes" type="text" placeholder="Optional notes"></div>
+
+      <!-- LIVE PREVIEW -->
+      <div style="background:var(--ink4);border:1px solid var(--bd);border-radius:10px;padding:12px">
+        <div style="font-size:9px;font-weight:700;color:var(--g2);letter-spacing:1.5px;margin-bottom:8px;font-family:'Syne',sans-serif">LIVE PREVIEW</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
+          <div class="ms"><div class="ms-l">Invoice</div><div class="ms-v" style="color:var(--g2)" id="ec-prev-inv">0</div></div>
+          <div class="ms"><div class="ms-l">Guard Sal</div><div class="ms-v" style="color:var(--bl)" id="ec-prev-gd">0</div></div>
+          <div class="ms"><div class="ms-l">Saving</div><div class="ms-v" style="color:var(--gr)" id="ec-prev-sav">0</div></div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-g" onclick="saveEditContract()" style="flex:1;letter-spacing:1px">✅ SAVE CHANGES</button>
+        <button class="btn btn-ghost" onclick="closeModal('modal-edit-contract')" style="flex:1">CANCEL</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- ADD CONTRACT MODAL -->
@@ -1407,6 +1509,7 @@ function go(id,el){
   if(id==='pl')renderPL();
   if(id==='expenses')renderExpenses();
   if(id==='partial'){populatePartialContracts();renderPartialLog();}
+  if(id==='settings'){}
 }
 
 // ── TOTALS ──
@@ -1770,13 +1873,80 @@ function renderSites(){
         <td style="color:var(--g2)">${fmt(ct.invoice)}</td>
         <td style="color:var(--bl)">${ct.guard?fmt(ct.guard):'—'}</td>
         <td style="color:var(--gr)"><strong>${fmt(ct.invoice-ct.guard)}</strong></td>
-        <td><button onclick="removeContract('${ct.id}')" class="btn btn-rd">✕</button></td>
+        <td style="white-space:nowrap">
+          <button onclick="openEditContract('${ct.id}')" class="btn btn-ghost btn-sm" style="margin-right:4px">✏️</button>
+          <button onclick="removeContract('${ct.id}')" class="btn btn-rd">✕</button>
+        </td>
       </tr>`;
     }).join('')}</tbody>
   </table></div></div>`;
 }
 
 // ── ADD CONTRACT ──
+function openEditContract(id){
+  // Search in contracts first, then DEFAULT_CONTRACTS
+  const all=[...DEFAULT_CONTRACTS,...contracts.filter(c=>!DEFAULT_CONTRACTS.find(d=>d.id===c.id))];
+  const ct=all.find(c=>c.id===id);
+  if(!ct){alert('Contract not found');return;}
+  $('ec-id').value=id;
+  $('ec-site').value=ct.site||'';
+  $('ec-sup').value=ct.sup||'';
+  $('ec-invoice').value=Math.abs(ct.invoice||0);
+  $('ec-guard').value=Math.abs(ct.guard||0);
+  $('ec-guards').value=ct.g||0;
+  $('ec-type').value=ct.t||'full';
+  $('ec-notes').value=ct.note||'';
+  updateEditPreview();
+  $('modal-edit-contract').classList.add('on');
+}
+
+function updateEditPreview(){
+  const inv=parseFloat($('ec-invoice')?.value)||0;
+  const gd=parseFloat($('ec-guard')?.value)||0;
+  const sav=Math.max(0,inv-gd);
+  sv('ec-prev-inv',fmt(inv));
+  sv('ec-prev-gd',fmt(gd));
+  sv('ec-prev-sav',fmt(sav));
+}
+
+function saveEditContract(){
+  const id=$('ec-id').value;
+  const site=$('ec-site').value.trim();
+  const sup=$('ec-sup').value;
+  const invoice=parseFloat($('ec-invoice').value)||0;
+  const guard=parseFloat($('ec-guard').value)||0;
+  const guards=parseInt($('ec-guards').value)||0;
+  const type=$('ec-type').value;
+  const note=$('ec-notes').value.trim();
+  if(!site||!invoice){alert('Enter site name and invoice');return;}
+
+  // Update in DEFAULT_CONTRACTS first
+  const dcIdx=DEFAULT_CONTRACTS.findIndex(c=>c.id===id);
+  if(dcIdx>=0){
+    DEFAULT_CONTRACTS[dcIdx]={...DEFAULT_CONTRACTS[dcIdx],site,sup,invoice,guard,g:guards,t:type,note};
+  }
+  // Also update in contracts array
+  const cIdx=contracts.findIndex(c=>c.id===id);
+  if(cIdx>=0){
+    contracts[cIdx]={...contracts[cIdx],site,sup,invoice,guard,g:guards,t:type,note};
+  } else if(dcIdx<0){
+    // New custom contract
+    contracts.push({id,site,sup,invoice,guard,g:guards,t:type,note});
+  }
+
+  closeModal('modal-edit-contract');
+  // Refresh ALL tabs
+  renderSites();
+  renderEstimated();
+  renderPL();
+  renderSupervisors();
+  updateChinese();
+  updateMustafa();
+  refresh();
+  save();
+  toast('✅ CONTRACT UPDATED — ALL TABS REFRESHED');
+}
+
 function openAddContract(){
   $('modal-contract').classList.add('on');
 }
@@ -2601,10 +2771,56 @@ function populatePartialContracts(){
 }
 
 
+// ── PASSWORD ──
+const DEFAULT_PW='bluehawks2026';
+function getPW(){return localStorage.getItem('bh_pw')||DEFAULT_PW;}
+function checkPW(){
+  const input=$('pw-input');
+  if(!input)return;
+  if(input.value===getPW()){
+    $('pw-screen').style.display='none';
+    sessionStorage.setItem('bh_auth','1');
+    input.value='';
+  } else {
+    const err=$('pw-error');
+    if(err){err.style.display='block';}
+    input.value='';
+    input.focus();
+    setTimeout(()=>{if(err)err.style.display='none';},2000);
+  }
+}
+function initPW(){
+  if(sessionStorage.getItem('bh_auth')==='1'){
+    $('pw-screen').style.display='none';
+  } else {
+    setTimeout(()=>{const i=$('pw-input');if(i)i.focus();},100);
+  }
+}
+function changePW(){
+  const cur=$('settings-cur-pw')?.value;
+  const nw=$('settings-new-pw')?.value;
+  const cf=$('settings-confirm-pw')?.value;
+  if(!cur||!nw||!cf){alert('Fill all fields');return;}
+  if(cur!==getPW()){alert('Current password incorrect');return;}
+  if(nw!==cf){alert('New passwords do not match');return;}
+  if(nw.length<6){alert('Password must be at least 6 characters');return;}
+  localStorage.setItem('bh_pw',nw);
+  if($('settings-cur-pw'))$('settings-cur-pw').value='';
+  if($('settings-new-pw'))$('settings-new-pw').value='';
+  if($('settings-confirm-pw'))$('settings-confirm-pw').value='';
+  toast('✅ PASSWORD CHANGED SUCCESSFULLY');
+}
+function logout(){
+  sessionStorage.removeItem('bh_auth');
+  location.reload();
+}
+
+
 (async()=>{
 await load();
 refresh();
 updateMustafa();
+initPW();
 renderMisc();
 renderMonths();
 renderLoan();
@@ -2615,6 +2831,7 @@ renderEstimated();
 renderPL();
 renderInventory();
 sv('ammo-30',ammo[30]||0);sv('ammo-223',ammo[223]||0);sv('ammo-12',ammo[12]||0);
+// Set today's date for attendance
 const today=new Date().toISOString().split('T')[0];
 if($('att-date'))$('att-date').value=today;
 })();
