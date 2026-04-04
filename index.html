@@ -151,7 +151,7 @@ tbody tr:last-child td{border-bottom:none}
   <div class="hdr-sub">Ops Center</div>
   <div class="hdr-right">
     <div class="hdr-dot"></div>
-    <div class="hdr-badge" id="hdr-month">MAR 2026</div>
+    <div class="hdr-badge" id="hdr-month">APR 2026</div>
     <div class="hdr-av">A</div>
   </div>
 </header>
@@ -274,7 +274,7 @@ tbody tr:last-child td{border-bottom:none}
           <option value="other">Other</option>
         </select></div>
         <div><label>Month (leave blank for current)</label>
-        <input id="p-month" type="text" placeholder="e.g. Mar 2026 or Feb 2026 (for pending)"></div>
+        <input id="p-month" type="text" placeholder="e.g. Apr 2026 or Feb 2026 (for pending)"></div>
         <button class="btn btn-g" onclick="addPay()" style="width:100%;padding:13px;font-size:12px;letter-spacing:2px">✅ ADD PAYMENT</button>
       </div>
     </div>
@@ -380,7 +380,7 @@ tbody tr:last-child td{border-bottom:none}
       <div><label>Type</label><select id="l-type"><option value="given">💳 Loan Given (Alan injects)</option><option value="recovered">✅ Recovered (from collections)</option></select></div>
       <div><label>Amount (PKR)</label><input id="l-amt" type="number" placeholder="e.g. 500000"></div>
       <div><label>Description</label><input id="l-desc" type="text" placeholder="e.g. Guard salaries March batch 1"></div>
-      <div><label>Date</label><input id="l-date" type="text" placeholder="e.g. 8 March 2026"></div>
+      <div><label>Date</label><input id="l-date" type="text" placeholder="e.g. 8 April 2026"></div>
       <button class="btn btn-g" onclick="addLoan()" style="width:100%;letter-spacing:1.5px">ADD ENTRY</button>
     </div>
   </div>
@@ -431,6 +431,73 @@ tbody tr:last-child td{border-bottom:none}
   <div class="card">
     <div class="ct">Abdul Rehman — All 25 Sites — Live Status</div>
     <div id="mu-table"></div>
+  </div>
+
+  <!-- ABDUL REHMAN EXPENSES -->
+  <div class="card" style="border-color:rgba(239,68,68,.2)">
+    <div class="ct" style="color:var(--rd)">Abdul Rehman — April 2026 Expenses</div>
+    <div class="al al-pu" style="margin-bottom:10px"><span>👤</span><span>Abdul Rehman manages all 25 Mustafa sites. His expenses come from Mustafa's share.</span></div>
+    <div class="row"><span class="rl">Salary</span><span class="rv" style="color:var(--rd)">38,000 PKR</span></div>
+    <div class="row"><span class="rl">Commission</span><span class="rv" style="color:var(--rd)">0 PKR</span></div>
+    <div class="row"><span class="rl">Fuel</span><span class="rv" style="color:var(--rd)">20,000 PKR</span></div>
+    <div class="row"><span class="rl">Card</span><span class="rv" style="color:var(--rd)">1,500 PKR</span></div>
+    <div class="row"><span class="rl">Bike Repairs</span><span class="rv" style="color:var(--rd)">3,600 PKR</span></div>
+    <div class="row"><span class="rl">Wireless Payment</span><span class="rv" style="color:var(--rd)">21,000 PKR</span></div>
+    <div class="row"><span class="rl">Uniform</span><span class="rv" style="color:var(--rd)">18,000 PKR</span></div>
+    <div class="row" style="border-top:2px solid rgba(239,68,68,.3);margin-top:4px;padding-top:10px">
+      <span class="rl" style="font-weight:700;color:var(--tx);font-family:'Syne',sans-serif">Total AR Expenses</span>
+      <span class="rv" style="color:var(--rd);font-size:15px;font-family:'Syne',sans-serif;font-weight:800">103,000 PKR</span>
+    </div>
+    <div style="margin-top:10px;background:var(--ink4);border-radius:8px;padding:10px">
+      <div class="row" style="border:none;padding:4px 0"><span class="rl">Mustafa Total Saving (potential)</span><span class="rv" style="color:var(--gr)">477,250 PKR</span></div>
+      <div class="row" style="border:none;padding:4px 0"><span class="rl">Less Abdul Rehman Expenses</span><span class="rv" style="color:var(--rd)">− 103,000 PKR</span></div>
+      <div class="row" style="border:none;padding:4px 0"><span class="rl">Net Mustafa Profit</span><span class="rv" style="color:var(--gr);font-weight:700">374,250 PKR</span></div>
+      <div class="row" style="border:none;padding:4px 0"><span class="rl" style="font-weight:700;color:var(--g2)">Alan 50% (after AR expenses)</span><span class="rv" style="color:var(--g2);font-weight:800;font-size:14px;font-family:'Syne',sans-serif">187,125 PKR</span></div>
+    </div>
+  </div>
+
+  <!-- G-13 PCC PARTIAL SALARY ALERT -->
+  <div class="card" style="border-color:rgba(245,158,11,.2)">
+    <div class="ct" style="color:var(--am)">⚠️ G-13 PCC — Special Arrangement</div>
+    <div class="al al-y"><span>💡</span><span>G-13 PCC invoice this month: 29,000 PKR. Guard salary 26,000 PKR. Confirm if guard was paid 6-day partial salary only.</span></div>
+    <div class="row"><span class="rl">Invoice (March)</span><span class="rv" style="color:var(--g2)">29,000 PKR</span></div>
+    <div class="row"><span class="rl">Guard Sal (March)</span><span class="rv" style="color:var(--bl)">26,000 PKR</span></div>
+    <div class="row"><span class="rl">Saving</span><span class="rv" style="color:var(--gr)">3,000 PKR</span></div>
+    <div style="margin-top:10px">
+      <div style="font-size:9px;font-weight:700;color:var(--am);letter-spacing:1.5px;margin-bottom:8px;font-family:'Syne',sans-serif">CONFIRM GUARD PAYMENT TYPE:</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button onclick="confirmG13('full','160,000')" style="flex:1;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);border-radius:8px;color:var(--gr);padding:8px;cursor:pointer;font-size:10px;font-weight:700;font-family:'Syne',sans-serif">✅ Full Month<br><span style="font-size:9px;opacity:.7">160,000 PKR</span></button>
+        <button onclick="confirmG13('partial','26,000')" style="flex:1;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);border-radius:8px;color:var(--am);padding:8px;cursor:pointer;font-size:10px;font-weight:700;font-family:'Syne',sans-serif">🟡 6-Day Partial<br><span style="font-size:9px;opacity:.7">26,000 PKR</span></button>
+        <button onclick="confirmG13('none','0')" style="flex:1;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);border-radius:8px;color:var(--rd);padding:8px;cursor:pointer;font-size:10px;font-weight:700;font-family:'Syne',sans-serif">❌ Not Paid<br><span style="font-size:9px;opacity:.7">0 PKR</span></button>
+      </div>
+      <div id="g13-confirmed" style="display:none;margin-top:8px" class="al al-g"><span>✅</span><span id="g13-confirm-msg"></span></div>
+    </div>
+  </div>
+
+  <!-- ABDUL REHMAN EXPENSES -->
+  <div class="card" style="border-color:rgba(239,68,68,.2)">
+    <div class="ct" style="color:var(--rd)">Abdul Rehman — Supervisor Expenses (April 2026)</div>
+    <div class="al al-pu"><span>👤</span><span>Abdul Rehman manages all 25 Mustafa sites. His expenses reduce the net profit before 50/50 split.</span></div>
+    <div class="row"><span class="rl">Salary</span><span class="rv" style="color:var(--rd)">38,000 PKR</span></div>
+    <div class="row"><span class="rl">Fuel</span><span class="rv" style="color:var(--rd)">20,000 PKR</span></div>
+    <div class="row"><span class="rl">Card</span><span class="rv" style="color:var(--rd)">1,500 PKR</span></div>
+    <div class="row"><span class="rl">Bike Repairs (Kick + Puncture)</span><span class="rv" style="color:var(--rd)">3,600 PKR</span></div>
+    <div class="row"><span class="rl">Wireless Payment</span><span class="rv" style="color:var(--rd)">21,000 PKR</span></div>
+    <div class="row"><span class="rl">Uniform</span><span class="rv" style="color:var(--rd)">18,000 PKR</span></div>
+    <div class="row" style="border-top:2px solid rgba(239,68,68,.3);margin-top:4px;padding-top:10px">
+      <span class="rl" style="font-weight:700;color:var(--tx);font-family:'Syne',sans-serif">Total AR Expenses</span>
+      <span class="rv" style="color:var(--rd);font-size:15px;font-family:'Syne',sans-serif;font-weight:800">103,000 PKR</span>
+    </div>
+    <div style="margin-top:12px;background:var(--ink4);border-radius:10px;padding:12px">
+      <div style="font-size:9px;font-weight:700;color:var(--g2);letter-spacing:1.5px;margin-bottom:8px;font-family:'Syne',sans-serif">NET CALCULATION</div>
+      <div class="row" style="padding:5px 0"><span class="rl">Potential Total Saving</span><span class="rv" style="color:var(--gr)" id="mu-pot-saving">0 PKR</span></div>
+      <div class="row" style="padding:5px 0"><span class="rl">Less Abdul Rehman Expenses</span><span class="rv" style="color:var(--rd)">− 103,000 PKR</span></div>
+      <div class="row" style="padding:5px 0"><span class="rl">Net Mustafa Profit</span><span class="rv" style="color:var(--gr)" id="mu-net-profit">0 PKR</span></div>
+      <div class="row" style="border-top:1px solid var(--g);margin-top:4px;padding-top:8px">
+        <span class="rl" style="font-weight:800;color:var(--g2);font-family:'Syne',sans-serif">Alan 50% Real Share</span>
+        <span class="rv" style="color:var(--g2);font-size:16px;font-family:'Syne',sans-serif;font-weight:800" id="mu-alan-real">0 PKR</span>
+      </div>
+    </div>
   </div>
 
   <!-- PAYMENT LOG -->
@@ -874,7 +941,7 @@ tbody tr:last-child td{border-bottom:none}
       <div><label>Description</label><input id="m-desc" type="text" placeholder="e.g. Wapda Town cheque received"></div>
       <div class="fg2">
         <div><label>Amount (PKR)</label><input id="m-amt" type="number" placeholder="Amount"></div>
-        <div><label>Month</label><input id="m-month" type="text" placeholder="Mar 2026"></div>
+        <div><label>Month</label><input id="m-month" type="text" placeholder="Apr 2026"></div>
       </div>
       <div class="fg2">
         <div><label>Type</label><select id="m-type"><option value="extra">➕ Extra Income</option><option value="deduct">➖ Deduction</option></select></div>
@@ -893,7 +960,7 @@ tbody tr:last-child td{border-bottom:none}
   <div class="card">
     <div class="ct" style="color:var(--gr)">Save This Month</div>
     <div class="fg2" style="margin-bottom:10px">
-      <input id="mo-lbl" type="text" placeholder="e.g. March 2026" style="flex:1">
+      <input id="mo-lbl" type="text" placeholder="e.g. April 2026" style="flex:1">
       <button class="btn btn-g" onclick="saveMonth()" style="white-space:nowrap">SAVE</button>
     </div>
     <div style="border-top:1px solid var(--bd);padding-top:12px">
@@ -910,6 +977,78 @@ tbody tr:last-child td{border-bottom:none}
     <div class="row"><span class="rl">29th</span><span class="rv" style="color:var(--gr)">Monthly report + save record + share with Claude</span></div>
   </div>
   <div id="mo-list"><div style="text-align:center;padding:24px;color:var(--tx3);font-size:10px;letter-spacing:2px">NO RECORDS YET</div></div>
+</div>
+
+<!-- SMART PARTIAL CALCULATOR -->
+<div id="pg-partial" class="pg">
+  <div class="ptitle">Smart <em>Partial</em></div>
+  <div class="psub">Calculate exact guard salary for any partial month</div>
+  <div class="al al-tl"><span>💡</span><span>New contract mid-month, guard joined late, or guard left early — enter the details and get exact PKR to pay.</span></div>
+
+  <div class="card">
+    <div class="ct" style="color:var(--tl)">Quick Calculate</div>
+    <div class="fg">
+      <div><label>Select Contract (auto-fills salary)</label>
+      <select id="pc-contract" onchange="fillPartialContract(this.value)">
+        <option value="">— Select contract or fill manually —</option>
+      </select></div>
+      <div class="fg2">
+        <div><label style="color:var(--bl)">Monthly Guard Salary (PKR)</label>
+        <input id="pc-monthly" type="number" placeholder="e.g. 160000" oninput="calcPartial()"></div>
+        <div><label>Days in Month</label>
+        <input id="pc-days-month" type="number" placeholder="30" value="30" oninput="calcPartial()"></div>
+      </div>
+      <div><label>Calculation Type</label>
+      <select id="pc-type" onchange="togglePartialType()">
+        <option value="days_worked">Guard worked X days (new contract / joined late)</option>
+        <option value="days_left">Guard left after X days (resigned / removed)</option>
+        <option value="date_range">Date range (from — to)</option>
+        <option value="guards">Multiple guards, different days each</option>
+      </select></div>
+
+      <!-- DAYS WORKED -->
+      <div id="pc-input-days">
+        <div><label style="color:var(--gr)">Days Worked This Month</label>
+        <input id="pc-days-worked" type="number" placeholder="e.g. 6" oninput="calcPartial()"></div>
+      </div>
+
+      <!-- DATE RANGE -->
+      <div id="pc-input-dates" style="display:none">
+        <div class="fg2">
+          <div><label>From Date</label><input id="pc-from" type="date" oninput="calcPartialDates()"></div>
+          <div><label>To Date</label><input id="pc-to" type="date" oninput="calcPartialDates()"></div>
+        </div>
+      </div>
+
+      <!-- MULTIPLE GUARDS -->
+      <div id="pc-input-multi" style="display:none">
+        <div class="al al-b"><span>💡</span><span>Add each guard separately with their days worked</span></div>
+        <div id="pc-guards-list"></div>
+        <button class="btn btn-ghost btn-sm" onclick="addPartialGuard()" style="width:100%;margin-top:6px">+ Add Guard</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULT CARD -->
+  <div class="card" id="pc-result" style="display:none;border-color:rgba(192,154,58,.3)">
+    <div class="ct" style="color:var(--g2)">Calculation Result</div>
+    <div class="row"><span class="rl">Monthly Salary</span><span class="rv" id="pc-r-monthly" style="color:var(--tx)">0 PKR</span></div>
+    <div class="row"><span class="rl">Daily Rate</span><span class="rv" id="pc-r-daily" style="color:var(--bl)">0 PKR/day</span></div>
+    <div class="row"><span class="rl">Days Worked</span><span class="rv" id="pc-r-days" style="color:var(--tx)">0 days</span></div>
+    <div class="row" style="border-top:2px solid rgba(192,154,58,.3);margin-top:6px;padding-top:10px">
+      <span class="rl" style="font-weight:800;color:var(--tx);font-family:'Syne',sans-serif;font-size:14px">PAY THIS AMOUNT</span>
+      <span class="rv" id="pc-r-pay" style="color:var(--g2);font-size:28px;font-family:'Syne',sans-serif;font-weight:800">0 PKR</span>
+    </div>
+    <div class="row"><span class="rl">Full Month Would Be</span><span class="rv" id="pc-r-full" style="color:var(--tx3)">0 PKR</span></div>
+    <div class="row"><span class="rl">Saving vs Full Month</span><span class="rv" id="pc-r-saving" style="color:var(--gr)">0 PKR</span></div>
+    <button class="btn btn-ghost btn-sm" onclick="savePartialCalc()" style="width:100%;margin-top:10px">📋 Save to Log</button>
+  </div>
+
+  <!-- SAVED LOG -->
+  <div class="card">
+    <div class="ct">Saved Calculations</div>
+    <div id="pc-log"><div style="text-align:center;padding:14px;color:var(--tx3);font-size:10px">No saved calculations yet</div></div>
+  </div>
 </div>
 
 <!-- PENDING -->
@@ -998,7 +1137,7 @@ const SUPS={
 // Mustafa is SEPARATE — 50/50 partner, NOT part of company collections
 const MUSTAFA_COLOR='#C084FC';
 
-// Expense breakdowns per supervisor — March 2026
+// Expense breakdowns per supervisor — April 2026
 const EXP_BREAKDOWN={
   tanvir:{'total':220316,'items':[['Salary',44000],['Rashan Allowance',9000],['Commission',41420],['Fuel',11200],['Office Rent + Bill',23926],['PWD Flat Rent + Bill',28770],['Bahria Flat + Bill',28000],['Store Rent',10000],['Federation Breakfast',7000],['Bike Maintenance',10700],['Lahore Weapon Return',4000],['Card',1800],['Misc',1500],['EOBI',-1000]]},
   shah:{'total':94400,'items':[['Salary',55000],['Commission',13250],['Fuel',10000],['Card',1700],['Motorcycle Maintenance',7500],['Uniform Cleaning',5150],['Weapon Maintenance',1000],['Store Work',800]]},
@@ -1105,7 +1244,7 @@ const DEFAULT_CONTRACTS=[
   {id:'m10',sup:'mustafa',site:'Raja Bazar Kakar Plaza',t:'full',g:2,invoice:90000,guard:72000},
   {id:'m11',sup:'mustafa',site:'Tulsa Save Mart',t:'full',g:3,invoice:93000,guard:78000},
   {id:'m12',sup:'mustafa',site:'Islamabad Personal',t:'full',g:1,invoice:50000,guard:30000},
-  {id:'m13',sup:'mustafa',site:'Punjab Cash & Carry E11',t:'full',g:8,invoice:252000,guard:222000},
+  {id:'m13',sup:'mustafa',site:'Punjab Cash And Carry E11',t:'full',g:8,invoice:252000,guard:210000},
   {id:'m14',sup:'mustafa',site:'Royal Dynasty',t:'full',g:2,invoice:80000,guard:60000},
   {id:'m15',sup:'mustafa',site:'Montreal Marquee',t:'full',g:4,invoice:128000,guard:100000},
   {id:'m16',sup:'mustafa',site:'Phase 2 Save Mart',t:'full',g:3,invoice:93000,guard:75000},
@@ -1116,7 +1255,7 @@ const DEFAULT_CONTRACTS=[
   {id:'m21',sup:'mustafa',site:'Bahria Shah Sb',t:'full',g:1,invoice:29000,guard:25000},
   {id:'m22',sup:'mustafa',site:'Gondal',t:'full',g:4,invoice:153000,guard:120000},
   {id:'m23',sup:'mustafa',site:'National Group',t:'full',g:2,invoice:76550,guard:56000},
-  {id:'m24',sup:'mustafa',site:'G-13 PCC',t:'full',g:6,invoice:180000,guard:160000},
+  {id:'m24',sup:'mustafa',site:'G-13 PCC',t:'full',g:6,invoice:180000,guard:160000,note:'Partial month — use 🧮 Partial tab for exact guard salary'},
   {id:'m25',sup:'mustafa',site:'Barani',t:'weapon',g:2,invoice:15000,guard:0},
 ];
 
@@ -1267,6 +1406,7 @@ function go(id,el){
   if(id==='estimated')renderEstimated();
   if(id==='pl')renderPL();
   if(id==='expenses')renderExpenses();
+  if(id==='partial'){populatePartialContracts();renderPartialLog();}
 }
 
 // ── TOTALS ──
@@ -1325,7 +1465,7 @@ function refresh(){
 
   sv('a-col',fmt(col));sv('a-gd',fmt(gd));sv('a-co',fmt(co));
   sv('a-rem',fmt(rem));sv('a-misc',fmt(mx));sv('a-net',fmt(net));
-  sv('evp-col',fmt(col)+' PKR');sv('evp-rem',fmt(rem)+' PKR');
+  sv('evp-col',fmt(col)+' PKR');sv('evp-rem',fmt(Math.max(0,rem))+' PKR');
   sv('evp-actual',fmt(net)+' PKR');sv('evp-pct',pct+'% COLLECTED');
   const bar=$('evp-bar');if(bar)bar.style.width=Math.min(100,pct)+'%';
   sv('e-misc',fmt(mx));
@@ -1376,53 +1516,76 @@ function refresh(){
 
 // ── ESTIMATED ──
 function renderEstimated(){
-  const allC=contracts.filter(c=>c.sup!=='mustafa');
-  const TC=allC.reduce((a,c)=>a+c.invoice,0);
-  const TG=allC.reduce((a,c)=>a+c.guard,0);
-  const TS=TC-TG;
+  const src=DEFAULT_CONTRACTS.filter(c=>c.sup!=='mustafa');
+  const TC=src.reduce((a,c)=>a+Math.abs(c.invoice||0),0);
+  const TG=src.reduce((a,c)=>a+Math.abs(c.guard||0),0);
+  const TS=Math.max(0,TC-TG);
   const exp=622739;
   const{x:mx,net:mn}=miscT();
   const pot=Math.max(0,TS-exp+mn);
   const{col,co}=allT();
+  const rem=Math.max(0,TC-col);
+  const pct=TC>0?Math.min(100,Math.round((col/TC)*100)):0;
   sv('e-contract',fmt(TC));sv('e-guard',fmt(TG));sv('e-saving',fmt(TS));sv('e-net',fmt(pot));
-  sv('evp-pot',fmt(pot)+' PKR');
-  // Breakdown table
+  sv('evp-pot',fmt(pot)+' PKR');sv('evp-col',fmt(col)+' PKR');
+  sv('evp-rem',fmt(rem)+' PKR');
+  sv('evp-actual',fmt(Math.max(0,co-exp+mn))+' PKR');
+  sv('evp-pct',pct+'% COLLECTED');
+  sv('e-misc',fmt(mx));
+  const bar=$('evp-bar');if(bar)bar.style.width=pct+'%';
+  const sids=['tanvir','shah','altaf','karamat','shahwaiz','company','islamabad'];
   const tbl=$('est-table');
   if(tbl){
-    const sids=['tanvir','shah','altaf','karamat','shahwaiz','company','islamabad'];
+    let tInv=0,tGd=0,tSav=0,tExp=0,tNet=0;
+    const rows=sids.map(sid=>{
+      const s=SUPS[sid];
+      const cc=DEFAULT_CONTRACTS.filter(c=>c.sup===sid);
+      const inv=cc.reduce((a,c)=>a+Math.abs(c.invoice||0),0);
+      const gd=cc.reduce((a,c)=>a+Math.abs(c.guard||0),0);
+      const sav=Math.max(0,inv-gd);
+      const ex=s.exp||0;
+      const net=sav-ex;
+      tInv+=inv;tGd+=gd;tSav+=sav;tExp+=ex;tNet+=net;
+      return `<tr>
+        <td style="font-family:'Syne',sans-serif;font-weight:600">${s.name}</td>
+        <td style="color:var(--g2)">${fmt(inv)}</td>
+        <td style="color:var(--bl)">${fmt(gd)}</td>
+        <td style="color:var(--gr)">${fmt(sav)}</td>
+        <td style="color:var(--rd)">${ex?fmt(ex):'—'}</td>
+        <td style="color:var(--gr)"><strong>${fmt(Math.max(0,net))}</strong></td>
+      </tr>`;
+    });
     tbl.innerHTML=`<div class="tw"><table>
       <thead><tr><th>Source</th><th>Invoice</th><th>Guard Sal</th><th>Saving</th><th>Expenses</th><th>Net</th></tr></thead>
-      <tbody>${sids.map(sid=>{
-        const s=SUPS[sid];const ct=contractTotals(sid);
-        const saving=ct.invoice-ct.guard;const net=saving-s.exp;
-        return `<tr><td style="font-family:'Syne',sans-serif;font-weight:600">${s.name}</td>
-          <td style="color:var(--g2)">${fmt(ct.invoice)}</td>
-          <td style="color:var(--bl)">${fmt(ct.guard)}</td>
-          <td style="color:var(--gr)">${fmt(saving)}</td>
-          <td style="color:var(--rd)">${s.exp?fmt(s.exp):'—'}</td>
-          <td style="color:var(--gr)"><strong>${fmt(net)}</strong></td></tr>`;
-      }).join('')}
-      <tr style="background:var(--ink4)"><td style="font-family:'Syne',sans-serif;font-weight:700;color:var(--g2)">TOTAL</td>
-        <td style="color:var(--g2)"><strong>${fmt(TC)}</strong></td>
-        <td style="color:var(--bl)"><strong>${fmt(TG)}</strong></td>
-        <td style="color:var(--gr)"><strong>${fmt(TS)}</strong></td>
-        <td style="color:var(--rd)"><strong>622,739</strong></td>
-        <td style="color:var(--gr)"><strong>${fmt(pot)}</strong></td></tr>
-      </tbody></table></div>`;
+      <tbody>${rows.join('')}
+      <tr style="background:var(--ink4)">
+        <td style="font-family:'Syne',sans-serif;font-weight:700;color:var(--g2)">TOTAL</td>
+        <td style="color:var(--g2)"><strong>${fmt(tInv)}</strong></td>
+        <td style="color:var(--bl)"><strong>${fmt(tGd)}</strong></td>
+        <td style="color:var(--gr)"><strong>${fmt(tSav)}</strong></td>
+        <td style="color:var(--rd)"><strong>${fmt(tExp)}</strong></td>
+        <td style="color:var(--gr);font-size:13px"><strong>${fmt(Math.max(0,tNet))}</strong></td>
+      </tr></tbody></table></div>`;
   }
-  // Next month outlook
   const nm=$('next-outlook');
-  if(nm&&months.length>0){
-    const lastM=months[0];
-    nm.innerHTML=`<div class="row"><span class="rl">Expected Collections (same contracts)</span><span class="rv" style="color:var(--g2)">~${fmt(TC)} PKR</span></div>
-      <div class="row"><span class="rl">Islamabad pending carry forward</span><span class="rv" style="color:var(--am)">510,000 PKR</span></div>
-      <div class="row"><span class="rl">Eastern Poultry fully active</span><span class="rv" style="color:var(--gr)">+80,000 PKR saving</span></div>
-      <div class="row"><span class="rl">Expected Expenses</span><span class="rv" style="color:var(--rd)">~545,000 PKR</span></div>
-      <div class="row"><span class="rl" style="font-weight:700;color:var(--tx);font-family:'Syne',sans-serif">Estimated Next Month Net</span><span class="rv" style="color:var(--pu);font-size:16px;font-family:'Syne',sans-serif;font-weight:800">~${fmt(pot+80000)} PKR</span></div>`;
+  if(nm){
+    const cnContracts=DEFAULT_CONTRACTS.filter(c=>c.sup==='islamabad');
+    const cnTotal=cnContracts.reduce((a,c)=>a+Math.abs(c.invoice||0),0);
+    const cnPays=pays.filter(p=>p.sid==='islamabad').reduce((a,p)=>a+p.amt,0);
+    const cnPending=Math.max(0,cnTotal-cnPays);
+    const nextEst=Math.max(0,pot+(cnPending>0?cnPending:0));
+    nm.innerHTML=`
+      <div class="row"><span class="rl">Regular contracts (all active sites)</span><span class="rv" style="color:var(--g2)">~${fmt(TC)} PKR</span></div>
+      ${cnPending>0?`<div class="row"><span class="rl" style="color:var(--am)">+ Islamabad pending (not yet collected)</span><span class="rv" style="color:var(--am)">+ ${fmt(cnPending)} PKR</span></div>`:'<div class="row"><span class="rl" style="color:var(--gr)">✅ Islamabad all collected</span><span class="rv" style="color:var(--gr)">0 pending</span></div>'}
+      <div class="row"><span class="rl">Staff expenses</span><span class="rv" style="color:var(--rd)">− ${fmt(exp)} PKR</span></div>
+      <div class="row" style="border-top:2px solid rgba(192,154,58,.3);margin-top:8px;padding-top:12px">
+        <span class="rl" style="font-weight:800;color:var(--tx);font-family:'Syne',sans-serif;font-size:13px">Estimated Net Profit</span>
+        <span class="rv" style="color:var(--pu);font-size:20px;font-family:'Syne',sans-serif;font-weight:800">~${fmt(nextEst)} PKR</span>
+      </div>
+      <div style="font-size:9px;color:var(--tx3);margin-top:6px">Mustafa 50% share separate · Pending auto-updates as you add payments</div>`;
   }
 }
 
-// ── P&L ──
 function renderPL(){
   const{col,gd,co}=allT();const{x:mx,net:mn}=miscT();
   const exp=622739;const net=Math.max(0,co-exp+mn);
@@ -1524,7 +1687,7 @@ function renderSupervisors(){
     const bd=EXP_BREAKDOWN[sid];
     const expBreakdown=bd?`
       <div id="exp-detail-${sid}" style="display:none;margin-top:10px;background:var(--ink5);border-radius:8px;padding:10px">
-        <div style="font-size:9px;font-weight:700;color:var(--rd);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;font-family:'Syne',sans-serif">Expense Breakdown — March 2026</div>
+        <div style="font-size:9px;font-weight:700;color:var(--rd);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;font-family:'Syne',sans-serif">Expense Breakdown — April 2026</div>
         ${bd.items.map(([name,val])=>`
           <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--bd);font-size:11px">
             <span style="color:var(--tx2)">${name}</span>
@@ -1777,6 +1940,15 @@ function updateMustafa(){
   sv('mu-gd',fmt(mt.gd));
   sv('mu-alan',fmt(mt.alan));
   sv('mu-must',fmt(mt.mustafa));
+  // Real Alan share after Abdul Rehman expenses
+  const muContracts2=(contracts.length>0?contracts:DEFAULT_CONTRACTS).filter(c=>c.sup==='mustafa');
+  const muPotSaving=muContracts2.reduce((a,c)=>a+Math.max(0,Math.abs(c.invoice||0)-Math.abs(c.guard||0)),0);
+  const arExp=103000;
+  const netMuProfit=Math.max(0,muPotSaving-arExp);
+  const alanReal=Math.floor(netMuProfit/2);
+  sv('mu-pot-saving',fmt(muPotSaving)+' PKR');
+  sv('mu-net-profit',fmt(netMuProfit)+' PKR');
+  sv('mu-alan-real',fmt(alanReal)+' PKR');
 
   // Site status table
   const tbl=$('mu-table');
@@ -1852,6 +2024,26 @@ function addMustafaPay(){
   updateMustafa();save();toast('✅ MUSTAFA PAYMENT ADDED — NOT IN COMPANY ACCOUNTS');
 }
 
+function confirmG13(type, amount){
+  const conf=$('g13-confirmed');
+  const msg=$('g13-confirm-msg');
+  if(!conf||!msg)return;
+  const labels={'full':'Full month salary confirmed — 160,000 PKR paid to guards',
+    'partial':'6-day partial salary confirmed — 26,000 PKR paid to guards',
+    'none':'No salary paid this month for G-13 PCC'};
+  msg.textContent=labels[type]||'';
+  conf.style.display='flex';
+  // Update contracts in memory
+  const c=contracts.find(x=>x.site==='G-13 PCC')||DEFAULT_CONTRACTS.find(x=>x.site==='G-13 PCC');
+  if(c){
+    if(type==='full')c.guard=160000;
+    else if(type==='partial')c.guard=26000;
+    else c.guard=0;
+  }
+  save();
+  toast('✅ G-13 PCC SALARY CONFIRMED — '+amount);
+}
+
 function delMustafaPay(id){
   mustafaPays=mustafaPays.filter(p=>p.id!==id);
   updateMustafa();save();
@@ -1860,7 +2052,7 @@ function delMustafaPay(id){
 // ── MISC ──
 function addMisc(){
   const desc=$('m-desc').value.trim();const amt=parseFloat($('m-amt').value)||0;
-  const t=$('m-type').value;const month=$('m-month').value.trim()||'Mar 2026';
+  const t=$('m-type').value;const month=$('m-month').value.trim()||'Apr 2026';
   if(!desc||!amt){alert('Enter description and amount');return;}
   miscs.push({id:mid++,desc,amt,t,month});
   $('m-desc').value='';$('m-amt').value='';$('m-month').value='';
@@ -1885,7 +2077,7 @@ function renderMisc(){
 // ── LOAN ──
 function addLoan(){
   const t=$('l-type').value;const amt=parseFloat($('l-amt').value)||0;
-  const desc=$('l-desc').value.trim();const date=$('l-date').value.trim()||'Mar 2026';
+  const desc=$('l-desc').value.trim();const date=$('l-date').value.trim()||'Apr 2026';
   if(!amt){alert('Enter amount');return;}
   loans.push({id:lid++,t,amt,desc,date});
   $('l-amt').value='';$('l-desc').value='';$('l-date').value='';
@@ -2255,7 +2447,7 @@ function renderExpenses(){
 
 // ── MONTHLY ──
 function saveMonth(){
-  const label=$('mo-lbl').value.trim();if(!label){alert('Enter month name e.g. March 2026');return;}
+  const label=$('mo-lbl').value.trim();if(!label){alert('Enter month name e.g. April 2026');return;}
   const{col,gd,co}=allT();const{x,net:mn}=miscT();const{g,r}=loanT();
   const allC=contracts.filter(c=>c.sup!=='mustafa');
   const TC=allC.reduce((a,c)=>a+c.invoice,0);
@@ -2294,6 +2486,121 @@ function renderMonths(){
 }
 
 // ── INIT ──
+// ── SMART PARTIAL CALCULATOR ──
+let partialLog=[];
+let pcGuards=[];
+
+function fillPartialContract(val){
+  if(!val)return;
+  const all=[...DEFAULT_CONTRACTS,...(contracts.length>0?contracts:[])];
+  const c=all.find(x=>x.id===val);
+  if(!c)return;
+  const m=$('pc-monthly');
+  if(m&&c.guard)m.value=Math.abs(c.guard);
+  calcPartial();
+}
+
+function togglePartialType(){
+  const type=$('pc-type')?.value;
+  $('pc-input-days').style.display=(type==='days_worked'||type==='days_left')?'block':'none';
+  $('pc-input-dates').style.display=type==='date_range'?'block':'none';
+  $('pc-input-multi').style.display=type==='guards'?'block':'none';
+  calcPartial();
+}
+
+function calcPartialDates(){
+  const from=$('pc-from')?.value;
+  const to=$('pc-to')?.value;
+  if(!from||!to)return;
+  const d1=new Date(from);const d2=new Date(to);
+  const days=Math.max(1,Math.round((d2-d1)/(1000*60*60*24))+1);
+  const dw=$('pc-days-worked');if(dw)dw.value=days;
+  calcPartial();
+}
+
+function calcPartial(){
+  const monthly=parseFloat($('pc-monthly')?.value)||0;
+  const daysInMonth=parseInt($('pc-days-month')?.value)||30;
+  const type=$('pc-type')?.value||'days_worked';
+  if(!monthly)return;
+  const dailyRate=Math.round(monthly/daysInMonth);
+  let daysWorked=0;
+  if(type==='days_worked'||type==='days_left'||type==='date_range'){
+    daysWorked=parseInt($('pc-days-worked')?.value)||0;
+  } else if(type==='guards'){
+    daysWorked=pcGuards.reduce((a,g)=>a+g.days,0)/Math.max(1,pcGuards.length);
+  }
+  if(!daysWorked)return;
+  const payAmount=Math.round(dailyRate*daysWorked);
+  const saving=Math.max(0,monthly-payAmount);
+  const result=$('pc-result');if(result)result.style.display='block';
+  sv('pc-r-monthly',fmt(monthly)+' PKR');
+  sv('pc-r-daily',fmt(dailyRate)+' PKR/day');
+  sv('pc-r-days',daysWorked+' days out of '+daysInMonth);
+  sv('pc-r-pay',fmt(payAmount)+' PKR');
+  sv('pc-r-full',fmt(monthly)+' PKR');
+  sv('pc-r-saving',fmt(saving)+' PKR saved');
+  window._lastPartialResult={monthly,dailyRate,daysWorked,payAmount,saving,daysInMonth};
+}
+
+function addPartialGuard(){
+  const idx=pcGuards.length;
+  pcGuards.push({name:'Guard '+(idx+1),days:0});
+  renderPartialGuards();
+}
+function renderPartialGuards(){
+  const c=$('pc-guards-list');if(!c)return;
+  c.innerHTML=pcGuards.map((g,i)=>`
+    <div style="display:flex;gap:8px;margin-bottom:6px;align-items:center">
+      <input type="text" value="${g.name}" placeholder="Guard name" style="flex:2"
+        oninput="pcGuards[${i}].name=this.value">
+      <input type="number" value="${g.days||''}" placeholder="Days" style="flex:1"
+        oninput="pcGuards[${i}].days=parseInt(this.value)||0;calcPartial()">
+      <button onclick="pcGuards.splice(${i},1);renderPartialGuards();calcPartial()" class="btn btn-rd">✕</button>
+    </div>`).join('');
+}
+
+function savePartialCalc(){
+  const r=window._lastPartialResult;if(!r)return;
+  const contract=$('pc-contract');
+  const label=contract?.options[contract.selectedIndex]?.text||'Manual calc';
+  partialLog.unshift({
+    label,monthly:r.monthly,days:r.daysWorked,
+    daily:r.dailyRate,pay:r.payAmount,saving:r.saving,
+    date:new Date().toLocaleDateString('en-PK')
+  });
+  renderPartialLog();
+  toast('✅ CALCULATION SAVED');
+}
+function renderPartialLog(){
+  const c=$('pc-log');if(!c)return;
+  if(!partialLog.length){c.innerHTML='<div style="text-align:center;padding:14px;color:var(--tx3);font-size:10px">No saved calculations yet</div>';return;}
+  c.innerHTML=partialLog.map(p=>`
+    <div style="background:var(--ink4);border:1px solid var(--bd);border-radius:9px;padding:11px;margin-bottom:7px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <span style="font-weight:700;font-family:'Syne',sans-serif;font-size:12px">${p.label}</span>
+        <span style="font-size:9px;color:var(--tx3)">${p.date}</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
+        <div class="ms"><div class="ms-l">Days</div><div class="ms-v" style="color:var(--bl)">${p.days}</div></div>
+        <div class="ms"><div class="ms-l">Daily Rate</div><div class="ms-v" style="color:var(--tx)">${fmt(p.daily)}</div></div>
+        <div class="ms"><div class="ms-l">PAY</div><div class="ms-v" style="color:var(--g2)">${fmt(p.pay)}</div></div>
+      </div>
+    </div>`).join('');
+}
+
+function populatePartialContracts(){
+  const sel=$('pc-contract');if(!sel)return;
+  const all=[...DEFAULT_CONTRACTS,...(contracts.length>0?contracts.filter(c=>!DEFAULT_CONTRACTS.find(d=>d.id===c.id)):[])];
+  const withGuard=all.filter(c=>c.guard>0);
+  sel.innerHTML='<option value="">— Select contract or fill manually —</option>'+
+    withGuard.map(c=>{
+      const s=SUPS[c.sup];
+      return `<option value="${c.id}">${c.site} (${s?s.name:c.sup}) — Guard: ${fmt(Math.abs(c.guard))} PKR/mo</option>`;
+    }).join('');
+}
+
+
 (async()=>{
 await load();
 refresh();
@@ -2308,7 +2615,6 @@ renderEstimated();
 renderPL();
 renderInventory();
 sv('ammo-30',ammo[30]||0);sv('ammo-223',ammo[223]||0);sv('ammo-12',ammo[12]||0);
-// Set today's date for attendance
 const today=new Date().toISOString().split('T')[0];
 if($('att-date'))$('att-date').value=today;
 })();
