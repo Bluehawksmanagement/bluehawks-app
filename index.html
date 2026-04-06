@@ -193,6 +193,7 @@ tbody tr:last-child td{border-bottom:none}
   <div class="nt" onclick="go('misc',this)">➕ Misc</div>
   <div class="nt" onclick="go('monthly',this)">📅 Monthly</div>
   <div class="nt" onclick="go('settings',this)">⚙️ Settings</div>
+  <div class="nt" onclick="go('audit',this)">🔍 Audit</div>
   <div class="nt" onclick="go('pending',this)">⚠️ Pending</div>
 </nav>
 
@@ -1103,6 +1104,39 @@ tbody tr:last-child td{border-bottom:none}
   </div>
 </div>
 
+<!-- GUARD SALARY AUDIT -->
+<div id="pg-audit" class="pg">
+  <div class="ptitle">Guard Salary <em>Audit</em></div>
+  <div class="psub">Record vs Actually Paid — April 2026</div>
+  <div class="al al-y"><span>💡</span><span>Enter actual amount paid to guards at each site. App will show variance vs our records automatically.</span></div>
+
+  <!-- SUMMARY STATS -->
+  <div class="g2">
+    <div class="sc" style="border-color:rgba(56,189,248,.2)"><div class="sc-bar" style="background:linear-gradient(90deg,var(--bl2),var(--bl))"></div><div class="sc-l">Record Total</div><div class="sc-v" id="au-record" style="color:var(--bl)">0</div><div class="sc-s">PKR in our books</div></div>
+    <div class="sc" style="border-color:rgba(34,197,94,.2)"><div class="sc-bar" style="background:linear-gradient(90deg,var(--gr2),var(--gr))"></div><div class="sc-l">Actually Paid</div><div class="sc-v" id="au-actual" style="color:var(--gr)">0</div><div class="sc-s">PKR handed to guards</div></div>
+    <div class="sc pls" style="border-color:rgba(239,68,68,.2)"><div class="sc-bar" style="background:linear-gradient(90deg,var(--rd2),var(--rd))"></div><div class="sc-l">Total Variance</div><div class="sc-v" id="au-variance" style="color:var(--rd)">0</div><div class="sc-s">PKR unaccounted</div></div>
+    <div class="sc" style="border-color:rgba(245,158,11,.2)"><div class="sc-bar" style="background:var(--am)"></div><div class="sc-l">Sites Pending</div><div class="sc-v" id="au-pending-count" style="color:var(--am)">0</div><div class="sc-s">not yet entered</div></div>
+    <div class="sc" style="border-color:rgba(34,197,94,.2)"><div class="sc-bar" style="background:var(--gr)"></div><div class="sc-l">Sites Matched</div><div class="sc-v" id="au-matched" style="color:var(--gr)">0</div><div class="sc-s">record = actual</div></div>
+    <div class="sc" style="border-color:rgba(239,68,68,.2)"><div class="sc-bar" style="background:var(--rd)"></div><div class="sc-l">Sites Flagged</div><div class="sc-v" id="au-flagged" style="color:var(--rd)">0</div><div class="sc-s">discrepancy found</div></div>
+  </div>
+
+  <!-- FILTER BUTTONS -->
+  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
+    <button class="btn btn-ghost btn-sm on" id="auf-all" onclick="setAuditFilter('all',this)">All Sites</button>
+    <button class="btn btn-ghost btn-sm" id="auf-pending" onclick="setAuditFilter('pending',this)">🟡 Pending</button>
+    <button class="btn btn-ghost btn-sm" id="auf-flagged" onclick="setAuditFilter('flagged',this)">🔴 Flagged</button>
+    <button class="btn btn-ghost btn-sm" id="auf-matched" onclick="setAuditFilter('matched',this)">✅ Matched</button>
+    <button class="btn btn-ghost btn-sm" id="auf-tanvir" onclick="setAuditFilter('tanvir',this)">Tanvir</button>
+    <button class="btn btn-ghost btn-sm" id="auf-karamat" onclick="setAuditFilter('karamat',this)">Karamat</button>
+    <button class="btn btn-ghost btn-sm" id="auf-shahwaiz" onclick="setAuditFilter('shahwaiz',this)">Shahwaiz</button>
+    <button class="btn btn-ghost btn-sm" id="auf-company" onclick="setAuditFilter('company',this)">Company</button>
+    <button class="btn btn-ghost btn-sm" id="auf-islamabad" onclick="setAuditFilter('islamabad',this)">Chinese</button>
+  </div>
+
+  <!-- SITES LIST -->
+  <div id="au-sites"></div>
+</div>
+
 <!-- PENDING -->
 <div id="pg-pending" class="pg">
   <div class="ptitle">Pending <em>Issues</em></div>
@@ -1510,6 +1544,7 @@ function go(id,el){
   if(id==='expenses')renderExpenses();
   if(id==='partial'){populatePartialContracts();renderPartialLog();}
   if(id==='settings'){}
+  if(id==='audit'){renderAudit();}
 }
 
 // ── TOTALS ──
@@ -2816,8 +2851,198 @@ function logout(){
 }
 
 
+// ── GUARD SALARY AUDIT ──
+let auditData={};  // {siteId: {actual, notes, status}}
+let auditFilter='all';
+
+function setAuditFilter(f, btn){
+  auditFilter=f;
+  document.querySelectorAll('[id^="auf-"]').forEach(b=>b.classList.remove('on'));
+  if(btn)btn.classList.add('on');
+  renderAudit();
+}
+
+function renderAudit(){
+  const c=$('au-sites');if(!c)return;
+
+  // Get all sites with guard salary from DEFAULT_CONTRACTS
+  const sites=DEFAULT_CONTRACTS.filter(ct=>ct.guard>0&&ct.sup!=='mustafa');
+
+  let totalRecord=0,totalActual=0,pendingCount=0,matchedCount=0,flaggedCount=0;
+
+  const filtered=sites.filter(ct=>{
+    const ad=auditData[ct.id]||{};
+    const status=ad.status||'pending';
+    if(auditFilter==='all')return true;
+    if(auditFilter==='pending')return status==='pending';
+    if(auditFilter==='flagged')return status==='flagged';
+    if(auditFilter==='matched')return status==='matched';
+    return ct.sup===auditFilter;
+  });
+
+  // Calculate totals from ALL sites
+  sites.forEach(ct=>{
+    const ad=auditData[ct.id]||{};
+    const record=Math.abs(ct.guard||0);
+    const actual=ad.actual||0;
+    totalRecord+=record;
+    if(actual>0)totalActual+=actual;
+    const status=ad.status||'pending';
+    if(status==='pending')pendingCount++;
+    else if(status==='flagged')flaggedCount++;
+    else if(status==='matched')matchedCount++;
+  });
+
+  const totalVariance=totalRecord-totalActual;
+  sv('au-record',fmt(totalRecord));
+  sv('au-actual',fmt(totalActual));
+  sv('au-variance',fmt(Math.abs(totalVariance)));
+  sv('au-pending-count',pendingCount);
+  sv('au-matched',matchedCount);
+  sv('au-flagged',flaggedCount);
+
+  // Group by supervisor
+  const supGroups={};
+  filtered.forEach(ct=>{
+    if(!supGroups[ct.sup])supGroups[ct.sup]=[];
+    supGroups[ct.sup].push(ct);
+  });
+
+  if(filtered.length===0){
+    c.innerHTML='<div style="text-align:center;padding:24px;color:var(--tx3);font-size:10px;letter-spacing:2px">NO SITES MATCH FILTER</div>';
+    return;
+  }
+
+  c.innerHTML=Object.entries(supGroups).map(([sup,cts])=>{
+    const s=SUPS[sup];
+    const supRecord=cts.reduce((a,ct)=>a+Math.abs(ct.guard||0),0);
+    const supActual=cts.reduce((a,ct)=>a+(auditData[ct.id]?.actual||0),0);
+    const supVar=supRecord-supActual;
+    return `<div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div>
+          <div style="font-weight:800;font-size:15px;color:${s?s.c:'var(--g2)'};font-family:'Syne',sans-serif">${s?s.name:sup}</div>
+          <div style="font-size:9px;color:var(--tx3);margin-top:2px;letter-spacing:1px">${cts.length} SITES · Record: ${fmt(supRecord)} PKR</div>
+        </div>
+        ${supActual>0?`<span class="bdg ${supVar===0?'b-g':supVar>0?'b-r':'b-b'}">${supVar===0?'✅ MATCHED':supVar>0?'🔴 -'+fmt(supVar):'🟢 +'+fmt(Math.abs(supVar))}</span>`:'<span class="bdg b-y">🟡 PENDING</span>'}
+      </div>
+      ${cts.map(ct=>{
+        const record=Math.abs(ct.guard||0);
+        const ad=auditData[ct.id]||{};
+        const actual=ad.actual||0;
+        const notes=ad.notes||'';
+        const status=ad.status||'pending';
+        const variance=record-actual;
+        return `<div style="background:var(--ink4);border:1px solid ${status==='flagged'?'rgba(239,68,68,.3)':status==='matched'?'rgba(34,197,94,.2)':'var(--bd)'};border-radius:10px;padding:11px;margin-bottom:7px">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+            <div style="flex:1">
+              <div style="font-size:12px;font-weight:700;font-family:'Syne',sans-serif">${ct.site}</div>
+              <div style="font-size:9px;color:var(--tx3);margin-top:2px">${ct.g} guards · Record: <span style="color:var(--bl)">${fmt(record)} PKR</span></div>
+            </div>
+            <span class="bdg ${status==='matched'?'b-g':status==='flagged'?'b-r':'b-y'}" style="flex-shrink:0;margin-left:8px">
+              ${status==='matched'?'✅ OK':status==='flagged'?'🔴 FLAG':'🟡 PENDING'}
+            </span>
+          </div>
+          <div class="fg2" style="margin-bottom:6px">
+            <div>
+              <label style="color:var(--gr)">Actually Paid (PKR)</label>
+              <input type="number" placeholder="Enter actual amount" value="${actual||''}"
+                style="border-color:${status==='flagged'?'rgba(239,68,68,.4)':status==='matched'?'rgba(34,197,94,.3)':'var(--bd2)'}"
+                oninput="updateAuditEntry('${ct.id}',this.value,'${ct.guard}')">
+            </div>
+            <div>
+              <label>Notes</label>
+              <input type="text" placeholder="e.g. Guard absent 3 days" value="${notes}"
+                oninput="updateAuditNotes('${ct.id}',this.value)">
+            </div>
+          </div>
+          ${actual>0?`<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 10px;background:var(--ink5);border-radius:7px;font-size:11px">
+            <span style="color:var(--tx2)">Variance</span>
+            <span style="font-weight:800;color:${variance===0?'var(--gr)':variance>0?'var(--rd)':'var(--bl)'};font-family:'Syne',sans-serif">
+              ${variance===0?'✅ Exact match':variance>0?'🔴 Underpaid by '+fmt(variance)+' PKR':'🟢 Overpaid by '+fmt(Math.abs(variance))+' PKR'}
+            </span>
+          </div>`:''}
+        </div>`;
+      }).join('')}
+    </div>`;
+  }).join('');
+}
+
+function updateAuditEntry(siteId, actualVal, recordVal){
+  const actual=parseFloat(actualVal)||0;
+  const record=Math.abs(parseFloat(recordVal)||0);
+  if(!auditData[siteId])auditData[siteId]={};
+  auditData[siteId].actual=actual;
+  if(actual===0)auditData[siteId].status='pending';
+  else if(actual===record)auditData[siteId].status='matched';
+  else auditData[siteId].status='flagged';
+  // Update stats without full re-render (preserve input focus)
+  updateAuditStats();
+  saveAuditData();
+}
+
+function updateAuditNotes(siteId, notes){
+  if(!auditData[siteId])auditData[siteId]={};
+  auditData[siteId].notes=notes;
+  saveAuditData();
+}
+
+function updateAuditStats(){
+  const sites=DEFAULT_CONTRACTS.filter(ct=>ct.guard>0&&ct.sup!=='mustafa');
+  let totalRecord=0,totalActual=0,pendingCount=0,matchedCount=0,flaggedCount=0;
+  sites.forEach(ct=>{
+    const ad=auditData[ct.id]||{};
+    const record=Math.abs(ct.guard||0);
+    const actual=ad.actual||0;
+    totalRecord+=record;
+    if(actual>0)totalActual+=actual;
+    const status=ad.status||'pending';
+    if(status==='pending')pendingCount++;
+    else if(status==='flagged')flaggedCount++;
+    else if(status==='matched')matchedCount++;
+  });
+  sv('au-record',fmt(totalRecord));
+  sv('au-actual',fmt(totalActual));
+  sv('au-variance',fmt(Math.abs(totalRecord-totalActual)));
+  sv('au-pending-count',pendingCount);
+  sv('au-matched',matchedCount);
+  sv('au-flagged',flaggedCount);
+}
+
+function saveAuditData(){
+  // Save to localStorage as backup
+  try{localStorage.setItem('bh_audit',JSON.stringify(auditData));}catch(e){}
+  // Save to Supabase cloud
+  if(typeof supabase!=='undefined'&&supabase){
+    try{
+      supabase.from('audit_data').upsert([{
+        id:'audit_april_2026',
+        data:JSON.stringify(auditData),
+        updated_at:new Date().toISOString()
+      }]).then(({error})=>{if(error)console.log('Audit save error:',error);});
+    }catch(e){}
+  }
+}
+async function loadAuditData(){
+  // Try Supabase first
+  if(typeof supabase!=='undefined'&&supabase){
+    try{
+      const{data,error}=await supabase.from('audit_data').select('*').eq('id','audit_april_2026').single();
+      if(data&&data.data){
+        auditData=JSON.parse(data.data);
+        console.log('Audit loaded from Supabase');
+        return;
+      }
+    }catch(e){}
+  }
+  // Fallback to localStorage
+  try{const d=localStorage.getItem('bh_audit');if(d)auditData=JSON.parse(d);}catch(e){}
+}
+
+
 (async()=>{
 await load();
+loadAuditData();
 refresh();
 updateMustafa();
 initPW();
