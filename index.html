@@ -930,10 +930,28 @@ tbody tr:last-child td{border-bottom:none}
           <option value="shahwaiz_misc|Shahwaiz Misc Expenses|5650|office|Shahwaiz">Shahwaiz — Misc (5,650)</option>
           <option value="bilal_misc|Bilal Misc Expenses|7200|office|Bilal">Bilal — Misc (7,200)</option>
         </optgroup>
-        <optgroup label="🔫 Weapon & 📡 Wireless">
-          <option value="weapon_maint|Weapon Maintenance|0|weapon|Workshop">Weapon Maintenance</option>
+        <optgroup label="👕 Uniform / Shoes">
+          <option value="unif_full|Blue Full Uniform Set|0|uniform|Shop">Blue Full Uniform Set</option>
+          <option value="unif_shirt|Blue Shirt / Kameez|0|uniform|Shop">Blue Shirt / Kameez</option>
+          <option value="unif_pant|Blue Pant / Shalwar|0|uniform|Shop">Blue Pant / Shalwar</option>
+          <option value="unif_black|Black Uniform Set|0|uniform|Shop">Black Uniform Set</option>
+          <option value="unif_jacket|Jacket / Coat|0|uniform|Shop">Jacket / Coat</option>
+          <option value="unif_belt|Belt|0|uniform|Shop">Belt</option>
+          <option value="unif_cap_blue|Blue Cap|0|uniform|Shop">Blue Cap</option>
+          <option value="unif_cap_black|Black Cap|0|uniform|Shop">Black Cap</option>
+          <option value="unif_cap_red|Red Cap|0|uniform|Shop">Red Cap</option>
+          <option value="unif_socks|Socks|0|uniform|Shop">Socks</option>
+          <option value="shoes_black|Black Shoes|0|shoes|Shop">Black Shoes</option>
+          <option value="shoes_brown|Brown Shoes|0|shoes|Shop">Brown Shoes</option>
+        </optgroup>
+        <optgroup label="🔫 Weapon & 🎯 Ammo">
+          <option value="weapon_maint|Weapon Maintenance|0|repair|Workshop">Weapon Maintenance</option>
+          <option value="ammo_30|30 Bore Ammunition|0|ammo_buy|Supplier">30 Bore Ammunition</option>
+          <option value="ammo_12|12 Bore Ammunition|0|ammo_buy|Supplier">12 Bore Ammunition</option>
+          <option value="ammo_223|223 Bore Ammunition|0|ammo_buy|Supplier">223 Bore Ammunition</option>
+        </optgroup>
+        <optgroup label="📡 Wireless">
           <option value="wireless_buy|Wireless Set Purchase|0|wireless|Supplier">Wireless Set Purchase</option>
-          <option value="ammo_buy|Ammunition Purchase|0|weapon|Supplier">Ammunition Purchase</option>
         </optgroup>
         <optgroup label="🚗 Transport & Other">
           <option value="transport|Transport / Travel|0|transport|Driver">Transport / Travel</option>
@@ -944,6 +962,9 @@ tbody tr:last-child td{border-bottom:none}
       <div><label>Description</label><input id="exp-desc" type="text" placeholder="e.g. Shah SB Salary April 2026"></div>
       <div class="fg2">
         <div><label>Amount (PKR)</label><input id="exp-amt" type="number" placeholder="e.g. 5000"></div>
+        <div><label>Qty (for inventory)</label><input id="exp-qty-hidden" type="number" placeholder="e.g. 2" value="0"></div>
+      </div>
+      <div class="fg2">
         <div><label>Category</label>
         <select id="exp-cat" onchange="showExpSubcat(this.value)">
           <option value="uniform">👕 Uniform</option>
@@ -956,12 +977,25 @@ tbody tr:last-child td{border-bottom:none}
           <option value="office">🏢 Salary / Office</option>
           <option value="other">📋 Other</option>
         </select></div>
-        <div id="exp-subcat-wrap" style="display:none">
-          <label>Sub-category</label>
-          <select id="exp-subcat">
-            <option value="">— Select item —</option>
-          </select>
-        </div>
+        <div><label>Sub-category / Item</label>
+        <select id="exp-subcat" style="border-color:rgba(45,212,191,.2)">
+          <option value="">— Select item type —</option>
+          <option value="Full Uniform Set">Full Uniform Set</option>
+          <option value="Shirt / Kameez">Shirt / Kameez</option>
+          <option value="Pant / Shalwar">Pant / Shalwar</option>
+          <option value="Black Uniform">Black Uniform</option>
+          <option value="Jacket / Coat">Jacket / Coat</option>
+          <option value="Belt">Belt</option>
+          <option value="Blue Cap">Blue Cap</option>
+          <option value="Black Cap">Black Cap</option>
+          <option value="Red Cap">Red Cap</option>
+          <option value="Socks">Socks</option>
+          <option value="Black Shoes">Black Shoes</option>
+          <option value="Brown Shoes">Brown Shoes</option>
+          <option value="30 Bore Rounds">30 Bore Rounds</option>
+          <option value="12 Bore Rounds">12 Bore Rounds</option>
+          <option value="223 Bore Rounds">223 Bore Rounds</option>
+        </select></div>
       </div>
       <div class="fg2">
         <div><label>Date</label><input id="exp-date" type="text" placeholder="e.g. 3 Apr 2026"></div>
@@ -1507,6 +1541,7 @@ async function load(){
   const loaderMsg=document.getElementById('sb-loader-msg');
   const setMsg=m=>{if(loaderMsg)loaderMsg.textContent=m;};
   const hideLoader=()=>{if(loader)loader.style.display='none';};
+  // ── Supabase first ──
   try{
     setMsg('CONNECTING TO CLOUD...');
     const[
@@ -1566,7 +1601,7 @@ async function load(){
     console.warn('Supabase load failed, falling back to localStorage:',err);
     setMsg('OFFLINE — USING LOCAL DATA');
   }
-  // Fallback localStorage
+  // ── Fallback: localStorage ──
   try{
     const d=JSON.parse(localStorage.getItem('bh_v5')||'{}');
     if(d.pays)pays=d.pays;if(d.miscs)miscs=d.miscs;
@@ -1576,30 +1611,10 @@ async function load(){
     if(d.mustafaPays)mustafaPays=d.mustafaPays;
     if(d.expenses)expenses=d.expenses;
     if(d.mpid)mpid=d.mpid;if(d.expid)expid=d.expid;
-    // Pre-load Shah SB shoe purchase if no expenses yet
     if(expenses.length===0){
-      expenses=[{
-        id:expid++,
-        desc:'Black Shoes × 2 — Shah SB (2 pairs @ 1,050 PKR each)',
-        amount:2100,
-        category:'uniform',
-        date:'3 Apr 2026',
-        paidTo:'Shop',
-        auto:false
-      }];
-      // Also add to uniform log
-      uniformLog.unshift({
-        item:'Black Shoes',qty:2,
-        site:'Shah SB — Personal',sup:'Shah SB',
-        action:'bought',
-        date:'3 Apr 2026',
-        cost:1050,totalCost:2100,
-        note:'2 pairs @ PKR 1,050 each — Shah SB'
-      });
-      // Update stock
-      if(uniforms['shoes_black_new']){
-        uniforms['shoes_black_new'].qty+=2;
-      }
+      expenses=[{id:expid++,desc:'Black Shoes × 2 — Shah SB (2 pairs @ 1,050 PKR each)',amount:2100,category:'uniform',date:'3 Apr 2026',paidTo:'Shop',auto:false}];
+      uniformLog.unshift({item:'Black Shoes',qty:2,site:'Shah SB — Personal',sup:'Shah SB',action:'bought',date:'3 Apr 2026',cost:1050,totalCost:2100,note:'2 pairs @ PKR 1,050 each — Shah SB'});
+      if(uniforms['shoes_black_new'])uniforms['shoes_black_new'].qty+=2;
     }
     if(d.weapons)weapons=d.weapons;else weapons=[...DEFAULT_WEAPONS];
     if(d.ammoLog)ammoLog=d.ammoLog;
@@ -1608,11 +1623,9 @@ async function load(){
     if(d.uniforms)uniforms=d.uniforms;else uniforms={...DEFAULT_UNIFORMS};
     if(d.pid)pid=d.pid;if(d.mid)mid=d.mid;if(d.moid)moid=d.moid;
     if(d.lid)lid=d.lid;if(d.aid)aid=d.aid;if(d.cid)cid=d.cid;
-    if(months.length===0){
-      months=[{id:1,label:'February 2026',savedAt:'31/3/2026',col:3159777,gd:1701000,co:1458777,miscX:0,exp:623600,netP:835177,cnt:8,lG:0,lR:0}];
-      moid=2;
-    }
+    if(months.length===0){months=[{id:1,label:'February 2026',savedAt:'31/3/2026',col:3159777,gd:1701000,co:1458777,miscX:0,exp:623600,netP:835177,cnt:8,lG:0,lR:0}];moid=2;}
   }catch(e){weapons=[...DEFAULT_WEAPONS];uniforms={...DEFAULT_UNIFORMS};}
+  setTimeout(hideLoader,600);
 }
 function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2200);}
 
@@ -1747,7 +1760,8 @@ function refresh(){
 
 // ── ESTIMATED ──
 function renderEstimated(){
-  const src=DEFAULT_CONTRACTS.filter(c=>c.sup!=='mustafa');
+  // Always use live contracts array — this is updated when sites are edited
+  const src=(contracts.length>0?contracts:DEFAULT_CONTRACTS).filter(c=>c.sup!=='mustafa');
   const TC=src.reduce((a,c)=>a+Math.abs(c.invoice||0),0);
   const TG=src.reduce((a,c)=>a+Math.abs(c.guard||0),0);
   const TS=Math.max(0,TC-TG);
@@ -1770,7 +1784,8 @@ function renderEstimated(){
     let tInv=0,tGd=0,tSav=0,tExp=0,tNet=0;
     const rows=sids.map(sid=>{
       const s=SUPS[sid];
-      const cc=DEFAULT_CONTRACTS.filter(c=>c.sup===sid);
+      const liveContracts=contracts.length>0?contracts:DEFAULT_CONTRACTS;
+      const cc=liveContracts.filter(c=>c.sup===sid);
       const inv=cc.reduce((a,c)=>a+Math.abs(c.invoice||0),0);
       const gd=cc.reduce((a,c)=>a+Math.abs(c.guard||0),0);
       const sav=Math.max(0,inv-gd);
@@ -1800,7 +1815,8 @@ function renderEstimated(){
   }
   const nm=$('next-outlook');
   if(nm){
-    const cnContracts=DEFAULT_CONTRACTS.filter(c=>c.sup==='islamabad');
+    const liveCtrs=contracts.length>0?contracts:DEFAULT_CONTRACTS;
+    const cnContracts=liveCtrs.filter(c=>c.sup==='islamabad');
     const cnTotal=cnContracts.reduce((a,c)=>a+Math.abs(c.invoice||0),0);
     const cnPays=pays.filter(p=>p.sid==='islamabad').reduce((a,p)=>a+p.amt,0);
     const cnPending=Math.max(0,cnTotal-cnPays);
@@ -2091,18 +2107,19 @@ function saveEditContract(){
   const note=$('ec-notes').value.trim();
   if(!site||!invoice){alert('Enter site name and invoice');return;}
 
-  // Update in DEFAULT_CONTRACTS first
+  // Update in DEFAULT_CONTRACTS
   const dcIdx=DEFAULT_CONTRACTS.findIndex(c=>c.id===id);
   if(dcIdx>=0){
     DEFAULT_CONTRACTS[dcIdx]={...DEFAULT_CONTRACTS[dcIdx],site,sup,invoice,guard,g:guards,t:type,note};
   }
-  // Also update in contracts array
+  // Update in live contracts array (primary source)
   const cIdx=contracts.findIndex(c=>c.id===id);
   if(cIdx>=0){
     contracts[cIdx]={...contracts[cIdx],site,sup,invoice,guard,g:guards,t:type,note};
-  } else if(dcIdx<0){
-    // New custom contract
-    contracts.push({id,site,sup,invoice,guard,g:guards,t:type,note});
+  } else {
+    // Not in contracts array yet — add it from DEFAULT_CONTRACTS or as new
+    const base=DEFAULT_CONTRACTS.find(c=>c.id===id)||{id};
+    contracts.push({...base,site,sup,invoice,guard,g:guards,t:type,note});
   }
 
   closeModal('modal-edit-contract');
@@ -2750,10 +2767,21 @@ function showExpSubcat(cat){
   }
 }
 
+// Map quick select keys to sub-category items
+const QUICK_TO_SUBCAT={
+  'unif_full':'Full Uniform Set','unif_shirt':'Shirt / Kameez',
+  'unif_pant':'Pant / Shalwar','unif_black':'Black Uniform',
+  'unif_jacket':'Jacket / Coat','unif_belt':'Belt',
+  'unif_cap_blue':'Blue Cap','unif_cap_black':'Black Cap',
+  'unif_cap_red':'Red Cap','unif_socks':'Socks',
+  'shoes_black':'Black Shoes','shoes_brown':'Brown Shoes',
+  'ammo_30':'30 Bore Rounds','ammo_12':'12 Bore Rounds','ammo_223':'223 Bore Rounds',
+};
+
 function fillExpense(val){
   if(!val)return;
   const parts=val.split('|');
-  // parts: [key, desc, amount, category, paidTo]
+  const key=parts[0]||'';
   const desc=parts[1]||'';
   const amount=parseInt(parts[2])||0;
   const cat=parts[3]||'other';
@@ -2764,6 +2792,14 @@ function fillExpense(val){
   if(a&&amount>0)a.value=amount;
   if(c)c.value=cat;
   if(p)p.value=paidTo;
+  // Set sub-category if applicable
+  const subcat=QUICK_TO_SUBCAT[key];
+  const sc=$('exp-subcat');
+  if(sc&&subcat){
+    sc.value=subcat;
+  }
+  // Focus on amount field for quick entry
+  if(a)setTimeout(()=>a.focus(),100);
   // Set today's date if empty
   const dt=$('exp-date');
   if(dt&&!dt.value)dt.value=new Date().toLocaleDateString('en-PK');
