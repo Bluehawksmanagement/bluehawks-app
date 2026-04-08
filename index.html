@@ -146,9 +146,7 @@ tbody tr:last-child td{border-bottom:none}
 <div id="sb-loader" style="position:fixed;inset:0;background:rgba(6,8,16,0.97);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px">
   <div style="font-size:32px;filter:drop-shadow(0 0 12px rgba(192,154,58,.6))">🦅</div>
   <div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:#D4AE50;letter-spacing:3px;text-transform:uppercase">Loading Data...</div>
-  <div style="width:48px;height:3px;background:#1E2A3C;border-radius:99px;overflow:hidden">
-    <div style="height:100%;background:linear-gradient(90deg,#C09A3A,#F0CC78);border-radius:99px;animation:ldbar 1.2s ease-in-out infinite"></div>
-  </div>
+  <div style="width:48px;height:3px;background:#1E2A3C;border-radius:99px;overflow:hidden"><div style="height:100%;background:linear-gradient(90deg,#C09A3A,#F0CC78);border-radius:99px;animation:ldbar 1.2s ease-in-out infinite"></div></div>
   <div id="sb-loader-msg" style="font-size:9px;color:#4A6080;letter-spacing:2px;font-family:'Syne',sans-serif">CONNECTING TO CLOUD</div>
 </div>
 <style>@keyframes ldbar{0%{width:0%;margin-left:0}50%{width:100%;margin-left:0}100%{width:0%;margin-left:100%}}</style>
@@ -305,7 +303,21 @@ tbody tr:last-child td{border-bottom:none}
           <option value="other">Other</option>
         </select></div>
         <div><label>Month (leave blank for current)</label>
-        <input id="p-month" type="text" placeholder="e.g. Apr 2026 or Feb 2026 (for pending)"></div>
+        <input id="p-month" type="text" placeholder="e.g. Apr 2026 or Mar 2026 (for pending)"></div>
+        <div style="background:var(--ink4);border:1px solid var(--bd);border-radius:10px;padding:12px">
+          <label style="margin-bottom:8px;display:block">Guard Salary Status</label>
+          <div style="display:flex;gap:8px">
+            <button type="button" id="gd-paid-btn" onclick="setGuardPaid(true)"
+              style="flex:1;padding:10px;border-radius:8px;border:2px solid var(--gr);background:rgba(34,197,94,.15);color:var(--gr);font-weight:700;font-family:'Syne',sans-serif;font-size:10px;cursor:pointer;letter-spacing:1px">
+              ✅ GUARD PAID
+            </button>
+            <button type="button" id="gd-unpaid-btn" onclick="setGuardPaid(false)"
+              style="flex:1;padding:10px;border-radius:8px;border:2px solid rgba(239,68,68,.3);background:transparent;color:var(--tx3);font-weight:700;font-family:'Syne',sans-serif;font-size:10px;cursor:pointer;letter-spacing:1px">
+              🔴 NOT PAID YET
+            </button>
+          </div>
+          <div id="gd-status-note" style="font-size:9px;color:var(--gr);margin-top:6px;letter-spacing:.5px">✅ Guard salary will be marked as PAID</div>
+        </div>
         <button class="btn btn-g" onclick="addPay()" style="width:100%;padding:13px;font-size:12px;letter-spacing:2px">✅ ADD PAYMENT</button>
       </div>
     </div>
@@ -933,15 +945,23 @@ tbody tr:last-child td{border-bottom:none}
       <div class="fg2">
         <div><label>Amount (PKR)</label><input id="exp-amt" type="number" placeholder="e.g. 5000"></div>
         <div><label>Category</label>
-        <select id="exp-cat">
-          <option value="uniform">👕 Uniform / Shoes</option>
+        <select id="exp-cat" onchange="showExpSubcat(this.value)">
+          <option value="uniform">👕 Uniform</option>
+          <option value="shoes">👟 Shoes / Boots</option>
+          <option value="weapon_buy">🔫 Weapon Purchase</option>
+          <option value="ammo_buy">🎯 Ammunition</option>
           <option value="wireless">📡 Wireless Sets</option>
-          <option value="weapon">🔫 Weapon / Ammo</option>
           <option value="transport">🚗 Transport / Fuel</option>
           <option value="repair">🔧 Repairs</option>
           <option value="office">🏢 Salary / Office</option>
           <option value="other">📋 Other</option>
         </select></div>
+        <div id="exp-subcat-wrap" style="display:none">
+          <label>Sub-category</label>
+          <select id="exp-subcat">
+            <option value="">— Select item —</option>
+          </select>
+        </div>
       </div>
       <div class="fg2">
         <div><label>Date</label><input id="exp-date" type="text" placeholder="e.g. 3 Apr 2026"></div>
@@ -1487,8 +1507,6 @@ async function load(){
   const loaderMsg=document.getElementById('sb-loader-msg');
   const setMsg=m=>{if(loaderMsg)loaderMsg.textContent=m;};
   const hideLoader=()=>{if(loader)loader.style.display='none';};
-
-  // ── Try Supabase first ──
   try{
     setMsg('CONNECTING TO CLOUD...');
     const[
@@ -1507,9 +1525,7 @@ async function load(){
       sb.from('monthly_records').select('*').order('id',{ascending:false}),
       sb.from('settings').select('*'),
     ]);
-    if(e1||e2||e3||e4||e5||e6||e7||e8||e9||e10){
-      throw new Error('Supabase query error: '+(e1||e2||e3||e4||e5||e6||e7||e8||e9||e10)?.message);
-    }
+    if(e1||e2||e3||e4||e5||e6||e7||e8||e9||e10) throw new Error('query error');
     setMsg('LOADING DATA...');
     if(pD&&pD.length) pays=pD.map(p=>({id:p.id,sid:p.sid,desc:p.desc_text,amt:p.amt,gd:p.gd||0,time:p.time,type:p.type,tl:p.tl,payMonth:p.pay_month}));
     if(mpD&&mpD.length) mustafaPays=mpD.map(p=>({id:p.id,site:p.site,desc:p.desc_text,amt:p.amt,gd:p.gd||0,time:p.time,type:p.type,tl:p.tl}));
@@ -1527,10 +1543,8 @@ async function load(){
     else weapons=[...DEFAULT_WEAPONS];
     if(moD&&moD.length) months=moD.map(m=>({id:m.id,label:m.label,savedAt:m.saved_at,col:m.col,gd:m.gd,co:m.co,miscX:m.misc_x,exp:m.exp,netP:m.net_p,cnt:m.cnt,lG:m.l_given,lR:m.l_rec}));
     if(sD&&sD.length){
-      const ammoS=sD.find(s=>s.key==='ammo');
-      const unifS=sD.find(s=>s.key==='uniforms');
-      const alS=sD.find(s=>s.key==='ammo_log');
-      const ulS=sD.find(s=>s.key==='uniform_log');
+      const ammoS=sD.find(s=>s.key==='ammo');const unifS=sD.find(s=>s.key==='uniforms');
+      const alS=sD.find(s=>s.key==='ammo_log');const ulS=sD.find(s=>s.key==='uniform_log');
       const ctrS=sD.find(s=>s.key==='counters');
       if(ammoS&&ammoS.value)ammo=ammoS.value;
       if(unifS&&unifS.value)uniforms=unifS.value;
@@ -1540,22 +1554,19 @@ async function load(){
     }
     if(months.length===0){months=[{id:1,label:'February 2026',savedAt:'31/3/2026',col:3159777,gd:1701000,co:1458777,miscX:0,exp:623600,netP:835177,cnt:8,lG:0,lR:0}];moid=2;}
     if(expenses.length===0){
-      expenses=[{id:expid,desc:'Black Shoes × 2 — Shah SB (2 pairs @ 1,050 PKR each)',amount:2100,category:'uniform',date:'3 Apr 2026',paidTo:'Shop',auto:false}];
-      expid++;
+      expenses=[{id:expid,desc:'Black Shoes × 2 — Shah SB (2 pairs @ 1,050 PKR each)',amount:2100,category:'uniform',date:'3 Apr 2026',paidTo:'Shop',auto:false}];expid++;
       uniformLog.unshift({item:'Black Shoes',qty:2,site:'Shah SB — Personal',sup:'Shah SB',action:'bought',date:'3 Apr 2026',cost:1050,totalCost:2100,note:'2 pairs @ PKR 1,050 each — Shah SB'});
       if(uniforms['shoes_black_new'])uniforms['shoes_black_new'].qty+=2;
     }
-    // Also save to localStorage as cache
     try{localStorage.setItem('bh_v5',JSON.stringify({pays,miscs,months,loans,attendance,contracts,weapons,ammoLog,uniformLog,ammo,uniforms,mustafaPays,expenses,pid,mid,moid,lid,aid,cid,mpid,expid}));}catch(e){}
     setMsg('✅ CLOUD DATA LOADED');
-    setTimeout(hideLoader, 400);
+    setTimeout(hideLoader,400);
     return;
   }catch(err){
     console.warn('Supabase load failed, falling back to localStorage:',err);
     setMsg('OFFLINE — USING LOCAL DATA');
   }
-
-  // ── Fallback: localStorage ──
+  // Fallback localStorage
   try{
     const d=JSON.parse(localStorage.getItem('bh_v5')||'{}');
     if(d.pays)pays=d.pays;if(d.miscs)miscs=d.miscs;
@@ -1565,6 +1576,31 @@ async function load(){
     if(d.mustafaPays)mustafaPays=d.mustafaPays;
     if(d.expenses)expenses=d.expenses;
     if(d.mpid)mpid=d.mpid;if(d.expid)expid=d.expid;
+    // Pre-load Shah SB shoe purchase if no expenses yet
+    if(expenses.length===0){
+      expenses=[{
+        id:expid++,
+        desc:'Black Shoes × 2 — Shah SB (2 pairs @ 1,050 PKR each)',
+        amount:2100,
+        category:'uniform',
+        date:'3 Apr 2026',
+        paidTo:'Shop',
+        auto:false
+      }];
+      // Also add to uniform log
+      uniformLog.unshift({
+        item:'Black Shoes',qty:2,
+        site:'Shah SB — Personal',sup:'Shah SB',
+        action:'bought',
+        date:'3 Apr 2026',
+        cost:1050,totalCost:2100,
+        note:'2 pairs @ PKR 1,050 each — Shah SB'
+      });
+      // Update stock
+      if(uniforms['shoes_black_new']){
+        uniforms['shoes_black_new'].qty+=2;
+      }
+    }
     if(d.weapons)weapons=d.weapons;else weapons=[...DEFAULT_WEAPONS];
     if(d.ammoLog)ammoLog=d.ammoLog;
     if(d.uniformLog)uniformLog=d.uniformLog;
@@ -1572,14 +1608,11 @@ async function load(){
     if(d.uniforms)uniforms=d.uniforms;else uniforms={...DEFAULT_UNIFORMS};
     if(d.pid)pid=d.pid;if(d.mid)mid=d.mid;if(d.moid)moid=d.moid;
     if(d.lid)lid=d.lid;if(d.aid)aid=d.aid;if(d.cid)cid=d.cid;
-    if(months.length===0){months=[{id:1,label:'February 2026',savedAt:'31/3/2026',col:3159777,gd:1701000,co:1458777,miscX:0,exp:623600,netP:835177,cnt:8,lG:0,lR:0}];moid=2;}
-    if(expenses.length===0){
-      expenses=[{id:expid++,desc:'Black Shoes × 2 — Shah SB (2 pairs @ 1,050 PKR each)',amount:2100,category:'uniform',date:'3 Apr 2026',paidTo:'Shop',auto:false}];
-      uniformLog.unshift({item:'Black Shoes',qty:2,site:'Shah SB — Personal',sup:'Shah SB',action:'bought',date:'3 Apr 2026',cost:1050,totalCost:2100,note:'2 pairs @ PKR 1,050 each — Shah SB'});
-      if(uniforms['shoes_black_new'])uniforms['shoes_black_new'].qty+=2;
+    if(months.length===0){
+      months=[{id:1,label:'February 2026',savedAt:'31/3/2026',col:3159777,gd:1701000,co:1458777,miscX:0,exp:623600,netP:835177,cnt:8,lG:0,lR:0}];
+      moid=2;
     }
   }catch(e){weapons=[...DEFAULT_WEAPONS];uniforms={...DEFAULT_UNIFORMS};}
-  setTimeout(hideLoader, 600);
 }
 function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2200);}
 
@@ -1818,6 +1851,31 @@ function switchIT(tab){
   });
   if(tab==='log')renderLog();if(tab==='split')renderSplit();
 }
+let guardPaidStatus=true; // default: guard is paid
+function setGuardPaid(paid){
+  guardPaidStatus=paid;
+  const paidBtn=$('gd-paid-btn');
+  const unpaidBtn=$('gd-unpaid-btn');
+  const note=$('gd-status-note');
+  if(paid){
+    if(paidBtn){paidBtn.style.background='rgba(34,197,94,.15)';paidBtn.style.borderColor='var(--gr)';paidBtn.style.color='var(--gr)';}
+    if(unpaidBtn){unpaidBtn.style.background='transparent';unpaidBtn.style.borderColor='rgba(239,68,68,.3)';unpaidBtn.style.color='var(--tx3)';}
+    if(note){note.style.color='var(--gr)';note.textContent='✅ Guard salary will be marked as PAID';}
+  } else {
+    if(paidBtn){paidBtn.style.background='transparent';paidBtn.style.borderColor='rgba(34,197,94,.3)';paidBtn.style.color='var(--tx3)';}
+    if(unpaidBtn){unpaidBtn.style.background='rgba(239,68,68,.15)';unpaidBtn.style.borderColor='var(--rd)';unpaidBtn.style.color='var(--rd)';}
+    if(note){note.style.color='var(--rd)';note.textContent='🔴 Guard salary marked as NOT PAID — you can update later';}
+  }
+}
+
+function markGuardPaid(payId){
+  const p=pays.find(x=>x.id===payId);
+  if(!p)return;
+  p.guardPaid=true;
+  renderLog();renderSites();refresh();save();
+  toast('✅ GUARD SALARY MARKED AS PAID');
+}
+
 function addPay(){
   const sid=$('p-sup').value;const desc=$('p-desc').value.trim();
   const amt=parseFloat($('p-amt').value)||0;const gd=parseFloat($('p-gd').value)||0;
@@ -1826,9 +1884,12 @@ function addPay(){
   if(!sid){alert('Select supervisor');return;}if(!desc){alert('Enter description');return;}if(!amt){alert('Enter amount');return;}
   const now=new Date();
   const time=now.getDate()+'/'+(now.getMonth()+1)+' '+now.getHours()+':'+String(now.getMinutes()).padStart(2,'0');
-  pays.push({id:pid++,sid,desc,amt,gd,time,type,tl,payMonth:payMonth||'current'});
+  pays.push({id:pid++,sid,desc,amt,gd,time,type,tl,payMonth:payMonth||'current',guardPaid:guardPaidStatus});
   $('p-desc').value='';$('p-amt').value='';$('p-gd').value='';$('p-month').value='';
-  renderLog();refresh();renderPL();save();toast('✅ PAYMENT ADDED — ALL TABS UPDATED');
+  // Reset guard paid to default
+  setGuardPaid(true);
+  renderLog();renderSites();refresh();renderPL();save();
+  toast('✅ PAYMENT ADDED — ALL TABS UPDATED');
 }
 function delPay(id){pays=pays.filter(p=>p.id!==id);renderLog();refresh();renderPL();save();}
 function renderLog(){
@@ -1852,6 +1913,10 @@ function renderLog(){
         <div style="flex:1;min-width:0">
           <div style="font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:'Syne',sans-serif">${p.desc}</div>
           <div style="font-size:9px;color:var(--tx3);margin-top:2px">${p.time} · ${p.tl} · G:${fmt(p.gd)} · Co:${fmt(Math.max(0,p.amt-p.gd))} ${p.payMonth&&p.payMonth!='current'?'· <span style="color:var(--am)">'+p.payMonth+'</span>':''}</div>
+          ${p.gd>0?`<div style="margin-top:4px;display:flex;align-items:center;gap:6px">
+            <span class="bdg ${p.guardPaid?'b-g':'b-r'}" style="font-size:8px">${p.guardPaid?'✅ Guard Paid':'🔴 Guard NOT Paid'}</span>
+            ${!p.guardPaid?`<button onclick="markGuardPaid(${p.id})" style="background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.25);border-radius:5px;color:var(--gr);padding:2px 8px;font-size:8px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif">MARK PAID</button>`:''}
+          </div>`:''}
         </div>
         <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;margin-left:8px">
           <span style="font-weight:800;color:var(--gr);font-size:14px;font-family:'Syne',sans-serif">+${fmt(p.amt)}</span>
@@ -1956,18 +2021,29 @@ function renderSites(){
   const tGd=filtered.reduce((a,ct)=>a+(ct.guard||0),0);
   c.innerHTML=`<div style="font-size:10px;color:var(--tx3);margin-bottom:8px;letter-spacing:1px">${filtered.length} SITES · Invoice: ${fmt(tInv)} PKR · Guard Sal: ${fmt(tGd)} PKR · Saving: ${fmt(tInv-tGd)} PKR</div>
   <div class="card" style="padding:0;overflow:hidden"><div class="tw"><table>
-    <thead><tr><th>Site</th><th>Supervisor</th><th>Type</th><th>G</th><th>Invoice</th><th>Guard</th><th>Saving</th><th>Action</th></tr></thead>
+    <thead><tr><th>Site</th><th>Supervisor</th><th>Type</th><th>G</th><th>Invoice</th><th>Guard</th><th>Saving</th><th>Status</th><th>Action</th></tr></thead>
     <tbody>${filtered.map(ct=>{
       const s=SUPS[ct.sup];
       return `<tr>
-        <td><strong style="font-family:'Syne',sans-serif;font-size:11px">${ct.site}</strong>${ct.note?`<div style="font-size:9px;color:var(--tx3)">${ct.note}</div>`:''}${ct.isNew?`<span class="bdg b-g" style="font-size:8px">NEW</span>`:''}
+        <td>
+          <strong style="font-family:'Syne',sans-serif;font-size:11px">${ct.site}</strong>
+          ${ct.note?`<div style="font-size:9px;color:var(--tx3)">${ct.note}</div>`:''}
+          ${ct.isNew?`<span class="bdg b-g" style="font-size:8px">NEW</span>`:''}
         </td>
         <td><span style="font-size:10px;color:${s?s.c:'var(--tx3)'};font-family:'Syne',sans-serif;font-weight:600">${s?s.name:ct.sup}</span></td>
         <td><span class="bdg ${ct.t==='full'?'b-g':'b-b'}">${ct.t==='full'?'Guards':'W/S'}</span></td>
         <td style="color:var(--tx3)">${ct.g||'—'}</td>
-        <td style="color:var(--g2)">${fmt(ct.invoice)}</td>
-        <td style="color:var(--bl)">${ct.guard?fmt(ct.guard):'—'}</td>
-        <td style="color:var(--gr)"><strong>${fmt(ct.invoice-ct.guard)}</strong></td>
+        <td style="color:var(--g2)">${fmt(Math.abs(ct.invoice||0))}</td>
+        <td style="color:var(--bl)">${ct.guard?fmt(Math.abs(ct.guard)):'—'}</td>
+        <td style="color:var(--gr)"><strong>${fmt(Math.abs(ct.invoice||0)-Math.abs(ct.guard||0))}</strong></td>
+        <td>${(()=>{
+          const sitePays=pays.filter(p=>p.desc&&(p.desc===ct.site||p.desc.startsWith(ct.site+'—')||p.desc.startsWith(ct.site+' —')));
+          const collected=sitePays.reduce((a,p)=>a+p.amt,0);
+          const guardUnpaid=sitePays.some(p=>p.gd>0&&!p.guardPaid);
+          if(collected===0)return '<span class="bdg b-r">🔴 Pending</span>';
+          if(collected>=Math.abs(ct.invoice||0))return guardUnpaid?'<span class="bdg b-y">💰 Paid · 🔴 Guard Due</span>':'<span class="bdg b-g">✅ Complete</span>';
+          return guardUnpaid?'<span class="bdg b-y">🟡 Partial · 🔴 Guard Due</span>':'<span class="bdg b-y">🟡 Partial</span>';
+        })()}</td>
         <td style="white-space:nowrap">
           <button onclick="openEditContract('${ct.id}')" class="btn btn-ghost btn-sm" style="margin-right:4px">✏️</button>
           <button onclick="removeContract('${ct.id}')" class="btn btn-rd">✕</button>
@@ -2644,6 +2720,36 @@ function renderAttendance(){
 }
 
 // ── EXPENSES ──
+const EXP_SUBCATS={
+  uniform:['Full Uniform Set','Shirt / Kameez','Pant / Shalwar','Jacket / Coat','Belt','Cap','Socks','T-Shirt','Jersey'],
+  shoes:['Black Shoes','Brown Shoes','Boots','Sandals'],
+  weapon_buy:['30 Bore Rifle','12 Bore Shotgun','223 Bore Rifle','9MM Pistol','30 Bore Pistol'],
+  ammo_buy:['30 Bore Rounds','12 Bore Rounds','223 Bore Rounds','9MM Rounds'],
+  wireless:['Wireless Set','Charger','Accessories'],
+};
+
+// Map expense sub-category to inventory key
+const EXP_TO_INV={
+  'Full Uniform Set':'blue_new','Shirt / Kameez':'blue_tshirt','Pant / Shalwar':'blue_old',
+  'Jacket / Coat':'blue_coat','Belt':'belt_new','Cap':'blue_cap','Socks':'socks',
+  'T-Shirt':'blue_tshirt','Jersey':'blue_tshirt',
+  'Black Shoes':'shoes_black_new','Brown Shoes':'shoes_brown_new',
+  '30 Bore Rounds':'ammo_30','12 Bore Rounds':'ammo_12','223 Bore Rounds':'ammo_223',
+};
+
+function showExpSubcat(cat){
+  const wrap=$('exp-subcat-wrap');
+  const sel=$('exp-subcat');
+  if(!wrap||!sel)return;
+  const opts=EXP_SUBCATS[cat];
+  if(opts){
+    sel.innerHTML='<option value="">— Select item —</option>'+opts.map(o=>`<option value="${o}">${o}</option>`).join('');
+    wrap.style.display='block';
+  } else {
+    wrap.style.display='none';
+  }
+}
+
 function fillExpense(val){
   if(!val)return;
   const parts=val.split('|');
@@ -2674,15 +2780,50 @@ function addExpense(opts){
   const paidTo=opts?opts.paidTo:($('exp-paid-to')?.value.trim()||'');
   const auto=opts?true:false;
   if(!desc||!amount){if(!auto)alert('Enter description and amount');return;}
-  expenses.push({id:expid++,desc,amount,category,date,paidTo,auto});
+  expenses.push({id:expid++,desc,amount,category,date,paidTo,auto,subcat:opts?opts.subcat||'':($('exp-subcat')?.value||''),qty:opts?opts.qty||0:parseInt($('exp-qty-hidden')?.value)||0});
+  const subcat=opts?opts.subcat:($('exp-subcat')?.value||'');
+  const invKey=EXP_TO_INV[subcat];
+  // Auto-update inventory if applicable
+  if(invKey&&qty>0){
+    if(invKey.startsWith('ammo_')){
+      const boreType=invKey.replace('ammo_','');
+      if(ammo[boreType]!==undefined){
+        ammo[boreType]+=qty;
+        sv('ammo-'+boreType.replace('30','30').replace('12','12').replace('223','223'),ammo[boreType]||0);
+      }
+    } else if(uniforms[invKey]){
+      uniforms[invKey].qty+=qty;
+    }
+  }
   if(!auto){
     $('exp-desc').value='';$('exp-amt').value='';$('exp-date').value='';$('exp-paid-to').value='';
+    if($('exp-subcat'))$('exp-subcat').value='';
+    showExpSubcat('');
   }
-  renderExpenses();save();
-  if(!auto)toast('✅ EXPENSE ADDED');
+  renderExpenses();renderUniforms();save();
+  if(!auto)toast('✅ EXPENSE ADDED — INVENTORY UPDATED');
 }
 
-function delExpense(id){expenses=expenses.filter(e=>e.id!==id);renderExpenses();save();}
+function delExpense(id){
+  const e=expenses.find(x=>x.id===id);
+  if(e){
+    // Reverse inventory update
+    const subcat=e.subcat||'';
+    const invKey=EXP_TO_INV[subcat];
+    const qty=e.qty||0;
+    if(invKey&&qty>0){
+      if(invKey.startsWith('ammo_')){
+        const boreType=invKey.replace('ammo_','');
+        if(ammo[boreType]!==undefined)ammo[boreType]=Math.max(0,ammo[boreType]-qty);
+      } else if(uniforms[invKey]){
+        uniforms[invKey].qty=Math.max(0,uniforms[invKey].qty-qty);
+      }
+    }
+  }
+  expenses=expenses.filter(x=>x.id!==id);
+  renderExpenses();renderUniforms();save();
+  toast('✅ EXPENSE DELETED — INVENTORY REVERSED');
+}
 
 function renderExpenses(){
   const total=expensesT();
@@ -2926,7 +3067,9 @@ function renderAudit(){
   const c=$('au-sites');if(!c)return;
 
   // Get all sites with guard salary from DEFAULT_CONTRACTS
-  const sites=DEFAULT_CONTRACTS.filter(ct=>ct.guard>0&&ct.sup!=='mustafa');
+  // Include ALL sites with guard salary including those edited
+  const src=(contracts.length>0?contracts:DEFAULT_CONTRACTS);
+  const sites=src.filter(ct=>ct.guard>0&&ct.sup!=='mustafa');
 
   let totalRecord=0,totalActual=0,pendingCount=0,matchedCount=0,flaggedCount=0;
 
@@ -3048,7 +3191,8 @@ function updateAuditNotes(siteId, notes){
 }
 
 function updateAuditStats(){
-  const sites=DEFAULT_CONTRACTS.filter(ct=>ct.guard>0&&ct.sup!=='mustafa');
+  // Include ALL sites with guard salary including those edited
+  const src=(contracts.length>0?contracts:DEFAULT_CONTRACTS);
   let totalRecord=0,totalActual=0,pendingCount=0,matchedCount=0,flaggedCount=0;
   sites.forEach(ct=>{
     const ad=auditData[ct.id]||{};
