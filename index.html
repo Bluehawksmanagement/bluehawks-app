@@ -898,6 +898,19 @@ tbody tr:last-child td{border-bottom:none}
   <div class="card">
     <div class="ct" style="color:var(--rd)">Add Expense</div>
     <div class="fg">
+      <div><label>Supervisor / Staff</label>
+      <select id="exp-supervisor" onchange="updateExpQuickByStaff(this.value)">
+        <option value="">— Select Staff Member —</option>
+        <option value="shah">Shah SB</option>
+        <option value="tanvir">Tanvir</option>
+        <option value="altaf">Altaf</option>
+        <option value="karamat">Karamat</option>
+        <option value="shahwaiz">Shahwaiz</option>
+        <option value="bilal">Bilal</option>
+        <option value="jazib">Jazib</option>
+        <option value="abdulrehman">Abdul Rehman (Mustafa)</option>
+        <option value="company">Company (General)</option>
+      </select></div>
       <div><label>Quick Select — Staff Expense</label>
       <select id="exp-quick" onchange="fillExpense(this.value)">
         <option value="">— Quick select or fill manually below —</option>
@@ -1302,6 +1315,19 @@ tbody tr:last-child td{border-bottom:none}
         <div style="font-size:9px;color:var(--g2);letter-spacing:1.5px;font-family:'Syne',sans-serif;margin-bottom:4px">EXPENSE AMOUNT</div>
         <div style="font-size:20px;font-weight:800;color:var(--rd);font-family:'Syne',sans-serif" id="ee-preview">0 PKR</div>
       </div>
+      <div><label>Supervisor / Staff</label>
+      <select id="ee-supervisor">
+        <option value="">— Select Staff —</option>
+        <option value="shah">Shah SB</option>
+        <option value="tanvir">Tanvir</option>
+        <option value="altaf">Altaf</option>
+        <option value="karamat">Karamat</option>
+        <option value="shahwaiz">Shahwaiz</option>
+        <option value="bilal">Bilal</option>
+        <option value="jazib">Jazib</option>
+        <option value="abdulrehman">Abdul Rehman</option>
+        <option value="company">Company (General)</option>
+      </select></div>
       <div style="display:flex;gap:8px">
         <button class="btn btn-g" onclick="saveEditExpense()" style="flex:1;letter-spacing:1px">✅ SAVE</button>
         <button class="btn btn-ghost" onclick="closeModal('modal-edit-expense')" style="flex:1">CANCEL</button>
@@ -2100,23 +2126,48 @@ function renderSupervisors(){
     const pct=ct.invoice>0?Math.round((col/ct.invoice)*100):0;
     const profitContrib=co-s.exp;
     const bd=EXP_BREAKDOWN[sid];
-    const expBreakdown=bd?`
-      <div id="exp-detail-${sid}" style="display:none;margin-top:10px;background:var(--ink5);border-radius:8px;padding:10px">
-        <div style="font-size:9px;font-weight:700;color:var(--rd);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;font-family:'Syne',sans-serif">Expense Breakdown — April 2026</div>
-        ${bd.items.map(([name,val])=>`
-          <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--bd);font-size:11px">
-            <span style="color:var(--tx2)">${name}</span>
-            <span style="color:${val<0?'var(--gr)':'var(--rd)'};font-weight:600;font-family:'DM Mono',monospace">${val<0?'−'+Math.abs(val).toLocaleString('en-PK'):val.toLocaleString('en-PK')} PKR</span>
-          </div>`).join('')}
-        <div style="display:flex;justify-content:space-between;padding:7px 0;margin-top:4px;font-size:12px;border-top:2px solid var(--rd)">
+    // Get dynamic expenses logged for this supervisor
+    const dynExps=expenses.filter(e=>e.supervisor===sid&&!e.auto);
+    const dynTotal=dynExps.reduce((a,e)=>a+e.amount,0);
+    const combinedTotal=dynTotal>0?dynTotal:(bd?bd.total:s.exp);
+    const expBreakdown=`
+      <div id="exp-detail-${sid}" style="display:none;margin-top:10px;background:var(--ink5);border-radius:10px;padding:12px">
+        <div style="font-size:9px;font-weight:700;color:var(--rd);letter-spacing:1.5px;margin-bottom:10px;font-family:'Syne',sans-serif;display:flex;justify-content:space-between;align-items:center">
+          <span>EXPENSE BREAKDOWN</span>
+          <button onclick="goAndSetSup('${sid}')" style="background:rgba(192,154,58,.1);border:1px solid rgba(192,154,58,.2);border-radius:5px;color:var(--g2);padding:2px 8px;font-size:8px;cursor:pointer;font-family:'Syne',sans-serif">+ ADD EXPENSE</button>
+        </div>
+        ${dynExps.length>0?`
+          <div style="font-size:9px;color:var(--bl);letter-spacing:1px;margin-bottom:6px;font-family:'Syne',sans-serif">LOGGED THIS MONTH:</div>
+          ${dynExps.map(e=>`
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--bd)">
+              <div style="flex:1;min-width:0">
+                <div style="font-size:11px;color:var(--tx2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.desc}</div>
+                <div style="font-size:9px;color:var(--tx3)">${e.date||''} · ${e.category||''}</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:5px;flex-shrink:0;margin-left:8px">
+                <span style="color:var(--rd);font-weight:700;font-family:'DM Mono'">${fmt(e.amount)}</span>
+                <button onclick="openEditExpense(${e.id})" style="background:rgba(192,154,58,.1);border:1px solid rgba(192,154,58,.2);border-radius:4px;color:var(--g2);padding:2px 6px;font-size:8px;cursor:pointer">✏️</button>
+                <button onclick="delExpenseAndRefreshSup(${e.id})" style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);border-radius:4px;color:var(--rd);padding:2px 6px;font-size:8px;cursor:pointer">✕</button>
+              </div>
+            </div>`).join('')}
+        `:`
+          ${bd?`
+          <div style="font-size:9px;color:var(--tx3);margin-bottom:6px">Reference figures (March 2026):</div>
+          ${bd.items.map(([name,val])=>`
+            <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--bd);font-size:11px">
+              <span style="color:var(--tx2)">${name}</span>
+              <span style="color:${val<0?'var(--gr)':'var(--rd)'};font-weight:600">${val<0?'−'+Math.abs(val).toLocaleString('en-PK'):val.toLocaleString('en-PK')} PKR</span>
+            </div>`).join('')}
+          `:'<div style="font-size:10px;color:var(--tx3);text-align:center;padding:10px">No expenses logged — tap + ADD EXPENSE above</div>'}
+        `}
+        <div style="display:flex;justify-content:space-between;padding:8px 0;margin-top:6px;font-size:13px;border-top:2px solid var(--rd)">
           <span style="font-weight:700;color:var(--tx);font-family:'Syne',sans-serif">TOTAL</span>
-          <span style="font-weight:800;color:var(--rd);font-family:'Syne',sans-serif">${bd.total.toLocaleString('en-PK')} PKR</span>
+          <span style="font-weight:800;color:var(--rd);font-family:'Syne',sans-serif">${fmt(combinedTotal)} PKR</span>
         </div>
       </div>
-      <button onclick="toggleExpDetail('${sid}')" style="margin-top:8px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);border-radius:7px;color:var(--rd);padding:5px 12px;cursor:pointer;font-size:9px;font-weight:700;font-family:'Syne',sans-serif;letter-spacing:1px;width:100%">
-        <span id="exp-btn-${sid}">▼ VIEW EXPENSE BREAKDOWN (${bd.total.toLocaleString('en-PK')} PKR)</span>
-      </button>`:
-      '<div style="font-size:9px;color:var(--tx3);margin-top:6px">No expense breakdown available</div>';
+      <button onclick="toggleExpDetail('${sid}')" style="margin-top:8px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);border-radius:7px;color:var(--rd);padding:6px 12px;cursor:pointer;font-size:9px;font-weight:700;font-family:'Syne',sans-serif;letter-spacing:1px;width:100%">
+        <span id="exp-btn-${sid}">▼ VIEW EXPENSE BREAKDOWN (${fmt(combinedTotal)} PKR)</span>
+      </button>`;
     return `<div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
         <div>
@@ -2139,6 +2190,20 @@ function renderSupervisors(){
       ${expBreakdown}
     </div>`;
   }).join('');
+}
+
+function goAndSetSup(sup){
+  // Go to expenses tab and pre-select supervisor
+  go('expenses', document.querySelector('.nt[onclick*="expenses"]'));
+  setTimeout(()=>{
+    const sel=$('exp-supervisor');
+    if(sel){sel.value=sup;updateExpQuickByStaff(sup);}
+  },100);
+}
+
+function delExpenseAndRefreshSup(id){
+  delExpense(id);
+  setTimeout(()=>renderSupervisors(),100);
 }
 
 function toggleExpDetail(sid){
@@ -2904,6 +2969,69 @@ function showExpSubcat(cat){
 }
 
 // Map quick select keys to sub-category items
+// Per-staff expense quick options
+const STAFF_QUICK_OPTIONS={
+  shah:[
+    'shah_sal|Shah SB Salary|55000|office|Shah SB',
+    'shah_fuel|Shah SB Fuel|10000|transport|Shah SB',
+    'shah_comm|Shah SB Commission|13250|office|Shah SB',
+    'shah_misc|Shah SB Misc Expenses|16150|office|Shah SB',
+  ],
+  tanvir:[
+    'tanvir_sal|Tanvir Salary + Rashan|53000|office|Tanvir',
+    'tanvir_fuel|Tanvir Fuel|11200|transport|Tanvir',
+    'tanvir_comm|Tanvir Commission|41420|office|Tanvir',
+    'tanvir_misc|Tanvir Misc Expenses|126896|office|Tanvir',
+  ],
+  altaf:[
+    'altaf_sal|Altaf Salary|44000|office|Altaf',
+    'altaf_fuel|Altaf Fuel|18000|transport|Altaf',
+    'altaf_comm|Altaf Commission|12723|office|Altaf',
+    'altaf_misc|Altaf Misc Expenses|4000|office|Altaf',
+  ],
+  karamat:[
+    'karamat_sal|Karamat Salary|52500|office|Karamat',
+    'karamat_fuel|Karamat Fuel|9000|transport|Karamat',
+    'karamat_comm|Karamat Commission|7750|office|Karamat',
+    'karamat_misc|Karamat Misc Expenses|10900|office|Karamat',
+  ],
+  shahwaiz:[
+    'shahwaiz_comm|Shahwaiz Commission|23800|office|Shahwaiz',
+    'shahwaiz_fuel|Shahwaiz Fuel|5000|transport|Shahwaiz',
+    'shahwaiz_misc|Shahwaiz Misc Expenses|5650|office|Shahwaiz',
+  ],
+  bilal:[
+    'bilal_sal|Bilal Salary|55000|office|Bilal',
+    'bilal_fuel|Bilal Fuel|8500|transport|Bilal',
+    'bilal_misc|Bilal Misc Expenses|7200|office|Bilal',
+  ],
+  jazib:[
+    'jazib_sal|Jazib Salary|35000|office|Jazib',
+    'jazib_fuel|Jazib Fuel|6000|transport|Jazib',
+  ],
+  abdulrehman:[
+    'ar_sal|Abdul Rehman Salary|38000|office|Abdul Rehman',
+    'ar_fuel|Abdul Rehman Fuel|20000|transport|Abdul Rehman',
+    'ar_misc|Abdul Rehman Misc|45000|office|Abdul Rehman',
+  ],
+};
+
+function updateExpQuickByStaff(sup){
+  const sel=$('exp-quick');if(!sel)return;
+  if(!sup||!STAFF_QUICK_OPTIONS[sup]){
+    // Reset to full list
+    sel.value='';
+    return;
+  }
+  // Filter quick select to show only this staff member's options
+  const opts=STAFF_QUICK_OPTIONS[sup];
+  sel.innerHTML='<option value="">— Quick select expense type —</option>'+
+    opts.map(o=>{
+      const parts=o.split('|');
+      return `<option value="${o}">${parts[1]} (${parseInt(parts[2]).toLocaleString('en-PK')} PKR)</option>`;
+    }).join('');
+}
+
 const QUICK_TO_SUBCAT={
   'unif_full':'Full Uniform Set','unif_shirt':'Shirt / Kameez',
   'unif_pant':'Pant / Shalwar','unif_black':'Black Uniform',
@@ -2952,7 +3080,8 @@ function addExpense(opts){
   const paidTo=opts?opts.paidTo:($('exp-paid-to')?.value.trim()||'');
   const auto=opts?true:false;
   if(!desc||!amount){if(!auto)alert('Enter description and amount');return;}
-  expenses.push({id:expid++,desc,amount,category,date,paidTo,auto,subcat:opts?opts.subcat||'':($('exp-subcat')?.value||''),qty:opts?opts.qty||0:parseInt($('exp-qty-hidden')?.value)||0});
+  const expSup=opts?opts.supervisor||'':($('exp-supervisor')?.value||'company');
+  expenses.push({id:expid++,desc,amount,category,date,paidTo,auto,subcat:opts?opts.subcat||'':($('exp-subcat')?.value||''),qty:opts?opts.qty||0:parseInt($('exp-qty-hidden')?.value)||0,supervisor:expSup});
   const subcat=opts?opts.subcat:($('exp-subcat')?.value||'');
   const invKey=EXP_TO_INV[subcat];
   // Auto-update inventory if applicable
@@ -2984,6 +3113,7 @@ function openEditExpense(id){
   $('ee-cat').value=e.category||'other';
   $('ee-date').value=e.date||'';
   $('ee-paid-to').value=e.paidTo||'';
+  if($('ee-supervisor'))$('ee-supervisor').value=e.supervisor||'company';
   updateExpPreview();
   $('modal-edit-expense').classList.add('on');
 }
@@ -3000,12 +3130,13 @@ function saveEditExpense(){
   const paidTo=$('ee-paid-to').value.trim();
   if(!desc||!amount){alert('Enter description and amount');return;}
   const idx=expenses.findIndex(e=>e.id===id);
+  const supervisor=$('ee-supervisor')?.value||'company';
   if(idx>=0){
-    expenses[idx]={...expenses[idx],desc,amount,category,date,paidTo};
+    expenses[idx]={...expenses[idx],desc,amount,category,date,paidTo,supervisor};
   }
   closeModal('modal-edit-expense');
-  renderExpenses();renderPL();refresh();save();
-  toast('✅ EXPENSE UPDATED — P&L REFRESHED');
+  renderExpenses();renderPL();renderSupervisors();refresh();save();
+  toast('✅ EXPENSE UPDATED — ALL TABS REFRESHED');
 }
 
 function delExpense(id){
@@ -3036,8 +3167,9 @@ function renderExpenses(){
   sv('exp-total',fmt(total));sv('exp-purchases',fmt(purchases));sv('exp-other',fmt(other));
   const c=$('exp-log');if(!c)return;
   if(!expenses.length){c.innerHTML='<div style="text-align:center;padding:16px;color:var(--tx3);font-size:10px;letter-spacing:2px">NO EXPENSES YET</div>';return;}
-  const catIcon={'uniform':'👕','wireless':'📡','weapon':'🔫','transport':'🚗','repair':'🔧','office':'🏢','other':'📋'};
-  const catColor={'uniform':'var(--am)','wireless':'var(--bl)','weapon':'var(--rd)','transport':'var(--gr)','repair':'var(--am)','office':'var(--tl)','other':'var(--tx2)'};
+  const catIcon={'uniform':'👕','shoes':'👟','wireless':'📡','weapon_buy':'🔫','ammo_buy':'🎯','transport':'🚗','repair':'🔧','office':'🏢','other':'📋'};
+  const catColor={'uniform':'var(--am)','shoes':'var(--am)','wireless':'var(--bl)','weapon_buy':'var(--rd)','ammo_buy':'var(--rd)','transport':'var(--gr)','repair':'var(--am)','office':'var(--tl)','other':'var(--tx2)'};
+  const staffNames={shah:'Shah SB',tanvir:'Tanvir',altaf:'Altaf',karamat:'Karamat',shahwaiz:'Shahwaiz',bilal:'Bilal',jazib:'Jazib',abdulrehman:'Abdul Rehman',company:'Company'};
   c.innerHTML=[...expenses].reverse().map(e=>`
     <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--bd);gap:10px">
       <div style="flex:1;min-width:0">
@@ -3046,7 +3178,7 @@ function renderExpenses(){
           <span style="font-size:12px;font-weight:600;font-family:'Syne',sans-serif;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.desc}</span>
           ${e.auto?'<span class="bdg b-tl" style="font-size:8px;flex-shrink:0">AUTO</span>':''}
         </div>
-        <div style="font-size:9px;color:var(--tx3);margin-top:2px">${e.date}${e.paidTo?' · '+e.paidTo:''} · <span style="color:${catColor[e.category]||'var(--tx3)'}">${e.category.toUpperCase()}</span></div>
+        <div style="font-size:9px;color:var(--tx3);margin-top:2px">${e.date}${e.paidTo?' · '+e.paidTo:''} · <span style="color:${catColor[e.category]||'var(--tx3)'}">${e.category.toUpperCase()}</span>${e.supervisor&&e.supervisor!=='company'?` · <span style="color:var(--g2);font-weight:700">${staffNames[e.supervisor]||e.supervisor}</span>`:''}</div>
       </div>
       <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
         <span style="font-weight:800;font-size:13px;color:var(--rd);font-family:'Syne',sans-serif">- ${fmt(e.amount)}</span>
