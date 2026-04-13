@@ -201,6 +201,7 @@ tbody tr:last-child td{border-bottom:none}
   <div class="nt" onclick="go('monthly',this)">📅 Monthly</div>
   <div class="nt" onclick="go('settings',this)">⚙️ Settings</div>
   <div class="nt" onclick="go('audit',this)">🔍 Audit</div>
+  <div class="nt" onclick="go('capital',this)">💼 Capital</div>
   <div class="nt" onclick="go('pending',this)">⚠️ Pending</div>
 </nav>
 
@@ -216,6 +217,7 @@ tbody tr:last-child td{border-bottom:none}
     <div class="sc" style="border-color:rgba(34,197,94,.2)"><div class="sc-bar" style="background:linear-gradient(90deg,var(--gr2),var(--gr))"></div><div class="sc-l">Misc Income</div><div class="sc-v" id="a-misc" style="color:var(--gr)">0</div><div class="sc-s">PKR added</div></div>
     <div class="sc" style="border-color:rgba(167,139,250,.2)"><div class="sc-bar" style="background:linear-gradient(90deg,#7C3AED,var(--pu))"></div><div class="sc-l">Actual Net Profit</div><div class="sc-v" id="a-net" style="color:var(--pu)">0</div><div class="sc-s">PKR real so far</div></div>
   </div>
+  <div id="a-capital-status"></div>
   <div class="al al-b"><span>💡</span><span>Add payments in ✏️ Input — all tabs update instantly including supervisor and site views</span></div>
   <div class="card">
     <div class="ct">Collection Progress</div>
@@ -1200,6 +1202,55 @@ tbody tr:last-child td{border-bottom:none}
   <div id="au-sites"></div>
 </div>
 
+<!-- WORKING CAPITAL LEDGER -->
+<div id="pg-capital" class="pg">
+  <div class="ptitle">Working <em>Capital</em></div>
+  <div class="psub">Alan's deployed capital — recovery per site — real profit</div>
+  <div class="al al-tl"><span>💼</span><span>Client pays → loan recovered FIRST → then profit. Every PKR tracked per site.</span></div>
+  <div class="g2">
+    <div class="sc" style="border-color:rgba(167,139,250,.2)"><div class="sc-bar" style="background:linear-gradient(90deg,#7C3AED,var(--pu))"></div><div class="sc-l">Total Deployed</div><div class="sc-v" id="wc-deployed" style="color:var(--pu)">0</div><div class="sc-s">PKR Alan injected</div></div>
+    <div class="sc" style="border-color:rgba(34,197,94,.2)"><div class="sc-bar" style="background:linear-gradient(90deg,var(--gr2),var(--gr))"></div><div class="sc-l">Recovered</div><div class="sc-v" id="wc-recovered" style="color:var(--gr)">0</div><div class="sc-s">PKR returned</div></div>
+    <div class="sc pls" style="border-color:rgba(239,68,68,.2)"><div class="sc-bar" style="background:linear-gradient(90deg,var(--rd2),var(--rd))"></div><div class="sc-l">Outstanding</div><div class="sc-v" id="wc-outstanding" style="color:var(--rd)">0</div><div class="sc-s">PKR still deployed</div></div>
+    <div class="sc" style="border-color:rgba(192,154,58,.3)"><div class="sc-bar" style="background:linear-gradient(90deg,var(--g),var(--g3))"></div><div class="sc-l">Real Net Profit</div><div class="sc-v" id="wc-real-profit" style="color:var(--g2)">0</div><div class="sc-s">after loan recovery</div></div>
+    <div class="sc" style="border-color:rgba(56,189,248,.2)"><div class="sc-bar" style="background:var(--bl)"></div><div class="sc-l">Recovery Rate</div><div class="sc-v" id="wc-rate" style="color:var(--bl)">0%</div><div class="sc-s">of capital returned</div></div>
+    <div class="sc" style="border-color:rgba(245,158,11,.2)"><div class="sc-bar" style="background:var(--am)"></div><div class="sc-l">Sites with Capital</div><div class="sc-v" id="wc-sites-count" style="color:var(--am)">0</div><div class="sc-s">sites using loan</div></div>
+  </div>
+
+  <div class="card">
+    <div class="ct" style="color:var(--pu)">💳 Inject Working Capital</div>
+    <div class="al al-pu"><span>💡</span><span>Alan pays guard salary before client collection. System auto-recovers when client pays.</span></div>
+    <div class="fg">
+      <div><label>Site (guard salary paid for)</label>
+      <select id="wc-site"><option value="">— Select site —</option></select></div>
+      <div class="fg2">
+        <div><label style="color:var(--pu)">Amount Injected (PKR)</label>
+        <input id="wc-amt" type="number" placeholder="Guard salary paid by Alan"></div>
+        <div><label>Date</label>
+        <input id="wc-date" type="text" placeholder="e.g. 8 Apr 2026"></div>
+      </div>
+      <div><label>Notes</label>
+      <input id="wc-notes" type="text" placeholder="e.g. Guard salary April — client not paid yet"></div>
+      <button class="btn" style="background:linear-gradient(135deg,#7C3AED,var(--pu));color:#fff;width:100%;padding:12px;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:1px;border:none;border-radius:10px;cursor:pointer" onclick="injectCapital()">💳 INJECT CAPITAL</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ct">Per Site — Capital Status</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+      <button class="btn btn-ghost btn-sm on" id="wcf-all" onclick="setWCFilter('all',this)">All</button>
+      <button class="btn btn-ghost btn-sm" id="wcf-outstanding" onclick="setWCFilter('outstanding',this)">🔴 Outstanding</button>
+      <button class="btn btn-ghost btn-sm" id="wcf-recovered" onclick="setWCFilter('recovered',this)">✅ Recovered</button>
+      <button class="btn btn-ghost btn-sm" id="wcf-partial" onclick="setWCFilter('partial',this)">🟡 Partial</button>
+    </div>
+    <div id="wc-site-breakdown"></div>
+  </div>
+
+  <div class="card">
+    <div class="ct" style="color:var(--gr)">Capital Injection Log</div>
+    <div id="wc-log"><div style="text-align:center;padding:14px;color:var(--tx3);font-size:10px">No capital deployed yet</div></div>
+  </div>
+</div>
+
 <!-- PENDING -->
 <div id="pg-pending" class="pg">
   <div class="ptitle">Pending <em>Issues</em></div>
@@ -1218,6 +1269,45 @@ tbody tr:last-child td{border-bottom:none}
   <div class="pi d"><div style="font-size:12px;font-weight:600;text-decoration:line-through;font-family:'Syne',sans-serif">Eastern Poultry — now fully active ✅</div></div>
   <div class="pi d"><div style="font-size:12px;font-weight:600;text-decoration:line-through;font-family:'Syne',sans-serif">Mustafa / Abdul Rehman — role clarified ✅</div></div>
   <div class="pi d"><div style="font-size:12px;font-weight:600;text-decoration:line-through;font-family:'Syne',sans-serif">Chinese clients — 5 Islamabad sites identified ✅</div></div>
+</div>
+
+<!-- EDIT EXPENSE MODAL -->
+<div class="modal-bg" id="modal-edit-expense">
+  <div class="modal">
+    <div class="modal-title">✏️ Edit Expense</div>
+    <input type="hidden" id="ee-id">
+    <div class="fg">
+      <div><label>Description</label><input id="ee-desc" type="text" placeholder="Expense description"></div>
+      <div class="fg2">
+        <div><label>Amount (PKR)</label><input id="ee-amt" type="number" oninput="updateExpPreview()"></div>
+        <div><label>Category</label>
+        <select id="ee-cat">
+          <option value="uniform">👕 Uniform</option>
+          <option value="shoes">👟 Shoes</option>
+          <option value="weapon_buy">🔫 Weapon</option>
+          <option value="ammo_buy">🎯 Ammo</option>
+          <option value="wireless">📡 Wireless</option>
+          <option value="transport">🚗 Transport/Fuel</option>
+          <option value="repair">🔧 Repairs</option>
+          <option value="office">🏢 Salary/Office</option>
+          <option value="other">📋 Other</option>
+        </select></div>
+      </div>
+      <div class="fg2">
+        <div><label>Date</label><input id="ee-date" type="text" placeholder="e.g. 8 Apr 2026"></div>
+        <div><label>Paid To</label><input id="ee-paid-to" type="text" placeholder="e.g. Tanvir"></div>
+      </div>
+      <!-- Live preview -->
+      <div style="background:var(--ink4);border:1px solid var(--bd);border-radius:10px;padding:10px">
+        <div style="font-size:9px;color:var(--g2);letter-spacing:1.5px;font-family:'Syne',sans-serif;margin-bottom:4px">EXPENSE AMOUNT</div>
+        <div style="font-size:20px;font-weight:800;color:var(--rd);font-family:'Syne',sans-serif" id="ee-preview">0 PKR</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-g" onclick="saveEditExpense()" style="flex:1;letter-spacing:1px">✅ SAVE</button>
+        <button class="btn btn-ghost" onclick="closeModal('modal-edit-expense')" style="flex:1">CANCEL</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- EDIT CONTRACT MODAL -->
@@ -1541,7 +1631,6 @@ async function load(){
   const loaderMsg=document.getElementById('sb-loader-msg');
   const setMsg=m=>{if(loaderMsg)loaderMsg.textContent=m;};
   const hideLoader=()=>{if(loader)loader.style.display='none';};
-  // ── Supabase first ──
   try{
     setMsg('CONNECTING TO CLOUD...');
     const[
@@ -1601,7 +1690,6 @@ async function load(){
     console.warn('Supabase load failed, falling back to localStorage:',err);
     setMsg('OFFLINE — USING LOCAL DATA');
   }
-  // ── Fallback: localStorage ──
   try{
     const d=JSON.parse(localStorage.getItem('bh_v5')||'{}');
     if(d.pays)pays=d.pays;if(d.miscs)miscs=d.miscs;
@@ -1611,10 +1699,30 @@ async function load(){
     if(d.mustafaPays)mustafaPays=d.mustafaPays;
     if(d.expenses)expenses=d.expenses;
     if(d.mpid)mpid=d.mpid;if(d.expid)expid=d.expid;
+    // Pre-load Shah SB shoe purchase if no expenses yet
     if(expenses.length===0){
-      expenses=[{id:expid++,desc:'Black Shoes × 2 — Shah SB (2 pairs @ 1,050 PKR each)',amount:2100,category:'uniform',date:'3 Apr 2026',paidTo:'Shop',auto:false}];
-      uniformLog.unshift({item:'Black Shoes',qty:2,site:'Shah SB — Personal',sup:'Shah SB',action:'bought',date:'3 Apr 2026',cost:1050,totalCost:2100,note:'2 pairs @ PKR 1,050 each — Shah SB'});
-      if(uniforms['shoes_black_new'])uniforms['shoes_black_new'].qty+=2;
+      expenses=[{
+        id:expid++,
+        desc:'Black Shoes × 2 — Shah SB (2 pairs @ 1,050 PKR each)',
+        amount:2100,
+        category:'uniform',
+        date:'3 Apr 2026',
+        paidTo:'Shop',
+        auto:false
+      }];
+      // Also add to uniform log
+      uniformLog.unshift({
+        item:'Black Shoes',qty:2,
+        site:'Shah SB — Personal',sup:'Shah SB',
+        action:'bought',
+        date:'3 Apr 2026',
+        cost:1050,totalCost:2100,
+        note:'2 pairs @ PKR 1,050 each — Shah SB'
+      });
+      // Update stock
+      if(uniforms['shoes_black_new']){
+        uniforms['shoes_black_new'].qty+=2;
+      }
     }
     if(d.weapons)weapons=d.weapons;else weapons=[...DEFAULT_WEAPONS];
     if(d.ammoLog)ammoLog=d.ammoLog;
@@ -1623,9 +1731,11 @@ async function load(){
     if(d.uniforms)uniforms=d.uniforms;else uniforms={...DEFAULT_UNIFORMS};
     if(d.pid)pid=d.pid;if(d.mid)mid=d.mid;if(d.moid)moid=d.moid;
     if(d.lid)lid=d.lid;if(d.aid)aid=d.aid;if(d.cid)cid=d.cid;
-    if(months.length===0){months=[{id:1,label:'February 2026',savedAt:'31/3/2026',col:3159777,gd:1701000,co:1458777,miscX:0,exp:623600,netP:835177,cnt:8,lG:0,lR:0}];moid=2;}
+    if(months.length===0){
+      months=[{id:1,label:'February 2026',savedAt:'31/3/2026',col:3159777,gd:1701000,co:1458777,miscX:0,exp:623600,netP:835177,cnt:8,lG:0,lR:0}];
+      moid=2;
+    }
   }catch(e){weapons=[...DEFAULT_WEAPONS];uniforms={...DEFAULT_UNIFORMS};}
-  setTimeout(hideLoader,600);
 }
 function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2200);}
 
@@ -1651,6 +1761,7 @@ function go(id,el){
   if(id==='partial'){populatePartialContracts();renderPartialLog();}
   if(id==='settings'){}
   if(id==='audit'){renderAudit();}
+  if(id==='capital'){renderCapital();populateWCSites();}
 }
 
 // ── TOTALS ──
@@ -1756,6 +1867,31 @@ function refresh(){
   }
   // Update other tabs if visible
   updateChinese();updateMustafa();renderLoan();renderExpenses();
+  renderActualWithCapital();
+  // Update guard salary status in actual tab
+  const guardStatusEl=$('a-guard-status');
+  if(guardStatusEl&&pays.length>0){
+    const totalGd=pays.reduce((a,p)=>a+p.gd,0);
+    const paidGd=pays.filter(p=>p.guardPaid).reduce((a,p)=>a+p.gd,0);
+    const unpaidGd=pays.filter(p=>p.gd>0&&!p.guardPaid).reduce((a,p)=>a+p.gd,0);
+    const unpaidPays=pays.filter(p=>p.gd>0&&!p.guardPaid);
+    guardStatusEl.innerHTML=`
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px">
+        <div class="ms"><div class="ms-l">Total Guard Sal</div><div class="ms-v" style="color:var(--bl)">${fmt(totalGd)}</div></div>
+        <div class="ms"><div class="ms-l">✅ Paid</div><div class="ms-v" style="color:var(--gr)">${fmt(paidGd)}</div></div>
+        <div class="ms"><div class="ms-l">🔴 Unpaid</div><div class="ms-v" style="color:${unpaidGd>0?'var(--rd)':'var(--gr)'}"> ${fmt(unpaidGd)}</div></div>
+      </div>
+      ${unpaidPays.length>0?`<div style="margin-top:4px">
+        <div style="font-size:9px;font-weight:700;color:var(--rd);letter-spacing:1.5px;margin-bottom:6px;font-family:'Syne',sans-serif">GUARD SALARY PENDING PAYMENT:</div>
+        ${unpaidPays.map(p=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--bd);font-size:11px">
+          <span style="color:var(--tx2)">${p.desc}</span>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="color:var(--rd);font-weight:700">${fmt(p.gd)} PKR</span>
+            <button onclick="markGuardPaid(${p.id})" style="background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.25);border-radius:5px;color:var(--gr);padding:2px 8px;font-size:8px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif">MARK PAID</button>
+          </div>
+        </div>`).join('')}
+      </div>`:'<div class="al al-g" style="margin-bottom:0"><span>✅</span><span>All guard salaries marked as paid</span></div>'}`;
+  }
 }
 
 // ── ESTIMATED ──
@@ -2840,6 +2976,38 @@ function addExpense(opts){
   if(!auto)toast('✅ EXPENSE ADDED — INVENTORY UPDATED');
 }
 
+function openEditExpense(id){
+  const e=expenses.find(x=>x.id===id);if(!e)return;
+  $('ee-id').value=id;
+  $('ee-desc').value=e.desc||'';
+  $('ee-amt').value=e.amount||0;
+  $('ee-cat').value=e.category||'other';
+  $('ee-date').value=e.date||'';
+  $('ee-paid-to').value=e.paidTo||'';
+  updateExpPreview();
+  $('modal-edit-expense').classList.add('on');
+}
+function updateExpPreview(){
+  const amt=parseFloat($('ee-amt')?.value)||0;
+  const el=$('ee-preview');if(el)el.textContent=fmt(amt)+' PKR';
+}
+function saveEditExpense(){
+  const id=parseInt($('ee-id').value);
+  const desc=$('ee-desc').value.trim();
+  const amount=parseFloat($('ee-amt').value)||0;
+  const category=$('ee-cat').value;
+  const date=$('ee-date').value.trim();
+  const paidTo=$('ee-paid-to').value.trim();
+  if(!desc||!amount){alert('Enter description and amount');return;}
+  const idx=expenses.findIndex(e=>e.id===id);
+  if(idx>=0){
+    expenses[idx]={...expenses[idx],desc,amount,category,date,paidTo};
+  }
+  closeModal('modal-edit-expense');
+  renderExpenses();renderPL();refresh();save();
+  toast('✅ EXPENSE UPDATED — P&L REFRESHED');
+}
+
 function delExpense(id){
   const e=expenses.find(x=>x.id===id);
   if(e){
@@ -2882,6 +3050,7 @@ function renderExpenses(){
       </div>
       <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
         <span style="font-weight:800;font-size:13px;color:var(--rd);font-family:'Syne',sans-serif">- ${fmt(e.amount)}</span>
+        <button onclick="openEditExpense(${e.id})" class="btn btn-ghost btn-sm" style="font-size:9px">✏️</button>
         <button onclick="delExpense(${e.id})" class="btn btn-rd">✕</button>
       </div>
     </div>`).join('');
@@ -3280,9 +3449,172 @@ async function loadAuditData(){
 }
 
 
+// ── WORKING CAPITAL LEDGER ──
+let capitalDeployments=[]; // [{id, site, sup, amt, date, notes, recovered}]
+let wcid=1;
+let wcFilter='all';
+
+function setWCFilter(f, btn){
+  wcFilter=f;
+  document.querySelectorAll('[id^="wcf-"]').forEach(b=>b.classList.remove('on'));
+  if(btn)btn.classList.add('on');
+  renderCapital();
+}
+
+function populateWCSites(){
+  const sel=$('wc-site');if(!sel)return;
+  const src=contracts.length>0?contracts:DEFAULT_CONTRACTS;
+  const withGuard=src.filter(c=>c.guard>0&&c.sup!=='mustafa');
+  sel.innerHTML='<option value="">— Select site —</option>'+
+    withGuard.map(c=>{
+      const s=SUPS[c.sup];
+      return `<option value="${c.id}|${c.site}|${c.sup}|${Math.abs(c.guard)}">${c.site} (${s?s.name:c.sup}) — Guard: ${fmt(Math.abs(c.guard))} PKR</option>`;
+    }).join('');
+}
+
+function injectCapital(){
+  const siteSel=$('wc-site')?.value;
+  const amt=parseFloat($('wc-amt')?.value)||0;
+  const date=$('wc-date')?.value.trim()||new Date().toLocaleDateString('en-PK');
+  const notes=$('wc-notes')?.value.trim()||'';
+  if(!siteSel||!amt){alert('Select site and enter amount');return;}
+  const parts=siteSel.split('|');
+  const siteId=parts[0];const site=parts[1];const sup=parts[2];const guardAmt=parseFloat(parts[3])||0;
+  capitalDeployments.push({id:wcid++,siteId,site,sup,amt,date,notes,guardAmt,recovered:0});
+  if($('wc-amt'))$('wc-amt').value='';
+  if($('wc-notes'))$('wc-notes').value='';
+  renderCapital();
+  renderActualWithCapital();
+  saveCapital();
+  toast('✅ CAPITAL DEPLOYED — TRACKING RECOVERY');
+}
+
+function saveCapital(){
+  try{localStorage.setItem('bh_capital',JSON.stringify({capitalDeployments,wcid}));}catch(e){}
+  if(typeof supabase!=='undefined'&&supabase){
+    supabase.from('settings').upsert([{key:'capital_data',value:JSON.stringify({capitalDeployments,wcid})}]).then(()=>{});
+  }
+}
+function loadCapital(){
+  try{
+    const d=localStorage.getItem('bh_capital');
+    if(d){const p=JSON.parse(d);capitalDeployments=p.capitalDeployments||[];wcid=p.wcid||1;}
+  }catch(e){}
+}
+
+function getCapitalStats(){
+  const totalDeployed=capitalDeployments.reduce((a,c)=>a+c.amt,0);
+  // Auto-calculate recovered based on payments received for each site
+  capitalDeployments.forEach(dep=>{
+    const sitePays=pays.filter(p=>p.sid===dep.sup&&p.desc&&(p.desc===dep.site||p.desc.startsWith(dep.site)));
+    const totalCollected=sitePays.reduce((a,p)=>a+p.amt,0);
+    // Recovery = min(amount deployed, amount collected from this site)
+    dep.recovered=Math.min(dep.amt, totalCollected);
+  });
+  const totalRecovered=capitalDeployments.reduce((a,c)=>a+c.recovered,0);
+  const outstanding=Math.max(0,totalDeployed-totalRecovered);
+  const rate=totalDeployed>0?Math.round((totalRecovered/totalDeployed)*100):0;
+  // Real profit = gross saving - expenses - outstanding capital
+  const{co}=allT();const{net:mn}=miscT();
+  const exp=622739;
+  const realProfit=Math.max(0,co-exp+mn-outstanding);
+  return{totalDeployed,totalRecovered,outstanding,rate,realProfit,siteCount:capitalDeployments.length};
+}
+
+function renderCapital(){
+  const stats=getCapitalStats();
+  sv('wc-deployed',fmt(stats.totalDeployed));
+  sv('wc-recovered',fmt(stats.totalRecovered));
+  sv('wc-outstanding',fmt(stats.outstanding));
+  sv('wc-real-profit',fmt(stats.realProfit));
+  sv('wc-rate',stats.rate+'%');
+  sv('wc-sites-count',stats.siteCount);
+  populateWCSites();
+
+  // Site breakdown
+  const breakdown=$('wc-site-breakdown');
+  if(breakdown){
+    const filtered=capitalDeployments.filter(dep=>{
+      const status=dep.recovered>=dep.amt?'recovered':dep.recovered>0?'partial':'outstanding';
+      if(wcFilter==='all')return true;
+      return status===wcFilter;
+    });
+    if(!filtered.length){
+      breakdown.innerHTML='<div style="text-align:center;padding:20px;color:var(--tx3);font-size:10px">No capital deployments match filter</div>';
+    } else {
+      breakdown.innerHTML=filtered.map(dep=>{
+        const status=dep.recovered>=dep.amt?'recovered':dep.recovered>0?'partial':'outstanding';
+        const pct=dep.amt>0?Math.min(100,Math.round((dep.recovered/dep.amt)*100)):0;
+        const s=SUPS[dep.sup];
+        return `<div style="background:var(--ink4);border:1px solid ${status==='recovered'?'rgba(34,197,94,.2)':status==='partial'?'rgba(245,158,11,.2)':'rgba(239,68,68,.2)'};border-radius:10px;padding:12px;margin-bottom:8px">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+            <div>
+              <div style="font-weight:700;font-family:'Syne',sans-serif;font-size:13px">${dep.site}</div>
+              <div style="font-size:9px;color:${s?s.c:'var(--tx3)'};margin-top:2px;font-family:'Syne',sans-serif">${s?s.name:dep.sup} · ${dep.date}</div>
+            </div>
+            <span class="bdg ${status==='recovered'?'b-g':status==='partial'?'b-y':'b-r'}">
+              ${status==='recovered'?'✅ RECOVERED':status==='partial'?'🟡 PARTIAL':'🔴 OUTSTANDING'}
+            </span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:8px">
+            <div class="ms"><div class="ms-l">Deployed</div><div class="ms-v" style="color:var(--pu)">${fmt(dep.amt)}</div></div>
+            <div class="ms"><div class="ms-l">Recovered</div><div class="ms-v" style="color:var(--gr)">${fmt(dep.recovered)}</div></div>
+            <div class="ms"><div class="ms-l">Outstanding</div><div class="ms-v" style="color:${dep.amt-dep.recovered>0?'var(--rd)':'var(--gr)'}">${fmt(Math.max(0,dep.amt-dep.recovered))}</div></div>
+          </div>
+          <div style="background:var(--ink5);border-radius:99px;height:6px;overflow:hidden;margin-bottom:4px">
+            <div style="height:100%;border-radius:99px;background:${status==='recovered'?'var(--gr)':status==='partial'?'var(--am)':'var(--rd)'};width:${pct}%;transition:width .7s"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--tx3)">
+            <span>${pct}% recovered</span>
+            <span>${dep.notes||''}</span>
+          </div>
+        </div>`;
+      }).join('');
+    }
+  }
+
+  // Log
+  const log=$('wc-log');
+  if(log){
+    if(!capitalDeployments.length){log.innerHTML='<div style="text-align:center;padding:14px;color:var(--tx3);font-size:10px">No capital deployed yet</div>';return;}
+    log.innerHTML=[...capitalDeployments].reverse().map(dep=>`
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--bd);gap:10px">
+        <div style="flex:1">
+          <div style="font-size:12px;font-weight:600;font-family:'Syne',sans-serif">${dep.site}</div>
+          <div style="font-size:9px;color:var(--tx3);margin-top:2px">${dep.date} · Deployed: ${fmt(dep.amt)} · Recovered: ${fmt(dep.recovered)}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+          <span style="color:${dep.recovered>=dep.amt?'var(--gr)':'var(--rd)'};font-weight:800;font-family:'Syne',sans-serif">${fmt(dep.amt)}</span>
+          <button onclick="delCapital(${dep.id})" class="btn btn-rd">✕</button>
+        </div>
+      </div>`).join('');
+  }
+}
+
+function delCapital(id){
+  capitalDeployments=capitalDeployments.filter(c=>c.id!==id);
+  renderCapital();renderActualWithCapital();saveCapital();
+  toast('✅ CAPITAL ENTRY REMOVED');
+}
+
+function renderActualWithCapital(){
+  // Update actual tab to show capital info
+  const stats=getCapitalStats();
+  const wcEl=$('a-capital-status');
+  if(wcEl){
+    wcEl.innerHTML=stats.totalDeployed>0?
+      `<div class="al al-pu" style="margin-bottom:8px">
+        <span>💼</span>
+        <span>Working Capital: ${fmt(stats.totalDeployed)} deployed · ${fmt(stats.totalRecovered)} recovered · <strong style="color:var(--rd)">${fmt(stats.outstanding)} outstanding</strong> · Real Profit: <strong style="color:var(--g2)">${fmt(stats.realProfit)} PKR</strong></span>
+      </div>`:'';
+  }
+}
+
+
 (async()=>{
 await load();
 loadAuditData();
+loadCapital();
 refresh();
 updateMustafa();
 initPW();
