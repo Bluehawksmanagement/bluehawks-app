@@ -472,29 +472,6 @@ tbody tr:last-child td{border-bottom:none}
     <div id="mu-table"></div>
   </div>
 
-  <!-- ABDUL REHMAN EXPENSES -->
-  <div class="card" style="border-color:rgba(239,68,68,.2)">
-    <div class="ct" style="color:var(--rd)">Abdul Rehman — April 2026 Expenses</div>
-    <div class="al al-pu" style="margin-bottom:10px"><span>👤</span><span>Abdul Rehman manages all 25 Mustafa sites. His expenses come from Mustafa's share.</span></div>
-    <div class="row"><span class="rl">Salary</span><span class="rv" style="color:var(--rd)">38,000 PKR</span></div>
-    <div class="row"><span class="rl">Commission</span><span class="rv" style="color:var(--rd)">0 PKR</span></div>
-    <div class="row"><span class="rl">Fuel</span><span class="rv" style="color:var(--rd)">20,000 PKR</span></div>
-    <div class="row"><span class="rl">Card</span><span class="rv" style="color:var(--rd)">1,500 PKR</span></div>
-    <div class="row"><span class="rl">Bike Repairs</span><span class="rv" style="color:var(--rd)">3,600 PKR</span></div>
-    <div class="row"><span class="rl">Wireless Payment</span><span class="rv" style="color:var(--rd)">21,000 PKR</span></div>
-    <div class="row"><span class="rl">Uniform</span><span class="rv" style="color:var(--rd)">18,000 PKR</span></div>
-    <div class="row" style="border-top:2px solid rgba(239,68,68,.3);margin-top:4px;padding-top:10px">
-      <span class="rl" style="font-weight:700;color:var(--tx);font-family:'Syne',sans-serif">Total AR Expenses</span>
-      <span class="rv" style="color:var(--rd);font-size:15px;font-family:'Syne',sans-serif;font-weight:800">103,000 PKR</span>
-    </div>
-    <div style="margin-top:10px;background:var(--ink4);border-radius:8px;padding:10px">
-      <div class="row" style="border:none;padding:4px 0"><span class="rl">Mustafa Total Saving (potential)</span><span class="rv" style="color:var(--gr)">477,250 PKR</span></div>
-      <div class="row" style="border:none;padding:4px 0"><span class="rl">Less Abdul Rehman Expenses</span><span class="rv" style="color:var(--rd)">− 103,000 PKR</span></div>
-      <div class="row" style="border:none;padding:4px 0"><span class="rl">Net Mustafa Profit</span><span class="rv" style="color:var(--gr);font-weight:700">374,250 PKR</span></div>
-      <div class="row" style="border:none;padding:4px 0"><span class="rl" style="font-weight:700;color:var(--g2)">Alan 50% (after AR expenses)</span><span class="rv" style="color:var(--g2);font-weight:800;font-size:14px;font-family:'Syne',sans-serif">187,125 PKR</span></div>
-    </div>
-  </div>
-
   <!-- G-13 PCC PARTIAL SALARY ALERT -->
   <div class="card" style="border-color:rgba(245,158,11,.2)">
     <div class="ct" style="color:var(--am)">⚠️ G-13 PCC — Special Arrangement</div>
@@ -1278,6 +1255,19 @@ tbody tr:last-child td{border-bottom:none}
     <div class="modal-title">✏️ Edit Expense</div>
     <input type="hidden" id="ee-id">
     <div class="fg">
+      <div><label style="color:var(--g2)">Supervisor / Staff</label>
+      <select id="ee-supervisor" style="border-color:rgba(192,154,58,.3)">
+        <option value="">— Select Staff —</option>
+        <option value="shah">Shah SB</option>
+        <option value="tanvir">Tanvir</option>
+        <option value="altaf">Altaf</option>
+        <option value="karamat">Karamat</option>
+        <option value="shahwaiz">Shahwaiz</option>
+        <option value="bilal">Bilal</option>
+        <option value="jazib">Jazib</option>
+        <option value="abdulrehman">Abdul Rehman (Mustafa)</option>
+        <option value="company">Company (General)</option>
+      </select></div>
       <div><label>Description</label><input id="ee-desc" type="text" placeholder="Expense description"></div>
       <div class="fg2">
         <div><label>Amount (PKR)</label><input id="ee-amt" type="number" oninput="updateExpPreview()"></div>
@@ -1303,19 +1293,6 @@ tbody tr:last-child td{border-bottom:none}
         <div style="font-size:9px;color:var(--g2);letter-spacing:1.5px;font-family:'Syne',sans-serif;margin-bottom:4px">EXPENSE AMOUNT</div>
         <div style="font-size:20px;font-weight:800;color:var(--rd);font-family:'Syne',sans-serif" id="ee-preview">0 PKR</div>
       </div>
-      <div><label>Supervisor / Staff</label>
-      <select id="ee-supervisor">
-        <option value="">— Select Staff —</option>
-        <option value="shah">Shah SB</option>
-        <option value="tanvir">Tanvir</option>
-        <option value="altaf">Altaf</option>
-        <option value="karamat">Karamat</option>
-        <option value="shahwaiz">Shahwaiz</option>
-        <option value="bilal">Bilal</option>
-        <option value="jazib">Jazib</option>
-        <option value="abdulrehman">Abdul Rehman</option>
-        <option value="company">Company (General)</option>
-      </select></div>
       <div style="display:flex;gap:8px">
         <button class="btn btn-g" onclick="saveEditExpense()" style="flex:1;letter-spacing:1px">✅ SAVE</button>
         <button class="btn btn-ghost" onclick="closeModal('modal-edit-expense')" style="flex:1">CANCEL</button>
@@ -1943,6 +1920,21 @@ function renderPL(){
   sv('pl-total-gd',fmt(gd)+' PKR');
   sv('pl-gross',fmt(co)+' PKR');sv('pl-net-gross',fmt(co)+' PKR');
   sv('pl-misc','+ '+fmt(mx)+' PKR');sv('pl-total',fmt(net)+' PKR');
+
+  // Dynamic staff expense rows in P&L
+  const staffRows=$('pl-staff-exp-rows');
+  if(staffRows){
+    const supOrder=['tanvir','shah','altaf','karamat','shahwaiz','bilal','jazib'];
+    const supNames={tanvir:'Tanvir',shah:'Shah SB',altaf:'Altaf',karamat:'Karamat',shahwaiz:'Shahwaiz',bilal:'Bilal',jazib:'Jazib'};
+    let totalExp=0;
+    staffRows.innerHTML=supOrder.map(sup=>{
+      const supExps=expenses.filter(e=>e.supervisor===sup&&!e.auto);
+      const supTotal=supExps.reduce((a,e)=>a+(e.amount||0),0);
+      totalExp+=supTotal;
+      return supTotal!==0?`<div class="row"><span class="rl">${supNames[sup]}</span><span class="rv" style="color:var(--rd)">${fmt(supTotal)} PKR</span></div>`:'';
+    }).join('');
+    sv('pl-total-exp',fmt(totalExp)+' PKR');
+  }
 }
 
 // ── INPUT TABS ──
@@ -3076,7 +3068,19 @@ function openEditExpense(id){
   $('ee-cat').value=e.category||'other';
   $('ee-date').value=e.date||'';
   $('ee-paid-to').value=e.paidTo||'';
-  if($('ee-supervisor'))$('ee-supervisor').value=e.supervisor||'company';
+  // Always set supervisor — this is critical for AR expenses
+  const supVal=e.supervisor||'company';
+  const supSel=$('ee-supervisor');
+  if(supSel){
+    supSel.value=supVal;
+    // If option not found, add it
+    if(supSel.value!==supVal){
+      const opt=document.createElement('option');
+      opt.value=supVal;opt.textContent=supVal;
+      supSel.appendChild(opt);
+      supSel.value=supVal;
+    }
+  }
   updateExpPreview();
   $('modal-edit-expense').classList.add('on');
 }
@@ -3093,10 +3097,13 @@ function saveEditExpense(){
   const paidTo=$('ee-paid-to').value.trim();
   if(!desc||!amount){alert('Enter description and amount');return;}
   const idx=expenses.findIndex(e=>e.id===id);
-  const supervisor=$('ee-supervisor')?.value||'company';
+  // Keep original supervisor if edit modal doesn't have one selected
+  const origExp=expenses.find(e=>e.id===id);
+  const supervisor=$('ee-supervisor')?.value||origExp?.supervisor||'company';
   if(idx>=0){
     expenses[idx]={...expenses[idx],desc,amount,category,date,paidTo,supervisor};
   }
+  console.log('Saved expense supervisor:', supervisor, 'id:', id);
   closeModal('modal-edit-expense');
   renderExpenses();renderPL();renderSupervisors();updateMustafa();refresh();save();
   toast('✅ EXPENSE UPDATED — ALL TABS REFRESHED');
